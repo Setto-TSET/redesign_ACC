@@ -77,7 +77,11 @@ export default function NewRequestPage() {
     if (!user?.pharmacyId) return;
     api.requests
       .list({ pharmacyId: user.pharmacyId })
-      .then((list) => setActive(list.find((r) => isAlive(r.status)) ?? null));
+      .then((list) => setActive(list.find((r) => isAlive(r.status)) ?? null))
+      .catch(() => {
+        toast.error('โหลดข้อมูลคำขอไม่สำเร็จ');
+        setActive(null);
+      });
   }, [user]);
 
   const update = (patch: Partial<RequestDraft>) =>
