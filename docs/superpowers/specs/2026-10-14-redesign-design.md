@@ -47,17 +47,17 @@ Redesign ระบบรับรองร้านยาคุณภาพ (Acc
 
 แต่ละ flow คือ spec/plan ย่อย 1 ชุด ทำเสร็จแล้วให้ทีมรีวิวก่อนเริ่ม flow ถัดไป
 
-| # | Flow | Route ใหม่ | แทนหน้าเดิม | จุดที่ทำให้ใช้ง่ายขึ้น |
-|---|---|---|---|---|
-| F0 | โครงหลัก (เสร็จแล้ว) | `/login`, layout, เมนู, guard | Default, Home*, Dashboard* | — |
-| F1 | ยื่นคำขอ (ร้านยา) | `/requests/new`, `/requests`, `/my-pharmacy` | Request, RequestList, Register*, DrugStore* | เลือกประเภทคำขอแบบ radio พร้อมคำอธิบาย แสดง checklist เอกสารตามประเภท ฟอร์มเป็น stepper 4 ขั้น: ประเภท → ผู้ยื่น → เอกสาร → คำรับรอง |
-| F2 | ตรวจคำขอและ assign (admin) | `/requests/[id]` | RequestDetail, Allocate*, AsmTimeManage | tab + timeline, ปุ่มขั้นถัดไปตาม status, เลือก template ตอบกลับในหน้าเดียว |
-| F3 | ประเมิน GPP (ผู้ตรวจ) | `/schedule`, `/requests/[id]/assess` | AsmCalendar, AsmGPP, GPP, AsmTravel* | แบ่งตามหมวด, คะแนนรวมสด, "ไม่มี" ไม่ต้อง postback, บันทึกร่าง, ใช้บนแท็บเล็ตได้ |
-| F4 | ออกใบรับรอง | `/certificates`, ส่วนท้าย `/requests/[id]` | PrintCert, GPPClose | ปุ่ม "+3 ปี" คำนวณวันหมดอายุ, ดูตัวอย่างใบรับรองก่อนพิมพ์ |
-| F5 | Post-audit และข้อร้องเรียน | `/post-audit`, `/complaints` | PostAudit, PostList, Complain* | ใช้ฟอร์มประเมินจาก F3 และรายการแบบ F2 |
-| F6 | ร้านยาและแผนที่ (admin, สสจ.) | `/pharmacies`, `/map`, `/gpp` | Location*, PharmacyList/Detail, Maps, PharmacyGPP* | รายการมาตรฐาน กรองตามจังหวัด หน้ารายละเอียดเป็น tab |
-| F7 | รายงาน | `/reports` | Report* (10 หน้า) | หน้าเดียว เลือกประเภทรายงานและช่วงวันที่ กราฟ recharts และ export xlsx |
-| F8 | เนื้อหาและงานผู้ดูแล | `/news`, `/documents`, `/users`, `/master-data`, `/templates`, `/settings`, `/allocation`, `/profile` | News*, Download*, Users, TemplateText, Setting, Knowledge, Manual | รายการมาตรฐานคู่กับ modal เพิ่มหรือแก้ไข |
+| #   | Flow                          | Route ใหม่                                                                                            | แทนหน้าเดิม                                                       | จุดที่ทำให้ใช้ง่ายขึ้น                                                                                                               |
+| --- | ----------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| F0  | โครงหลัก (เสร็จแล้ว)          | `/login`, layout, เมนู, guard                                                                         | Default, Home*, Dashboard*                                        | —                                                                                                                                    |
+| F1  | ยื่นคำขอ (ร้านยา)             | `/requests/new`, `/requests`, `/my-pharmacy`                                                          | Request, RequestList, Register*, DrugStore*                       | เลือกประเภทคำขอแบบ radio พร้อมคำอธิบาย แสดง checklist เอกสารตามประเภท ฟอร์มเป็น stepper 4 ขั้น: ประเภท → ผู้ยื่น → เอกสาร → คำรับรอง |
+| F2  | ตรวจคำขอและ assign (admin)    | `/requests/[id]`                                                                                      | RequestDetail, Allocate*, AsmTimeManage                           | tab + timeline, ปุ่มขั้นถัดไปตาม status, เลือก template ตอบกลับในหน้าเดียว                                                           |
+| F3  | ประเมิน GPP (ผู้ตรวจ)         | `/schedule`, `/requests/[id]/assess`                                                                  | AsmCalendar, AsmGPP, GPP, AsmTravel*                              | แบ่งตามหมวด, คะแนนรวมสด, "ไม่มี" ไม่ต้อง postback, บันทึกร่าง, ใช้บนแท็บเล็ตได้                                                      |
+| F4  | ออกใบรับรอง                   | `/certificates`, ส่วนท้าย `/requests/[id]`                                                            | PrintCert, GPPClose                                               | ปุ่ม "+3 ปี" คำนวณวันหมดอายุ, ดูตัวอย่างใบรับรองก่อนพิมพ์                                                                            |
+| F5  | Post-audit และข้อร้องเรียน    | `/post-audit`, `/complaints`                                                                          | PostAudit, PostList, Complain*                                    | ใช้ฟอร์มประเมินจาก F3 และรายการแบบ F2                                                                                                |
+| F6  | ร้านยาและแผนที่ (admin, สสจ.) | `/pharmacies`, `/map`, `/gpp`                                                                         | Location*, PharmacyList/Detail, Maps, PharmacyGPP*                | รายการมาตรฐาน กรองตามจังหวัด หน้ารายละเอียดเป็น tab                                                                                  |
+| F7  | รายงาน                        | `/reports`                                                                                            | Report* (10 หน้า)                                                 | หน้าเดียว เลือกประเภทรายงานและช่วงวันที่ กราฟ recharts และ export xlsx                                                               |
+| F8  | เนื้อหาและงานผู้ดูแล          | `/news`, `/documents`, `/users`, `/master-data`, `/templates`, `/settings`, `/allocation`, `/profile` | News*, Download*, Users, TemplateText, Setting, Knowledge, Manual | รายการมาตรฐานคู่กับ modal เพิ่มหรือแก้ไข                                                                                             |
 
 ลำดับ: F1 → F2 → F3 → F4 ก่อน เพื่อ demo ได้ครบตั้งแต่ยื่นคำขอจนได้ใบรับรอง จากนั้น F5–F8 สลับลำดับได้
 

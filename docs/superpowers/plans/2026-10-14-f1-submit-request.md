@@ -40,28 +40,28 @@
 
 ## File Structure
 
-| ไฟล์ | หน้าที่ |
-|---|---|
-| `tsconfig.json` (แก้) | เปิด `allowImportingTsExtensions` ให้เทสต์ import `./x.ts` ได้ |
-| `package.json` (แก้) | เพิ่ม script `test` |
-| `src/types/api.ts` (แก้) | type ของร้านยา คำขอ ร่างคำขอ การลงทะเบียน |
-| `src/lib/constants.ts` (ใหม่) | label ของ status/ใบรับรอง/ความเกี่ยวข้อง, ประเภทคำขอ + checklist เอกสาร, ข้อความคำรับรอง |
-| `src/lib/requestRules.ts` (ใหม่) | กฎ pure: เลือกประเภท, คำรับรอง, เอกสาร, เลขคำขอ, ตรวจฟอร์มทีละขั้น, งานที่รอร้านยา |
-| `src/lib/requestRules.test.ts` (ใหม่) | เทสต์ของไฟล์ด้านบน |
-| `src/mock/index.ts` (แก้) | seed ร้านยา 5 ร้าน และคำขอ 5 รายการ |
-| `src/lib/api.ts` (แก้) | `pharmacies`, `requests` (เก็บใน sessionStorage), `fda.lookup`, `registrations.create` |
-| `src/components/common/StatusBadge.tsx` (ใหม่) | `StatusBadge` (สถานะคำขอ) และ `CertBadge` (สถานะใบรับรอง) |
-| `src/components/common/Stepper.tsx` (ใหม่) | แถบขั้นตอน |
-| `src/components/common/Field.tsx` (ใหม่) | label + ช่องกรอก + error ใต้ช่อง |
-| `src/app/requests/page.tsx` (ใหม่) | รายการคำขอ |
-| `src/app/requests/new/page.tsx` (ใหม่) | stepper ยื่นคำขอ: state, ร่าง, ปุ่มถัดไป/ส่ง |
-| `src/app/requests/new/steps.tsx` (ใหม่) | เนื้อหาแต่ละขั้น 4 component |
-| `src/app/my-pharmacy/page.tsx` (ใหม่) | ข้อมูลร้านของฉัน |
-| `src/components/home/PharmacyHome.tsx` (ใหม่) | หน้าแรกของ role ร้านยา: งานที่รอคุณ + คำขอล่าสุด |
-| `src/app/page.tsx` (แก้) | แสดง `PharmacyHome` เมื่อเป็นร้านยา |
-| `src/app/register/page.tsx` (ใหม่) | ลงทะเบียนร้านยาใหม่ 2 ขั้น |
-| `src/components/auth/AuthGuard.tsx` (แก้) | `/register` เป็นหน้า public |
-| `src/app/login/page.tsx` (แก้) | ลิงก์ไปหน้าลงทะเบียน |
+| ไฟล์                                           | หน้าที่                                                                                  |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `tsconfig.json` (แก้)                          | เปิด `allowImportingTsExtensions` ให้เทสต์ import `./x.ts` ได้                           |
+| `package.json` (แก้)                           | เพิ่ม script `test`                                                                      |
+| `src/types/api.ts` (แก้)                       | type ของร้านยา คำขอ ร่างคำขอ การลงทะเบียน                                                |
+| `src/lib/constants.ts` (ใหม่)                  | label ของ status/ใบรับรอง/ความเกี่ยวข้อง, ประเภทคำขอ + checklist เอกสาร, ข้อความคำรับรอง |
+| `src/lib/requestRules.ts` (ใหม่)               | กฎ pure: เลือกประเภท, คำรับรอง, เอกสาร, เลขคำขอ, ตรวจฟอร์มทีละขั้น, งานที่รอร้านยา       |
+| `src/lib/requestRules.test.ts` (ใหม่)          | เทสต์ของไฟล์ด้านบน                                                                       |
+| `src/mock/index.ts` (แก้)                      | seed ร้านยา 5 ร้าน และคำขอ 5 รายการ                                                      |
+| `src/lib/api.ts` (แก้)                         | `pharmacies`, `requests` (เก็บใน sessionStorage), `fda.lookup`, `registrations.create`   |
+| `src/components/common/StatusBadge.tsx` (ใหม่) | `StatusBadge` (สถานะคำขอ) และ `CertBadge` (สถานะใบรับรอง)                                |
+| `src/components/common/Stepper.tsx` (ใหม่)     | แถบขั้นตอน                                                                               |
+| `src/components/common/Field.tsx` (ใหม่)       | label + ช่องกรอก + error ใต้ช่อง                                                         |
+| `src/app/requests/page.tsx` (ใหม่)             | รายการคำขอ                                                                               |
+| `src/app/requests/new/page.tsx` (ใหม่)         | stepper ยื่นคำขอ: state, ร่าง, ปุ่มถัดไป/ส่ง                                             |
+| `src/app/requests/new/steps.tsx` (ใหม่)        | เนื้อหาแต่ละขั้น 4 component                                                             |
+| `src/app/my-pharmacy/page.tsx` (ใหม่)          | ข้อมูลร้านของฉัน                                                                         |
+| `src/components/home/PharmacyHome.tsx` (ใหม่)  | หน้าแรกของ role ร้านยา: งานที่รอคุณ + คำขอล่าสุด                                         |
+| `src/app/page.tsx` (แก้)                       | แสดง `PharmacyHome` เมื่อเป็นร้านยา                                                      |
+| `src/app/register/page.tsx` (ใหม่)             | ลงทะเบียนร้านยาใหม่ 2 ขั้น                                                               |
+| `src/components/auth/AuthGuard.tsx` (แก้)      | `/register` เป็นหน้า public                                                              |
+| `src/app/login/page.tsx` (แก้)                 | ลิงก์ไปหน้าลงทะเบียน                                                                     |
 
 ไม่สร้าง `ListPage` กลางใน F1 — มีหน้ารายการแค่หน้าเดียว (`/requests`) จะแยกเป็น component เมื่อ F6 มีหน้ารายการที่สอง
 
@@ -70,6 +70,7 @@
 ### Task 1: Type, ค่าคงที่ และกฎของคำขอ (TDD)
 
 **Files:**
+
 - Modify: `tsconfig.json`
 - Modify: `package.json` (scripts)
 - Modify: `src/types/api.ts` (ต่อท้ายไฟล์)
@@ -78,6 +79,7 @@
 - Test: `src/lib/requestRules.test.ts`
 
 **Interfaces:**
+
 - Consumes: ไม่มี
 - Produces:
   - types: `RequestStatus`, `CertStatus`, `Pharmacist`, `Pharmacy`, `RequestType`, `ApplicantRelation`, `Applicant`, `RequestDoc`, `RequestMessage`, `AccRequest`, `RequestDraft`, `Registration`
@@ -365,8 +367,20 @@ import {
 
 const types: RequestType[] = [
   { id: 1, code: 'NEW', label: 'ใหม่', hint: '', docs: ['ขย.5', 'แผนผัง'] },
-  { id: 2, code: 'REN', label: 'ต่ออายุ', hint: '', docs: ['ขย.5', 'ใบรับรองเดิม'] },
-  { id: 4, code: 'CHG', label: 'เปลี่ยนเภสัชกร', hint: '', docs: ['หนังสือแต่งตั้ง'] },
+  {
+    id: 2,
+    code: 'REN',
+    label: 'ต่ออายุ',
+    hint: '',
+    docs: ['ขย.5', 'ใบรับรองเดิม'],
+  },
+  {
+    id: 4,
+    code: 'CHG',
+    label: 'เปลี่ยนเภสัชกร',
+    hint: '',
+    docs: ['หนังสือแต่งตั้ง'],
+  },
 ];
 
 const draft = (patch: Partial<RequestDraft> = {}): RequestDraft => ({
@@ -425,9 +439,10 @@ test('เลขคำขอต่อจากเลขสูงสุดขอ�
 });
 
 test('ตรวจฟอร์มทีละขั้น', () => {
-  assert.deepEqual(Object.keys(validateStep(0, draft({ typeIds: [] }), types)), [
-    'typeIds',
-  ]);
+  assert.deepEqual(
+    Object.keys(validateStep(0, draft({ typeIds: [] }), types)),
+    ['typeIds'],
+  );
   assert.deepEqual(validateStep(1, draft(), types), {});
 
   const bad = validateStep(
@@ -706,10 +721,12 @@ git commit -m "feat(f1): request types, constants and rules with tests"
 ### Task 2: Mock data และ api
 
 **Files:**
+
 - Modify: `src/mock/index.ts` (แก้บรรทัด import และต่อท้ายไฟล์)
 - Modify: `src/lib/api.ts` (เขียนใหม่ทั้งไฟล์)
 
 **Interfaces:**
+
 - Consumes: types และ `requestTypes` จาก Task 1, `isAlive`, `nextRequestNo`, `requiredDocs` จาก `requestRules`
 - Produces:
   - `api.pharmacies.list(): Promise<Pharmacy[]>`
@@ -888,7 +905,13 @@ export const seedRequests: AccRequest[] = [
     typeIds: [1],
     submittedAt: '2026-09-02T10:15:00',
     status: 'doc_review',
-    applicant: applicant('อรุณี', 'มีสุข', 'arunee@example.com', '0810000002', 1),
+    applicant: applicant(
+      'อรุณี',
+      'มีสุข',
+      'arunee@example.com',
+      '0810000002',
+      1,
+    ),
     docs: [
       {
         name: 'ขย5-เภสัชรักษ์.pdf',
@@ -918,7 +941,13 @@ export const seedRequests: AccRequest[] = [
     typeIds: [7],
     submittedAt: '2026-08-11T09:40:00',
     status: 'need_docs',
-    applicant: applicant('สุนิสา', 'แก่นใจ', 'sunisa@example.com', '0810000004', 2),
+    applicant: applicant(
+      'สุนิสา',
+      'แก่นใจ',
+      'sunisa@example.com',
+      '0810000004',
+      2,
+    ),
     docs: [],
     messages: [
       {
@@ -936,7 +965,13 @@ export const seedRequests: AccRequest[] = [
     typeIds: [2, 8],
     submittedAt: '2026-05-18T16:46:00',
     status: 'committee',
-    applicant: applicant('อนันต์', 'ดอยคำ', 'anan@example.com', '0810000003', 1),
+    applicant: applicant(
+      'อนันต์',
+      'ดอยคำ',
+      'anan@example.com',
+      '0810000003',
+      1,
+    ),
     docs: [],
     messages: [
       {
@@ -954,7 +989,13 @@ export const seedRequests: AccRequest[] = [
     typeIds: [6],
     submittedAt: '2026-03-14T10:00:00',
     status: 'cancelled',
-    applicant: applicant('วิทยา', 'รอบรู้', 'wittaya@example.com', '0810000005', 3),
+    applicant: applicant(
+      'วิทยา',
+      'รอบรู้',
+      'wittaya@example.com',
+      '0810000005',
+      3,
+    ),
     docs: [],
     messages: [
       {
@@ -972,7 +1013,13 @@ export const seedRequests: AccRequest[] = [
     typeIds: [2],
     submittedAt: '2023-06-20T14:00:00',
     status: 'approved',
-    applicant: applicant('สมชาย', 'ใจดี', 'somchai@example.com', '0810000001', 3),
+    applicant: applicant(
+      'สมชาย',
+      'ใจดี',
+      'somchai@example.com',
+      '0810000001',
+      3,
+    ),
     docs: [],
     messages: [
       {
@@ -1133,10 +1180,12 @@ git commit -m "feat(f1): pharmacy and request mock data behind api"
 ### Task 3: หน้ารายการคำขอ `/requests` + `StatusBadge`
 
 **Files:**
+
 - Create: `src/components/common/StatusBadge.tsx`
 - Create: `src/app/requests/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `api.requests.list`, `api.pharmacies.list`, `requestStatusLabels`, `certStatusLabels`, `requestTypes`, `isAlive`, `useAuth()` (`user`, `user.role`, `user.pharmacyId`)
 - Produces: `StatusBadge({ status }: { status: RequestStatus })`, `CertBadge({ status }: { status: CertStatus })`
 
@@ -1263,9 +1312,7 @@ export default function RequestsPage() {
         <div>
           <h2 className="text-2xl font-extrabold tracking-tight">คำขอรับรอง</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
-            {isPharmacy
-              ? 'คำขอทั้งหมดของร้านคุณ'
-              : 'คำขอจากร้านยาทุกร้าน'}
+            {isPharmacy ? 'คำขอทั้งหมดของร้านคุณ' : 'คำขอจากร้านยาทุกร้าน'}
           </p>
         </div>
         {isPharmacy && (
@@ -1327,7 +1374,10 @@ export default function RequestsPage() {
         {rows && visible.length === 0 ? (
           <div className="py-16 text-center">
             <p className="font-semibold">ไม่พบคำขอ</p>
-            <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
+            <p
+              className="text-sm mt-1"
+              style={{ color: 'var(--ink-secondary)' }}
+            >
               {all.length === 0 && isPharmacy
                 ? 'ร้านคุณยังไม่เคยยื่นคำขอ'
                 : 'ลองเปลี่ยนคำค้นหรือตัวกรอง'}
@@ -1418,6 +1468,7 @@ Expected: ไม่มี error (ถ้า lint เตือน `react-hooks/set
 - [ ] **Step 4: ตรวจในเบราว์เซอร์**
 
 Run: `npm run dev` แล้วเปิด `http://localhost:3001/login`
+
 - login `pharm001` → เมนู "คำขอรับรอง" → เห็นคำขอ 1 รายการ (`REN-6600031`, ผ่านการรับรอง) ไม่มีคอลัมน์ร้านยา มีปุ่ม "ยื่นคำขอใหม่"
 - chip "เสร็จสิ้น (1)" กดแล้วยังเห็นรายการ, chip "กำลังดำเนินการ (0)" → "ไม่พบคำขอ"
 - สลับ Demo role เป็น admin → เห็น 5 รายการ มีคอลัมน์ร้านยา ไม่มีปุ่มยื่นคำขอ, พิมพ์ "ขอนแก่น" → เหลือ `NEW-6900009`
@@ -1435,12 +1486,14 @@ git commit -m "feat(f1): request list with search and status chips"
 ### Task 4: Stepper ยื่นคำขอ `/requests/new`
 
 **Files:**
+
 - Create: `src/components/common/Stepper.tsx`
 - Create: `src/components/common/Field.tsx`
 - Create: `src/app/requests/new/steps.tsx`
 - Create: `src/app/requests/new/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `api.requests.list`, `api.requests.create`, `requestTypes`, `relationLabels`, `pledgeItems`, `pledgeWarning`, rules จาก Task 1, `StatusBadge`
 - Produces:
   - `Stepper({ steps, current }: { steps: string[]; current: number })`
@@ -1453,7 +1506,13 @@ git commit -m "feat(f1): request list with search and status chips"
 import { IconCheck } from '@tabler/icons-react';
 
 /** แถบขั้นตอนของฟอร์มยาว — บนมือถือแสดงชื่อเฉพาะขั้นปัจจุบัน */
-export function Stepper({ steps, current }: { steps: string[]; current: number }) {
+export function Stepper({
+  steps,
+  current,
+}: {
+  steps: string[];
+  current: number;
+}) {
   return (
     <ol className="flex items-center gap-2 mb-6" aria-label="ขั้นตอน">
       {steps.map((s, i) => {
@@ -1530,7 +1589,11 @@ export function Field({
         </p>
       )}
       {error && (
-        <p className="mt-1 text-xs" style={{ color: 'var(--danger)' }} role="alert">
+        <p
+          className="mt-1 text-xs"
+          style={{ color: 'var(--danger)' }}
+          role="alert"
+        >
           {error}
         </p>
       )}
@@ -1659,7 +1722,9 @@ export function TypeStep({ draft, update, errors }: StepProps) {
                     }
                   />
                   <span>
-                    <span className="block text-sm font-semibold">{t.label}</span>
+                    <span className="block text-sm font-semibold">
+                      {t.label}
+                    </span>
                     <span
                       className="block text-xs mt-0.5"
                       style={{ color: 'var(--ink-secondary)' }}
@@ -1790,7 +1855,8 @@ export function DocsStep({ draft, update, errors }: StepProps) {
   return (
     <div className="space-y-4">
       <Muted>
-        เอกสารที่ต้องแนบสำหรับคำขอนี้ {docs.length} รายการ รองรับไฟล์ PDF หรือรูปภาพ
+        เอกสารที่ต้องแนบสำหรับคำขอนี้ {docs.length} รายการ รองรับไฟล์ PDF
+        หรือรูปภาพ
       </Muted>
       <ul className="space-y-3">
         {docs.map((doc) => {
@@ -1879,10 +1945,7 @@ export function ReviewStep({ draft, update, errors }: StepProps) {
           ? relationLabels[a.relation]
           : '-',
     ],
-    [
-      'เอกสาร',
-      `${requiredDocs(draft.typeIds, requestTypes).length} รายการ`,
-    ],
+    ['เอกสาร', `${requiredDocs(draft.typeIds, requestTypes).length} รายการ`],
   ];
 
   return (
@@ -2051,7 +2114,8 @@ export default function NewRequestPage() {
       </AdminLayout>
     );
 
-  if (active === undefined) return <AdminLayout title="ยื่นคำขอรับรอง">{null}</AdminLayout>;
+  if (active === undefined)
+    return <AdminLayout title="ยื่นคำขอรับรอง">{null}</AdminLayout>;
 
   if (active)
     return (
@@ -2078,11 +2142,15 @@ export default function NewRequestPage() {
         <Stepper steps={STEPS} current={step} />
         <div className="card">
           <h2 className="text-lg font-bold mb-5">{STEPS[step]}</h2>
-          {step === 0 && <TypeStep draft={draft} update={update} errors={errors} />}
+          {step === 0 && (
+            <TypeStep draft={draft} update={update} errors={errors} />
+          )}
           {step === 1 && (
             <ApplicantStep draft={draft} update={update} errors={errors} />
           )}
-          {step === 2 && <DocsStep draft={draft} update={update} errors={errors} />}
+          {step === 2 && (
+            <DocsStep draft={draft} update={update} errors={errors} />
+          )}
           {step === 3 && (
             <ReviewStep draft={draft} update={update} errors={errors} />
           )}
@@ -2140,6 +2208,7 @@ Expected: ไม่มี error, เทสต์ผ่าน 8/8
 - [ ] **Step 6: ตรวจในเบราว์เซอร์**
 
 ใช้ dev server จาก Task 3 (ถ้าเคยยื่นคำขอไปแล้วในแท็บนั้น ให้ลบ `accpharm_requests` และ `accpharm_request_draft` ใน sessionStorage ก่อน)
+
 - login `pharm001` → `/requests/new` → กด "ถัดไป" ทันที → เห็น "เลือกประเภทคำขออย่างน้อย 1 ข้อ"
 - เลือก "ต่ออายุ" แล้วเลือก "ขอรับรองใหม่" → "ต่ออายุ" หลุดออกเอง; ติ๊ก "เปลี่ยนผู้ดำเนินกิจการ…" → เห็นตัวเลือกบุคคล/นิติบุคคล
 - ขั้นผู้ยื่น: อีเมลเติมจากบัญชีแล้ว; ปล่อยชื่อว่าง ใส่เบอร์ "12" → error ใต้ช่องชื่อและเบอร์
@@ -2164,9 +2233,11 @@ git commit -m "feat(f1): 4-step request form with draft autosave"
 ### Task 5: ข้อมูลร้านของฉัน `/my-pharmacy`
 
 **Files:**
+
 - Create: `src/app/my-pharmacy/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `api.pharmacies.get`, `CertBadge`, `useAuth()`
 - Produces: ไม่มี
 
@@ -2242,7 +2313,8 @@ export default function MyPharmacyPage() {
           </div>
 
           <p className="text-xs" style={{ color: 'var(--ink-tertiary)' }}>
-            การแก้ไขข้อมูลร้านต้องยื่นเป็นคำขอเปลี่ยนแปลง เพื่อให้ สรร. ตรวจสอบก่อน
+            การแก้ไขข้อมูลร้านต้องยื่นเป็นคำขอเปลี่ยนแปลง เพื่อให้ สรร.
+            ตรวจสอบก่อน
           </p>
 
           <section className="card">
@@ -2321,10 +2393,12 @@ git commit -m "feat(f1): my pharmacy page"
 ### Task 6: หน้าแรกของร้านยา — งานที่รอคุณ
 
 **Files:**
+
 - Create: `src/components/home/PharmacyHome.tsx`
 - Modify: `src/app/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `api.pharmacies.get`, `api.requests.list`, `pharmacyTodos`, `StatusBadge`, `requestTypes`
 - Produces: `PharmacyHome({ pharmacyId }: { pharmacyId: number })`
 
@@ -2375,7 +2449,9 @@ export function PharmacyHome({ pharmacyId }: { pharmacyId: number }) {
         {todos.length === 0 ? (
           <div className="card flex items-center gap-3">
             <IconCircleCheck size={22} style={{ color: 'var(--accent)' }} />
-            <p className="text-sm">ไม่มีงานค้าง ใบรับรองของร้านยังไม่ใกล้หมดอายุ</p>
+            <p className="text-sm">
+              ไม่มีงานค้าง ใบรับรองของร้านยังไม่ใกล้หมดอายุ
+            </p>
           </div>
         ) : (
           <ul className="space-y-3">
@@ -2446,7 +2522,9 @@ export function PharmacyHome({ pharmacyId }: { pharmacyId: number }) {
                       style={{ color: 'var(--ink-secondary)' }}
                     >
                       {r.typeIds
-                        .map((id) => requestTypes.find((t) => t.id === id)?.label)
+                        .map(
+                          (id) => requestTypes.find((t) => t.id === id)?.label,
+                        )
                         .join(', ')}
                     </span>
                   </span>
@@ -2473,13 +2551,13 @@ import { PharmacyHome } from '@/components/home/PharmacyHome';
 ใน `DashboardPage` หลังบล็อก `<div className="mb-8">…</div>` (ทักทาย) ให้ห่อเนื้อหาเดิมทั้งหมด (grid stat-card และ card ตาราง) ด้วยเงื่อนไข:
 
 ```tsx
-      {user?.role === 'pharmacy' && user.pharmacyId ? (
-        <PharmacyHome pharmacyId={user.pharmacyId} />
-      ) : (
-        <>
-          {/* grid stat-card และ card "คำขอล่าสุด" เดิม — ไม่แก้เนื้อใน */}
-        </>
-      )}
+{
+  user?.role === 'pharmacy' && user.pharmacyId ? (
+    <PharmacyHome pharmacyId={user.pharmacyId} />
+  ) : (
+    <>{/* grid stat-card และ card "คำขอล่าสุด" เดิม — ไม่แก้เนื้อใน */}</>
+  );
+}
 ```
 
 แก้ comment บนสุดของ `stats` เป็น:
@@ -2496,6 +2574,7 @@ Expected: ไม่มี error
 - [ ] **Step 4: ตรวจในเบราว์เซอร์**
 
 ลบ `accpharm_requests` ใน sessionStorage ก่อน
+
 - login `pharm001` → หน้าแรกเห็น "ใบรับรองใกล้หมดอายุ · หมดอายุในอีก N วัน (2026-12-31)" ปุ่ม "ยื่นต่ออายุ" และ "คำขอล่าสุด" 1 รายการ
 - ยื่นคำขอใหม่ตาม Task 4 → กลับหน้าแรก → การ์ดเปลี่ยนเป็น "คำขออยู่ระหว่างดำเนินการ" พร้อม badge "รอดำเนินการ" และปุ่ม "ติดตามสถานะ"
 - สลับเป็น admin → หน้าแรกเป็น stat-card และตารางเดิม
@@ -2513,11 +2592,13 @@ git commit -m "feat(f1): pharmacy home with pending tasks"
 ### Task 7: ลงทะเบียนร้านยาใหม่ `/register`
 
 **Files:**
+
 - Create: `src/app/register/page.tsx`
 - Modify: `src/components/auth/AuthGuard.tsx:8`
 - Modify: `src/app/login/page.tsx` (ต่อจาก `</form>`)
 
 **Interfaces:**
+
 - Consumes: `api.fda.lookup`, `api.registrations.create`, `Stepper`, `Field`, `inputClass`
 - Produces: ไม่มี
 
@@ -2587,12 +2668,17 @@ export default function RegisterPage() {
     if (Object.keys(e).length) return;
     setBusy(true);
     await api.registrations.create(form);
-    toast.success('ส่งข้อมูลลงทะเบียนแล้ว สรร. จะตรวจสอบและแจ้งบัญชีผู้ใช้ทางอีเมล');
+    toast.success(
+      'ส่งข้อมูลลงทะเบียนแล้ว สรร. จะตรวจสอบและแจ้งบัญชีผู้ใช้ทางอีเมล',
+    );
     router.push('/login');
   };
 
   return (
-    <div className="min-h-screen px-4 py-10" style={{ background: 'var(--bg)' }}>
+    <div
+      className="min-h-screen px-4 py-10"
+      style={{ background: 'var(--bg)' }}
+    >
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <span
@@ -2611,7 +2697,10 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <Stepper steps={['ตรวจสอบใบอนุญาต', 'ข้อมูลร้าน']} current={form ? 1 : 0} />
+        <Stepper
+          steps={['ตรวจสอบใบอนุญาต', 'ข้อมูลร้าน']}
+          current={form ? 1 : 0}
+        />
 
         <div className="card">
           {!form ? (
@@ -2648,13 +2737,20 @@ export default function RegisterPage() {
               </p>
               <div className="grid gap-5 sm:grid-cols-2">
                 {FIELDS.map(([key, label]) => (
-                  <Field key={key} label={label} htmlFor={key} error={errors[key]}>
+                  <Field
+                    key={key}
+                    label={label}
+                    htmlFor={key}
+                    error={errors[key]}
+                  >
                     <input
                       id={key}
                       className={inputClass(errors[key])}
                       aria-invalid={!!errors[key]}
                       value={form[key]}
-                      onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, [key]: e.target.value })
+                      }
                     />
                   </Field>
                 ))}
@@ -2704,16 +2800,16 @@ export default function RegisterPage() {
 เพิ่ม `import Link from 'next/link';` ต่อจาก `import { useState } from 'react';` แล้วใส่ต่อจาก `</form>`:
 
 ```tsx
-          <p className="mt-5 text-sm text-center text-zinc-600">
-            ร้านยายังไม่มีบัญชี?{' '}
-            <Link
-              href="/register"
-              className="font-semibold"
-              style={{ color: 'var(--accent)' }}
-            >
-              ลงทะเบียนร้านยา
-            </Link>
-          </p>
+<p className="mt-5 text-sm text-center text-zinc-600">
+  ร้านยายังไม่มีบัญชี?{' '}
+  <Link
+    href="/register"
+    className="font-semibold"
+    style={{ color: 'var(--accent)' }}
+  >
+    ลงทะเบียนร้านยา
+  </Link>
+</p>
 ```
 
 - [ ] **Step 4: ตรวจ type และ lint**
@@ -2741,9 +2837,11 @@ git commit -m "feat(f1): pharmacy self-registration with mock FDA lookup"
 ### Task 8: ตรวจ Definition of Done ของ F1
 
 **Files:**
+
 - ไม่มีไฟล์โค้ดใหม่ (แก้เฉพาะจุดที่ตรวจเจอ)
 
 **Interfaces:**
+
 - Consumes: ทุก task ก่อนหน้า
 - Produces: F1 พร้อมให้ทีมรีวิว
 

@@ -41,4 +41,4 @@ export function Field({
 
 /** class ของ input ตามสถานะ error */
 export const inputClass = (error?: string) =>
-  `input-field ${error ? '!border-red-500' : ''}`;
+  `input-field ${error ? '!border-[var(--danger)]' : ''}`;

@@ -56,7 +56,10 @@ export const api = {
     /** เรียงใหม่สุดก่อน */
     async list(filter: { pharmacyId?: number } = {}): Promise<AccRequest[]> {
       return loadRequests()
-        .filter((r) => !filter.pharmacyId || r.pharmacyId === filter.pharmacyId)
+        .filter(
+          (r) =>
+            !('pharmacyId' in filter) || r.pharmacyId === filter.pharmacyId,
+        )
         .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
     },
 
@@ -65,7 +68,10 @@ export const api = {
       if (all.some((r) => r.pharmacyId === pharmacyId && isAlive(r.status)))
         throw new Error('ร้านนี้มีคำขอที่กำลังดำเนินการอยู่');
       const now = new Date();
-      const at = now.toISOString().slice(0, 19);
+      // เวลาท้องถิ่น (ตรงกับ seed) ไม่ใช่ UTC
+      const at = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 19);
       const req: AccRequest = {
         id: `r${now.getTime()}`,
         no: nextRequestNo(
