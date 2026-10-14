@@ -7,10 +7,11 @@ import {
   IconMessageReport,
 } from '@tabler/icons-react';
 import { AdminLayout } from '@/components/layout';
+import { PharmacyHome } from '@/components/home/PharmacyHome';
 import { useAuth } from '@/contexts/AuthContext';
 import { roleLabels } from '@/mock';
 
-// ขั้นที่ 1: ตัวเลขยังเป็นค่าตัวอย่าง — ขั้นที่ 2 จะดึงจาก lib/api.ts และแยกเนื้อหาตาม role
+// ตัวเลขยังเป็นค่าตัวอย่างสำหรับ role อื่นนอกจากร้านยา — F2 เป็นต้นไปจะดึงจาก lib/api.ts ตาม role
 const stats = [
   { label: 'ร้านยาทั้งหมด', value: '12', icon: IconBuildingStore },
   { label: 'รับรองแล้ว', value: '6', icon: IconCertificate },
@@ -59,61 +60,67 @@ export default function DashboardPage() {
         </h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="stat-card">
-            <div
-              className="stat-icon"
-              style={{
-                background: 'var(--accent-soft)',
-                color: 'var(--accent)',
-              }}
-            >
-              <s.icon size={22} stroke={1.5} />
-            </div>
-            <div>
-              <div className="stat-value">{s.value}</div>
-              <div className="stat-label">{s.label}</div>
-            </div>
+      {user?.role === 'pharmacy' && user.pharmacyId ? (
+        <PharmacyHome pharmacyId={user.pharmacyId} />
+      ) : (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label} className="stat-card">
+                <div
+                  className="stat-icon"
+                  style={{
+                    background: 'var(--accent-soft)',
+                    color: 'var(--accent)',
+                  }}
+                >
+                  <s.icon size={22} stroke={1.5} />
+                </div>
+                <div>
+                  <div className="stat-value">{s.value}</div>
+                  <div className="stat-label">{s.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="card mt-6 !p-0 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
-          <h3 className="font-bold tracking-tight">คำขอล่าสุด</h3>
-          <div className="flex gap-2">
-            <button className="btn-secondary">ดูทั้งหมด</button>
-            <button className="btn-primary">ยื่นคำขอใหม่</button>
+          <div className="card mt-6 !p-0 overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
+              <h3 className="font-bold tracking-tight">คำขอล่าสุด</h3>
+              <div className="flex gap-2">
+                <button className="btn-secondary">ดูทั้งหมด</button>
+                <button className="btn-primary">ยื่นคำขอใหม่</button>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>เลขที่คำขอ</th>
+                    <th>ร้านยา</th>
+                    <th>จังหวัด</th>
+                    <th>สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sampleRows.map((r) => (
+                    <tr key={r.no}>
+                      <td className="font-mono !text-zinc-800">{r.no}</td>
+                      <td className="!text-zinc-800 font-medium">{r.shop}</td>
+                      <td>{r.province}</td>
+                      <td>
+                        <span className={`badge ${r.status[0]}`}>
+                          {r.status[1]}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>เลขที่คำขอ</th>
-                <th>ร้านยา</th>
-                <th>จังหวัด</th>
-                <th>สถานะ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sampleRows.map((r) => (
-                <tr key={r.no}>
-                  <td className="font-mono !text-zinc-800">{r.no}</td>
-                  <td className="!text-zinc-800 font-medium">{r.shop}</td>
-                  <td>{r.province}</td>
-                  <td>
-                    <span className={`badge ${r.status[0]}`}>
-                      {r.status[1]}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        </>
+      )}
     </AdminLayout>
   );
 }
