@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 // หน้าที่ไม่ต้อง login
-const publicPaths = ['/login'];
+const publicPaths = ['/login', '/register'];
 
 /** guard ฝั่ง client ของ PoC — ระบบจริงต้องตรวจสิทธิ์ที่ API ด้วยทุกครั้ง */
 export function AuthGuard({ children }: { children: React.ReactNode }) {

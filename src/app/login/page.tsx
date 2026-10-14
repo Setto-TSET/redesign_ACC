@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { IconPill } from '@tabler/icons-react';
@@ -146,6 +147,17 @@ export default function LoginPage() {
               {loading ? 'กำลังเข้าสู่ระบบ…' : 'เข้าสู่ระบบ'}
             </button>
           </form>
+
+          <p className="mt-5 text-sm text-center text-zinc-600">
+            ร้านยายังไม่มีบัญชี?{' '}
+            <Link
+              href="/register"
+              className="font-semibold"
+              style={{ color: 'var(--accent)' }}
+            >
+              ลงทะเบียนร้านยา
+            </Link>
+          </p>
 
           <div className="mt-8 px-4 py-3 rounded-xl bg-amber-50 border border-amber-100">
             <p className="text-[11px] font-semibold text-amber-700 tracking-wide mb-2">
