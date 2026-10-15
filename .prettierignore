@@ -8,3 +8,6 @@ public/
 next-env.d.ts
 package-lock.json
 *.tsbuildinfo
+
+# plans contain partial code snippets that prettier would reshape
+docs/superpowers/plans/

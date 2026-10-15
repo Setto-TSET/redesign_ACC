@@ -110,8 +110,8 @@ Action ที่ทำได้ทุกสถานะที่ยังไม�
 `src/lib/api.ts`
 
 - `requests.get(id, user): Promise<AccRequest | null>` — ร้านยาเห็นเฉพาะร้านตัวเอง, ผู้ตรวจเห็นเฉพาะคำขอที่มี id ตัวเองใน `assessorIds`; ไม่มีสิทธิ์ = `null` (หน้าแสดง "ไม่พบคำขอ" เหมือนไม่มี id)
-- `requests.act(id, action, input, user): Promise<AccRequest>` — เรียก `applyAction` แล้วบันทึกด้วย `map` + spread ไม่ mutate seed; throw `Error(ข้อความไทย)` เมื่อ `applyAction` คืน error
-- `requests.addPayment(id, payment, user): Promise<AccRequest>` — เฉพาะร้านยาเจ้าของคำขอ และสถานะ `submitted` / `doc_review` / `need_docs`
+- `requests.act(id, action, input, user): Promise<ActionResult>` — เรียก `applyAction` แล้วบันทึกด้วย `map` + spread ไม่ mutate seed; คืน `{ error, field }` (ข้อความไทย + ช่องที่ผิด) ให้หน้าแสดง error ใต้ช่อง
+- `requests.addPayment(id, payment, user): Promise<ActionResult>` — เฉพาะร้านยาเจ้าของคำขอ และสถานะ `submitted` / `doc_review` / `need_docs`
 - `assessors.list(): Promise<Assessor[]>`
 
 `src/mock/index.ts`
