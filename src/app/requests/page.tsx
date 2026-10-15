@@ -7,7 +7,8 @@ import { AdminLayout } from '@/components/layout';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
-import { requestTypes } from '@/lib/constants';
+import { typeLabel } from '@/lib/constants';
+import { formatDate } from '@/lib/format';
 import { isAlive } from '@/lib/requestRules';
 import type { AccRequest, Pharmacy, RequestStatus } from '@/types/api';
 
@@ -29,16 +30,6 @@ const groups: {
   },
   { key: 'closed', label: 'เสร็จสิ้น', match: (s) => !isAlive(s) },
 ];
-
-const typeText = (ids: number[]) =>
-  ids.map((id) => requestTypes.find((t) => t.id === id)?.label).join(', ');
-
-const dateText = (iso: string) =>
-  new Date(iso).toLocaleDateString('th-TH', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit',
-  });
 
 export default function RequestsPage() {
   const { user } = useAuth();
@@ -177,8 +168,8 @@ export default function RequestsPage() {
                           {shops[r.pharmacyId]?.name}
                         </td>
                       )}
-                      <td>{typeText(r.typeIds)}</td>
-                      <td>{dateText(r.submittedAt)}</td>
+                      <td>{typeLabel(r.typeIds)}</td>
+                      <td>{formatDate(r.submittedAt)}</td>
                       <td>
                         <StatusBadge status={r.status} />
                       </td>
@@ -210,7 +201,7 @@ export default function RequestsPage() {
                       className="mt-1 text-xs"
                       style={{ color: 'var(--ink-secondary)' }}
                     >
-                      {typeText(r.typeIds)} · {dateText(r.submittedAt)}
+                      {typeLabel(r.typeIds)} · {formatDate(r.submittedAt)}
                     </p>
                   </Link>
                 </li>

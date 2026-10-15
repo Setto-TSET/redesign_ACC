@@ -7,6 +7,7 @@ import {
   pledgeWarning,
   relationLabels,
   requestTypes,
+  typeLabel,
 } from '@/lib/constants';
 import {
   CHANGE_TYPE_IDS,
@@ -318,7 +319,7 @@ export function DocsStep({ draft, update, errors }: StepProps) {
 export function ReviewStep({ draft, update, errors }: StepProps) {
   const a = draft.applicant;
   const rows: [string, string][] = [
-    ['ประเภทคำขอ', draft.typeIds.map((id) => typeById(id).label).join(', ')],
+    ['ประเภทคำขอ', typeLabel(draft.typeIds)],
     ['ผู้ยื่นคำขอ', `${a.firstName} ${a.lastName}`],
     [
       'ติดต่อ',

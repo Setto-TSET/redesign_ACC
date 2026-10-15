@@ -2,6 +2,7 @@
 import type {
   ApplicantRelation,
   CertStatus,
+  RequestAction,
   RequestStatus,
   RequestType,
 } from '@/types/api';
@@ -98,6 +99,13 @@ export const requestTypes: RequestType[] = [
   },
 ];
 
+/** ชื่อประเภทคำขอคั่นด้วย ", " — ข้าม id ที่ไม่รู้จัก */
+export const typeLabel = (ids: number[]) =>
+  ids
+    .map((id) => requestTypes.find((t) => t.id === id)?.label)
+    .filter(Boolean)
+    .join(', ');
+
 /** คำรับรองของผู้ยื่นคำขอ (Request.aspx ส่วน pnPolicy) */
 export const pledgeItems = [
   'ไม่มีการจำหน่ายยาออนไลน์',
@@ -108,3 +116,24 @@ export const pledgeItems = [
 
 export const pledgeWarning =
   'หากตรวจพบภายหลังว่าคุณสมบัติไม่เป็นไปตามที่กำหนด หรือไม่ปฏิบัติตามคำรับรอง สำนักงานรับรองร้านยาคุณภาพสามารถยกเลิกการรับรอง หรือคืนคำขอโดยไม่พิจารณาได้';
+
+export const actionLabels: Record<RequestAction, string> = {
+  start_review: 'รับตรวจเอกสาร',
+  request_docs: 'ขอเอกสารเพิ่มเติม',
+  assign: 'มอบหมายผู้ตรวจ',
+  resubmit_docs: 'ส่งเอกสารเพิ่มแล้ว',
+  to_committee: 'ส่งคณะกรรมการ',
+  approve: 'ผ่านการรับรอง',
+  reject: 'ไม่ผ่าน',
+  reply: 'ตอบกลับร้านยา',
+  cancel: 'ยกเลิกคำขอ',
+  override: 'เปลี่ยนสถานะอื่น',
+};
+
+/** template ข้อความตอบกลับ (TemplateText ของระบบเดิม ตาม AdminManual ข้อ 13) */
+export const replyTemplates = [
+  'อยู่ระหว่างการดำเนินการตรวจสอบเอกสาร',
+  'กรุณาส่งเอกสารเพิ่มเติม ดังนี้',
+  'สรร. ได้ตรวจประเมินเรียบร้อยแล้ว อยู่ระหว่างยื่นคณะกรรมการรับรอง',
+  'ผ่านคณะกรรมการรับรองแล้ว เมื่อวันที่',
+];

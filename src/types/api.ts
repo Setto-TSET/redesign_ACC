@@ -108,6 +108,8 @@ export interface RequestMessage {
   at: string;
   text: string;
   status?: RequestStatus;
+  /** รายการนี้มาจาก "เปลี่ยนสถานะอื่น" (แก้สถานะ) */
+  override?: boolean;
 }
 
 export interface AccRequest {
@@ -122,6 +124,12 @@ export interface AccRequest {
   applicant: Applicant;
   docs: RequestDoc[];
   messages: RequestMessage[];
+  /** ผู้ตรวจประเมินที่ได้รับมอบหมาย (Assessor.id) */
+  assessorIds: number[];
+  /** หลักฐานการโอนเงิน */
+  payments: Payment[];
+  /** คะแนน GPP เป็นเปอร์เซ็นต์ (มีหลังประเมิน) */
+  gppScore?: number;
 }
 
 /** ร่างคำขอระหว่างกรอก stepper (เก็บใน sessionStorage) */
@@ -148,3 +156,39 @@ export interface Registration {
   phone: string;
   email: string;
 }
+
+/** action ที่ทำกับคำขอได้ — ตารางสิทธิ์อยู่ที่ lib/requestRules.ts */
+export type RequestAction =
+  | 'start_review'
+  | 'request_docs'
+  | 'assign'
+  | 'resubmit_docs'
+  | 'to_committee'
+  | 'approve'
+  | 'reject'
+  | 'reply'
+  | 'cancel'
+  | 'override';
+
+export interface Payment {
+  amount: number;
+  fileName: string;
+  paidAt: string;
+}
+
+export interface Assessor {
+  id: number;
+  name: string;
+}
+
+/** ข้อมูลที่ action ต้องใช้ — แต่ละ action ใช้เฉพาะบางช่อง */
+export interface ActionInput {
+  message?: string;
+  assessorIds?: number[];
+  newDocs?: RequestDoc[];
+  status?: RequestStatus;
+}
+
+/** ผลของ action: คำขอชุดใหม่ หรือ error พร้อมช่องที่ผิด */
+export type ActionResult =
+  { request: AccRequest } | { error: string; field?: keyof ActionInput };

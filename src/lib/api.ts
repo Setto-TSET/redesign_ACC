@@ -85,6 +85,8 @@ export const api = {
         submittedAt: at,
         status: 'submitted',
         applicant: draft.applicant,
+        assessorIds: [],
+        payments: [],
         // เก็บเฉพาะเอกสารที่ประเภทคำขอปัจจุบันต้องใช้ (ร่างอาจมีไฟล์ค้างจากประเภทที่เลือกออกไปแล้ว)
         docs: requiredDocs(draft.typeIds, requestTypes)
           .filter((type) => draft.docs[type])

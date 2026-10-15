@@ -9,7 +9,7 @@ import {
 } from '@tabler/icons-react';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { api } from '@/lib/api';
-import { requestTypes } from '@/lib/constants';
+import { typeLabel } from '@/lib/constants';
 import { pharmacyTodos, type Todo } from '@/lib/requestRules';
 import type { AccRequest } from '@/types/api';
 
@@ -114,11 +114,7 @@ export function PharmacyHome({ pharmacyId }: { pharmacyId: number }) {
                       className="block text-xs mt-0.5"
                       style={{ color: 'var(--ink-secondary)' }}
                     >
-                      {r.typeIds
-                        .map(
-                          (id) => requestTypes.find((t) => t.id === id)?.label,
-                        )
-                        .join(', ')}
+                      {typeLabel(r.typeIds)}
                     </span>
                   </span>
                   <StatusBadge status={r.status} />

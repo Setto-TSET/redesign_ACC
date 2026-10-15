@@ -7,16 +7,8 @@ import { AdminLayout } from '@/components/layout';
 import { CertBadge } from '@/components/common/StatusBadge';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
+import { formatDateLong } from '@/lib/format';
 import type { Pharmacy } from '@/types/api';
-
-const dateText = (iso?: string) =>
-  iso
-    ? new Date(iso).toLocaleDateString('th-TH', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : '-';
 
 function Rows({ rows }: { rows: [string, string][] }) {
   return (
@@ -76,8 +68,8 @@ export default function MyPharmacyPage() {
             <Rows
               rows={[
                 ['เลขที่ใบรับรอง', shop.qualityNo ?? '-'],
-                ['วันที่รับรอง', dateText(shop.certIssued)],
-                ['วันหมดอายุ', dateText(shop.certExpires)],
+                ['วันที่รับรอง', formatDateLong(shop.certIssued)],
+                ['วันหมดอายุ', formatDateLong(shop.certExpires)],
               ]}
             />
           </section>
