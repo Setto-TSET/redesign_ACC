@@ -130,6 +130,19 @@ export const actionLabels: Record<RequestAction, string> = {
   override: 'เปลี่ยนสถานะอื่น',
 };
 
+export const doneLabels: Record<RequestAction, string> = {
+  start_review: 'รับตรวจเอกสารแล้ว',
+  request_docs: 'ส่งคำขอเอกสารเพิ่มเติมแล้ว',
+  assign: 'มอบหมายผู้ตรวจแล้ว',
+  resubmit_docs: 'ส่งเอกสารเพิ่มเติมแล้ว',
+  to_committee: 'ส่งคณะกรรมการแล้ว',
+  approve: 'บันทึกผ่านการรับรองแล้ว',
+  reject: 'บันทึกไม่ผ่านการรับรองแล้ว',
+  reply: 'ส่งข้อความถึงร้านยาแล้ว',
+  cancel: 'ยกเลิกคำขอแล้ว',
+  override: 'เปลี่ยนสถานะแล้ว',
+};
+
 /** template ข้อความตอบกลับ (TemplateText ของระบบเดิม ตาม AdminManual ข้อ 13) */
 export const replyTemplates = [
   'อยู่ระหว่างการดำเนินการตรวจสอบเอกสาร',

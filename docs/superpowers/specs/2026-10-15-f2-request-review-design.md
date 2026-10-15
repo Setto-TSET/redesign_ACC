@@ -103,8 +103,8 @@ Action ที่ทำได้ทุกสถานะที่ยังไม�
 
 `src/lib/format.ts` (ใหม่, ย้ายของซ้ำจาก F1)
 
-- `typeLabel(ids: number[]): string` — ข้าม id ที่ไม่รู้จัก ไม่มีช่องว่างโผล่
-- `formatDate(iso: string): string`, `formatDateTime(iso: string): string` (th-TH)
+- `formatDate(iso: string): string`, `formatDateLong(iso: string): string`, `formatDateTime(iso: string): string` (th-TH)
+- `typeLabel(ids: number[]): string` (ข้าม id ที่ไม่รู้จัก ไม่มีช่องว่างโผล่) อยู่ที่ `src/lib/constants.ts` ไม่ใช่ format.ts เพื่อให้ `node --test` import ได้
 - แก้ `/requests`, `/my-pharmacy`, `PharmacyHome`, `steps.tsx` ให้ใช้ helper ชุดนี้
 
 `src/lib/api.ts`

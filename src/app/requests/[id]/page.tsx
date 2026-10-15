@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { AdminLayout } from '@/components/layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
-import { actionLabels } from '@/lib/constants';
+import { doneLabels } from '@/lib/constants';
 import { actionsFor, canAddPayment } from '@/lib/requestRules';
 import type {
   AccRequest,
@@ -80,7 +80,7 @@ export default function RequestDetailPage() {
     const res = await api.requests.act(req.id, action, input, user);
     if ('request' in res) {
       setReq(res.request);
-      toast.success(`${actionLabels[action]}แล้ว`);
+      toast.success(doneLabels[action]);
     }
     return res;
   };

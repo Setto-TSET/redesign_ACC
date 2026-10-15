@@ -86,7 +86,7 @@ export function RequestHeader({
                 className="btn-primary"
                 onClick={() => onAction(a)}
               >
-                {actionLabels[a]}
+                {a === 'resubmit_docs' ? 'แนบเอกสารเพิ่ม' : actionLabels[a]}
               </button>
             ))}
             {secondary.map((a) => (
@@ -96,7 +96,7 @@ export function RequestHeader({
                 className="btn-secondary"
                 onClick={() => onAction(a)}
               >
-                {actionLabels[a]}
+                {a === 'resubmit_docs' ? 'แนบเอกสารเพิ่ม' : actionLabels[a]}
               </button>
             ))}
           </div>

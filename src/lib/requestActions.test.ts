@@ -79,6 +79,50 @@ test('actionsFor ตามตารางสถานะและ role', () => {
   assert.deepEqual(actionsFor('submitted', 'ppho'), []);
 });
 
+test('actionsFor ครบทุกสถานะ × role', () => {
+  const flow: Record<string, string[]> = {
+    submitted: ['start_review'],
+    doc_review: ['request_docs', 'assign'],
+    assessed: ['to_committee'],
+    committee: ['approve', 'reject'],
+  };
+  const dead = ['approved', 'rejected', 'cancelled'];
+  const statuses = [
+    'submitted',
+    'doc_review',
+    'need_docs',
+    'assigned',
+    'assessed',
+    'committee',
+    ...dead,
+  ] as RequestStatus[];
+  for (const status of statuses) {
+    const staff = dead.includes(status)
+      ? ['override']
+      : [...(flow[status] ?? []), 'reply', 'cancel', 'override'];
+    const pharmacy =
+      status === 'need_docs'
+        ? ['resubmit_docs', 'cancel']
+        : status === 'submitted' || status === 'doc_review'
+          ? ['cancel']
+          : [];
+    const expected = {
+      pharmacy,
+      assessor: [],
+      admin: staff,
+      ppho: [],
+      superadmin: staff,
+    };
+    for (const [role, want] of Object.entries(expected)) {
+      assert.deepEqual(
+        actionsFor(status, role as 'admin'),
+        want,
+        `${status} × ${role}`,
+      );
+    }
+  }
+});
+
 test('applyAction เปลี่ยนสถานะ ต่อ timeline และไม่แก้ของเดิม', () => {
   const req = at('submitted');
   const res = applyAction(req, 'start_review', {}, admin, NOW);
@@ -96,6 +140,10 @@ test('applyAction เปลี่ยนสถานะ ต่อ timeline แล
 });
 
 test('applyAction ตรวจ input ที่ต้องมี', () => {
+  const orig = at('doc_review');
+  const snap = structuredClone(orig);
+  applyAction(orig, 'assign', { assessorIds: [] }, admin, NOW);
+  assert.deepEqual(orig, snap);
   assert.deepEqual(
     applyAction(at('doc_review'), 'assign', { assessorIds: [] }, admin, NOW),
     { error: 'เลือกผู้ตรวจอย่างน้อย 1 คน', field: 'assessorIds' },
