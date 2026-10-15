@@ -2,14 +2,26 @@
 // ตอนต่อ backend ให้แก้แค่ไฟล์นี้เป็น fetch(`${process.env.NEXT_PUBLIC_API_URL}/...`)
 import type {
   AccRequest,
+  ActionInput,
+  ActionResult,
+  Assessor,
   LoginResponse,
   Pharmacy,
   Registration,
+  RequestAction,
   RequestDraft,
+  User,
 } from '@/types/api';
-import { pharmacies, seedRequests, users } from '@/mock';
+import { assessors, pharmacies, seedRequests, users } from '@/mock';
 import { requestTypes } from '@/lib/constants';
-import { isAlive, nextRequestNo, requiredDocs } from '@/lib/requestRules';
+import {
+  applyAction,
+  canAddPayment,
+  canView,
+  isAlive,
+  nextRequestNo,
+  requiredDocs,
+} from '@/lib/requestRules';
 
 // PoC: คำขอที่ยื่นระหว่าง demo เก็บใน sessionStorage ของแท็บ
 // สลับ role ผ่าน "Demo role" ในแท็บเดียวกันแล้วเห็นข้อมูลชุดเดียวกัน
@@ -18,11 +30,29 @@ const REQUESTS_KEY = 'accpharm_requests';
 function loadRequests(): AccRequest[] {
   try {
     const stored = sessionStorage.getItem(REQUESTS_KEY);
-    if (stored) return JSON.parse(stored);
+    // คำขอที่บันทึกก่อนมี F2 ไม่มี assessorIds/payments — เติมค่าว่างให้
+    if (stored)
+      return (JSON.parse(stored) as AccRequest[]).map((r) => ({
+        ...r,
+        assessorIds: r.assessorIds ?? [],
+        payments: r.payments ?? [],
+      }));
   } catch {
     // sessionStorage ใช้ไม่ได้หรือข้อมูลเสีย — กลับไปใช้ seed
   }
   return seedRequests;
+}
+
+/** เวลาท้องถิ่น YYYY-MM-DDTHH:mm:ss (ตรงกับ seed) ไม่ใช่ UTC */
+function localNow(now = new Date()) {
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 19);
+}
+
+/** แทนคำขอ id นี้ด้วยชุดใหม่แล้วบันทึก (ไม่แก้ object เดิม) */
+function replaceRequest(all: AccRequest[], next: AccRequest) {
+  saveRequests(all.map((r) => (r.id === next.id ? next : r)));
 }
 
 function saveRequests(list: AccRequest[]) {
@@ -52,15 +82,69 @@ export const api = {
     },
   },
 
+  assessors: {
+    async list(): Promise<Assessor[]> {
+      return assessors;
+    },
+  },
+
   requests: {
-    /** เรียงใหม่สุดก่อน */
-    async list(filter: { pharmacyId?: number } = {}): Promise<AccRequest[]> {
+    /** เรียงใหม่สุดก่อน — ใส่ key ไว้แต่ค่าเป็น undefined = ไม่เห็นอะไรเลย (fail closed) */
+    async list(
+      filter: { pharmacyId?: number; assessorId?: number } = {},
+    ): Promise<AccRequest[]> {
       return loadRequests()
         .filter(
           (r) =>
-            !('pharmacyId' in filter) || r.pharmacyId === filter.pharmacyId,
+            (!('pharmacyId' in filter) || r.pharmacyId === filter.pharmacyId) &&
+            (!('assessorId' in filter) ||
+              (filter.assessorId !== undefined &&
+                r.assessorIds.includes(filter.assessorId))),
         )
         .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
+    },
+
+    /** null เมื่อไม่มีคำขอนี้ หรือผู้ใช้ไม่มีสิทธิ์ดู (ไม่บอกว่ามีอยู่) */
+    async get(id: string, user: User): Promise<AccRequest | null> {
+      const req = loadRequests().find((r) => r.id === id);
+      return req && canView(req, user) ? req : null;
+    },
+
+    async act(
+      id: string,
+      action: RequestAction,
+      input: ActionInput,
+      user: User,
+    ): Promise<ActionResult> {
+      const all = loadRequests();
+      const req = all.find((r) => r.id === id);
+      if (!req || !canView(req, user)) return { error: 'ไม่พบคำขอ' };
+      const res = applyAction(
+        req,
+        action,
+        input,
+        { name: user.name, role: user.role },
+        localNow(),
+      );
+      if ('request' in res) replaceRequest(all, res.request);
+      return res;
+    },
+
+    async addPayment(
+      id: string,
+      payment: { amount: number; fileName: string },
+      user: User,
+    ): Promise<ActionResult> {
+      const all = loadRequests();
+      const req = all.find((r) => r.id === id);
+      if (!req || !canAddPayment(req, user))
+        return { error: 'เพิ่มหลักฐานการโอนไม่ได้ในสถานะนี้' };
+      const request = {
+        ...req,
+        payments: [...req.payments, { ...payment, paidAt: localNow() }],
+      };
+      replaceRequest(all, request);
+      return { request };
     },
 
     async create(draft: RequestDraft, pharmacyId: number): Promise<AccRequest> {
@@ -68,10 +152,7 @@ export const api = {
       if (all.some((r) => r.pharmacyId === pharmacyId && isAlive(r.status)))
         throw new Error('ร้านนี้มีคำขอที่กำลังดำเนินการอยู่');
       const now = new Date();
-      // เวลาท้องถิ่น (ตรงกับ seed) ไม่ใช่ UTC
-      const at = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 19);
+      const at = localNow(now);
       const req: AccRequest = {
         id: `r${now.getTime()}`,
         no: nextRequestNo(

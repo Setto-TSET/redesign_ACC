@@ -42,7 +42,13 @@ export default function RequestsPage() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      api.requests.list(isPharmacy ? { pharmacyId: user.pharmacyId } : {}),
+      api.requests.list(
+        isPharmacy
+          ? { pharmacyId: user.pharmacyId }
+          : user.role === 'assessor'
+            ? { assessorId: user.id }
+            : {},
+      ),
       api.pharmacies.list(),
     ]).then(([reqs, list]) => {
       setRows(reqs);
@@ -67,7 +73,11 @@ export default function RequestsPage() {
         <div>
           <h2 className="text-2xl font-extrabold tracking-tight">คำขอรับรอง</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
-            {isPharmacy ? 'คำขอทั้งหมดของร้านคุณ' : 'คำขอจากร้านยาทุกร้าน'}
+            {isPharmacy
+              ? 'คำขอทั้งหมดของร้านคุณ'
+              : user?.role === 'assessor'
+                ? 'คำขอที่คุณได้รับมอบหมาย'
+                : 'คำขอจากร้านยาทุกร้าน'}
           </p>
         </div>
         {isPharmacy && (

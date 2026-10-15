@@ -2,6 +2,7 @@
 import type {
   AccRequest,
   Applicant,
+  Assessor,
   ApplicantRelation,
   Pharmacy,
   User,
@@ -342,4 +343,11 @@ export const seedRequests: AccRequest[] = [
       },
     ],
   },
+];
+
+/** ผู้ตรวจประเมิน — id 2 ตรงกับบัญชีทดลอง assessor01 */
+export const assessors: Assessor[] = [
+  { id: 2, name: 'ภญ.วรรณา ตรวจไว' },
+  { id: 6, name: 'ภก.ธนพล ตรวจดี' },
+  { id: 7, name: 'ภญ.กมลา ใส่ใจ' },
 ];
