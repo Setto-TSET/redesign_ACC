@@ -61,16 +61,30 @@ export function ActionDialog({
   const errorFor = (f: keyof ActionInput) =>
     error?.field === f ? error.text : undefined;
 
+  /** ช่องที่ action นี้แสดงจริง — error ของช่องอื่นต้องขึ้นเป็นข้อความรวม */
+  const renderedFields: (keyof ActionInput)[] = [
+    ...(action === 'override' ? (['status'] as const) : []),
+    ...(action === 'assign' ? (['assessorIds'] as const) : []),
+    ...(messageLabel ? (['message'] as const) : []),
+  ];
+  const showGenericError =
+    !!error && !(error.field && renderedFields.includes(error.field));
+
   const submit = async () => {
     setBusy(true);
-    const res = await onSubmit({
-      message,
-      assessorIds: picked,
-      status: status || undefined,
-    });
-    setBusy(false);
-    if ('error' in res) setError({ field: res.field, text: res.error });
-    else onClose();
+    try {
+      const res = await onSubmit({
+        message,
+        assessorIds: picked,
+        status: status || undefined,
+      });
+      if ('error' in res) setError({ field: res.field, text: res.error });
+      else onClose();
+    } catch {
+      setError({ text: 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง' });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -190,7 +204,7 @@ export function ActionDialog({
             </Field>
           )}
 
-          {error && !error.field && (
+          {showGenericError && error && (
             <p
               className="text-xs"
               style={{ color: 'var(--danger)' }}

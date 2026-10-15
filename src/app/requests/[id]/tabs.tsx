@@ -137,18 +137,23 @@ export function DocsTab({
 
   const submit = async () => {
     setBusy(true);
-    const res = await onResubmit(
-      files.map((name) => ({
-        name,
-        type: 'เอกสารเพิ่มเติม',
-        uploadedAt: today(),
-      })),
-    );
-    setBusy(false);
-    if ('error' in res) setError(res.error);
-    else {
-      setFiles([]);
-      setError('');
+    try {
+      const res = await onResubmit(
+        files.map((name) => ({
+          name,
+          type: 'เอกสารเพิ่มเติม',
+          uploadedAt: today(),
+        })),
+      );
+      if ('error' in res) setError(res.error);
+      else {
+        setFiles([]);
+        setError('');
+      }
+    } catch {
+      setError('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -247,12 +252,17 @@ export function PaymentsTab({
     setErrors(e);
     if (Object.keys(e).length) return;
     setBusy(true);
-    const res = await onAdd({ amount: Number(amount), fileName });
-    setBusy(false);
-    if ('error' in res) setErrors({ file: res.error });
-    else {
-      setAmount('');
-      setFileName('');
+    try {
+      const res = await onAdd({ amount: Number(amount), fileName });
+      if ('error' in res) setErrors({ file: res.error });
+      else {
+        setAmount('');
+        setFileName('');
+      }
+    } catch {
+      setErrors({ file: 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง' });
+    } finally {
+      setBusy(false);
     }
   };
 
