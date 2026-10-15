@@ -2,10 +2,15 @@
 // จึงรันเทสต์ด้วย node --test ได้ตรง ๆ
 import type {
   AccRequest,
+  ActionInput,
+  ActionResult,
   Pharmacy,
+  RequestAction,
   RequestDraft,
+  RequestMessage,
   RequestStatus,
   RequestType,
+  UserRole,
 } from '@/types/api';
 
 /** ประเภทหลัก — เลือกได้ทีละ 1 (ระบบเดิม: chkType1/7/2 ล้างกันเองใน CheckedChanged) */
@@ -160,4 +165,141 @@ export function pharmacyTodos(
       cta: 'ยื่นคำขอ',
     },
   ];
+}
+
+// ---------- F2: การทำงานกับคำขอ ----------
+
+// ponytail: ตารางสถานะเป็นของชั่วคราว ประกอบจาก AdminManual + RequestDetail.aspx.vb
+// ต้องเทียบกับตาราง AssessmentStatus ใน DB ระบบเดิมก่อนต่อ backend — แก้ที่ FLOW จุดเดียว
+type Step = {
+  action: RequestAction;
+  by: 'staff' | 'pharmacy';
+  to: RequestStatus;
+};
+
+const FLOW: Partial<Record<RequestStatus, Step[]>> = {
+  submitted: [{ action: 'start_review', by: 'staff', to: 'doc_review' }],
+  doc_review: [
+    { action: 'request_docs', by: 'staff', to: 'need_docs' },
+    { action: 'assign', by: 'staff', to: 'assigned' },
+  ],
+  need_docs: [{ action: 'resubmit_docs', by: 'pharmacy', to: 'doc_review' }],
+  // assigned → assessed ทำโดยผู้ตรวจใน F3
+  assessed: [{ action: 'to_committee', by: 'staff', to: 'committee' }],
+  committee: [
+    { action: 'approve', by: 'staff', to: 'approved' },
+    { action: 'reject', by: 'staff', to: 'rejected' },
+  ],
+};
+
+const STAFF: UserRole[] = ['admin', 'superadmin'];
+
+/** ร้านยายกเลิก/เพิ่มสลิปได้เฉพาะก่อนมอบหมายผู้ตรวจ (ระบบเดิม: status < 30) */
+const BEFORE_ASSIGN: RequestStatus[] = ['submitted', 'doc_review', 'need_docs'];
+
+/** action ที่ role นี้ทำได้ในสถานะนี้ — ปุ่มบนหน้าและการตรวจสิทธิ์ใช้ชุดเดียวกัน */
+export function actionsFor(
+  status: RequestStatus,
+  role: UserRole,
+): RequestAction[] {
+  const staff = STAFF.includes(role);
+  const out = (FLOW[status] ?? [])
+    .filter((s) => (s.by === 'staff' ? staff : role === 'pharmacy'))
+    .map((s) => s.action);
+  if (staff && isAlive(status)) out.push('reply', 'cancel');
+  if (role === 'pharmacy' && BEFORE_ASSIGN.includes(status)) out.push('cancel');
+  if (staff) out.push('override');
+  return out;
+}
+
+/** action ที่ต้องมีข้อความ และ error เมื่อไม่ได้กรอก */
+const NEEDS_TEXT: Partial<Record<RequestAction, string>> = {
+  request_docs: 'กรอกเอกสารที่ขอเพิ่ม',
+  reply: 'กรอกข้อความ',
+  reject: 'กรอกเหตุผล',
+  cancel: 'กรอกเหตุผล',
+  override: 'กรอกเหตุผล',
+};
+
+/** ข้อความใน timeline เมื่อ action ไม่มีข้อความจากผู้ใช้ */
+const DEFAULT_TEXT: Partial<Record<RequestAction, string>> = {
+  start_review: 'อยู่ระหว่างการดำเนินการตรวจสอบเอกสาร',
+  assign: 'มอบหมายผู้ตรวจประเมินแล้ว',
+  resubmit_docs: 'ส่งเอกสารเพิ่มเติมแล้ว',
+  to_committee:
+    'สรร. ได้ตรวจประเมินเรียบร้อยแล้ว อยู่ระหว่างยื่นคณะกรรมการรับรอง',
+  approve: 'ผ่านคณะกรรมการรับรองแล้ว',
+};
+
+/** ทำ action แล้วคืนคำขอชุดใหม่ (ไม่แก้ req เดิม) หรือ error พร้อมช่องที่ผิด */
+export function applyAction(
+  req: AccRequest,
+  action: RequestAction,
+  input: ActionInput,
+  actor: { name: string; role: UserRole },
+  now: string,
+): ActionResult {
+  if (!actionsFor(req.status, actor.role).includes(action))
+    return { error: 'ทำรายการนี้ไม่ได้ในสถานะปัจจุบัน' };
+
+  const patch: Partial<AccRequest> = {};
+  let status =
+    FLOW[req.status]?.find((s) => s.action === action)?.to ?? req.status;
+
+  if (action === 'assign') {
+    if (!input.assessorIds?.length)
+      return { error: 'เลือกผู้ตรวจอย่างน้อย 1 คน', field: 'assessorIds' };
+    patch.assessorIds = input.assessorIds;
+  }
+  if (action === 'resubmit_docs') {
+    if (!input.newDocs?.length)
+      return { error: 'แนบไฟล์ใหม่อย่างน้อย 1 ไฟล์', field: 'newDocs' };
+    patch.docs = [...req.docs, ...input.newDocs];
+  }
+  if (action === 'override') {
+    if (!input.status || input.status === req.status)
+      return { error: 'เลือกสถานะที่ต่างจากสถานะปัจจุบัน', field: 'status' };
+    status = input.status;
+  }
+  if (action === 'cancel') status = 'cancelled';
+
+  const text = input.message?.trim() ?? '';
+  const needs = NEEDS_TEXT[action];
+  if (needs && !text) return { error: needs, field: 'message' };
+
+  const message: RequestMessage = {
+    from: actor.name,
+    at: now,
+    text: text || DEFAULT_TEXT[action] || '',
+    status,
+    ...(action === 'override' ? { override: true } : {}),
+  };
+  return {
+    request: {
+      ...req,
+      ...patch,
+      status,
+      messages: [...req.messages, message],
+    },
+  };
+}
+
+type Viewer = { id: number; role: UserRole; pharmacyId?: number };
+
+/** ใครเปิดคำขอนี้ได้ — ร้านยาเฉพาะร้านตัวเอง, ผู้ตรวจเฉพาะที่ได้รับมอบหมาย */
+export function canView(req: AccRequest, user: Viewer): boolean {
+  if (STAFF.includes(user.role)) return true;
+  if (user.role === 'pharmacy')
+    return user.pharmacyId !== undefined && req.pharmacyId === user.pharmacyId;
+  if (user.role === 'assessor') return req.assessorIds.includes(user.id);
+  return false;
+}
+
+/** ร้านยาเจ้าของคำขอเพิ่มสลิปได้ก่อนมอบหมายผู้ตรวจ */
+export function canAddPayment(req: AccRequest, user: Viewer): boolean {
+  return (
+    user.role === 'pharmacy' &&
+    canView(req, user) &&
+    BEFORE_ASSIGN.includes(req.status)
+  );
 }
