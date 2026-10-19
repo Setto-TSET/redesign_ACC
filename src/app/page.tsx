@@ -57,8 +57,12 @@ export default function DashboardPage() {
 
       {showStats && stats.length > 0 && (
         <div className="mb-6 grid max-w-4xl gap-4 sm:grid-cols-3">
-          {stats.map((s) => (
-            <div key={s.label} className="stat-card">
+          {stats.map((s, i) => (
+            <div
+              key={s.label}
+              className="stat-card animate-stagger"
+              style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+            >
               <div
                 className="stat-icon"
                 style={{
@@ -66,10 +70,10 @@ export default function DashboardPage() {
                   color: 'var(--accent)',
                 }}
               >
-                <s.icon size={22} stroke={1.5} />
+                <s.icon size={22} stroke={1.5} aria-hidden="true" />
               </div>
               <div>
-                <div className="stat-value">{s.value}</div>
+                <div className="stat-value tabular-nums">{s.value}</div>
                 <div className="stat-label">{s.label}</div>
               </div>
             </div>

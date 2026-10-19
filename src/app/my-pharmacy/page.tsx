@@ -18,7 +18,7 @@ function Rows({ rows }: { rows: [string, string][] }) {
           <dt className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
             {k}
           </dt>
-          <dd className="text-sm font-medium">{v}</dd>
+          <dd className="text-sm font-medium break-words min-w-0">{v}</dd>
         </div>
       ))}
     </dl>
@@ -37,7 +37,10 @@ export default function MyPharmacyPage() {
     <AdminLayout title="ข้อมูลร้านของฉัน">
       {shop && (
         <div className="max-w-4xl space-y-6">
-          <div className="card flex flex-wrap items-start justify-between gap-4">
+          <div
+            className="card animate-stagger flex flex-wrap items-start justify-between gap-4"
+            style={{ '--i': 0 } as React.CSSProperties}
+          >
             <div className="min-w-0">
               <h2 className="text-2xl font-extrabold tracking-tight">
                 {shop.name}
@@ -53,7 +56,7 @@ export default function MyPharmacyPage() {
               </div>
             </div>
             <Link href="/requests/new" className="btn-secondary gap-2">
-              <IconEdit size={16} stroke={1.75} />
+              <IconEdit size={16} stroke={1.75} aria-hidden="true" />
               ขอเปลี่ยนแปลงข้อมูล
             </Link>
           </div>
@@ -63,7 +66,10 @@ export default function MyPharmacyPage() {
             ตรวจสอบก่อน
           </p>
 
-          <section className="card">
+          <section
+            className="card animate-stagger"
+            style={{ '--i': 1 } as React.CSSProperties}
+          >
             <h3 className="font-bold mb-2">การรับรอง</h3>
             <Rows
               rows={[
@@ -74,7 +80,10 @@ export default function MyPharmacyPage() {
             />
           </section>
 
-          <section className="card">
+          <section
+            className="card animate-stagger"
+            style={{ '--i': 2 } as React.CSSProperties}
+          >
             <h3 className="font-bold mb-2">ข้อมูลร้าน</h3>
             <Rows
               rows={[
@@ -87,7 +96,10 @@ export default function MyPharmacyPage() {
             />
           </section>
 
-          <section className="card">
+          <section
+            className="card animate-stagger"
+            style={{ '--i': 3 } as React.CSSProperties}
+          >
             <h3 className="font-bold mb-3">เภสัชกร</h3>
             <ul className="divide-y divide-zinc-100">
               {shop.pharmacists.map((p) => (

@@ -52,7 +52,11 @@ export function HomeTasks({ user }: { user: User }) {
         <h3 className="font-bold tracking-tight mb-3">งานที่รอคุณ</h3>
         {todos.length === 0 ? (
           <div className="card flex items-center gap-3">
-            <IconCircleCheck size={22} style={{ color: 'var(--accent)' }} />
+            <IconCircleCheck
+              size={22}
+              aria-hidden="true"
+              style={{ color: 'var(--accent)' }}
+            />
             <p className="text-sm">
               {isShop
                 ? 'ไม่มีงานค้าง ใบรับรองของร้านยังไม่ใกล้หมดอายุ'
@@ -61,20 +65,21 @@ export function HomeTasks({ user }: { user: User }) {
           </div>
         ) : (
           <ul className="space-y-3">
-            {todos.map((t) => {
+            {todos.map((t, i) => {
               const s = toneStyle[t.tone];
               const Icon =
                 t.tone === 'warning' ? IconAlertTriangle : IconInfoCircle;
               return (
                 <li
                   key={t.title}
-                  className="card flex flex-wrap items-center gap-4"
+                  className="card animate-stagger flex flex-wrap items-center gap-4"
+                  style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
                 >
                   <span
                     className="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center"
                     style={{ background: s.bg, color: s.fg }}
                   >
-                    <Icon size={22} stroke={1.75} />
+                    <Icon size={22} stroke={1.75} aria-hidden="true" />
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold">{t.title}</p>
@@ -113,8 +118,12 @@ export function HomeTasks({ user }: { user: User }) {
           </p>
         ) : (
           <ul className="divide-y divide-zinc-100">
-            {recent.map((r) => (
-              <li key={r.id}>
+            {recent.map((r, i) => (
+              <li
+                key={r.id}
+                className="animate-stagger"
+                style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+              >
                 <Link
                   href={`/requests/${r.id}`}
                   className="flex flex-wrap items-center justify-between gap-2 py-3"

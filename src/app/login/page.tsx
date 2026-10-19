@@ -42,7 +42,7 @@ export default function LoginPage() {
             className="w-8 h-8 rounded-lg flex items-center justify-center"
             style={{ background: 'var(--accent)' }}
           >
-            <IconPill size={18} className="text-white" />
+            <IconPill size={18} className="text-white" aria-hidden="true" />
           </span>
           <span className="text-white font-bold text-lg tracking-tight">
             Acc-Pharm
@@ -75,7 +75,7 @@ export default function LoginPage() {
               className="w-7 h-7 rounded-lg flex items-center justify-center"
               style={{ background: 'var(--accent)' }}
             >
-              <IconPill size={16} className="text-white" />
+              <IconPill size={16} className="text-white" aria-hidden="true" />
             </span>
             <span className="font-bold text-zinc-900 tracking-tight">
               Acc-Pharm
@@ -114,10 +114,12 @@ export default function LoginPage() {
               </label>
               <input
                 id="username"
+                name="username"
+                spellCheck={false}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="input-field"
-                placeholder="เช่น pharm001"
+                placeholder="เช่น pharm001…"
                 autoComplete="username"
                 required
               />
@@ -131,11 +133,12 @@ export default function LoginPage() {
               </label>
               <input
                 id="password"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-field"
-                placeholder="ไม่ต้องกรอกใน PoC"
+                placeholder="ไม่ต้องกรอกในต้นแบบนี้…"
                 autoComplete="current-password"
               />
             </div>

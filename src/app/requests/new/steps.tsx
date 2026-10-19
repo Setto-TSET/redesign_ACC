@@ -1,7 +1,7 @@
 'use client';
 
 import { IconCircleCheckFilled, IconCircleDashed } from '@tabler/icons-react';
-import { Field, inputClass } from '@/components/common/Field';
+import { Field, fieldAria, inputClass } from '@/components/common/Field';
 import {
   pledgeItems,
   pledgeWarning,
@@ -74,6 +74,7 @@ export function TypeStep({ draft, update, errors }: StepProps) {
               <input
                 type="radio"
                 name="mainType"
+                aria-invalid={!!errors.typeIds}
                 className="mt-1 accent-[var(--accent)]"
                 checked={main === o.id}
                 onChange={() =>
@@ -105,6 +106,7 @@ export function TypeStep({ draft, update, errors }: StepProps) {
                 <label className={optionClass(on)}>
                   <input
                     type="checkbox"
+                    aria-invalid={!!errors.typeIds}
                     className="mt-1 accent-[var(--accent)]"
                     checked={on}
                     onChange={() =>
@@ -170,8 +172,9 @@ export function ApplicantStep({ draft, update, errors }: StepProps) {
     <Field label={label} htmlFor={key} error={errors[key]}>
       <input
         id={key}
+        name={key}
         className={inputClass(errors[key])}
-        aria-invalid={!!errors[key]}
+        {...fieldAria(key, errors[key])}
         value={a[key]}
         onChange={(e) => set({ [key]: e.target.value } as Partial<Applicant>)}
         {...props}
@@ -187,14 +190,18 @@ export function ApplicantStep({ draft, update, errors }: StepProps) {
         {text('email', 'อีเมล', {
           type: 'email',
           autoComplete: 'email',
-          placeholder: 'name@example.com',
+          spellCheck: false,
+          placeholder: 'name@example.com…',
         })}
         {text('phone', 'เบอร์โทร', {
           type: 'tel',
           autoComplete: 'tel',
-          placeholder: '0812345678',
+          placeholder: '0812345678…',
         })}
-        {text('lineId', 'LINE ID (ถ้ามี)')}
+        {text('lineId', 'LINE ID (ถ้ามี)', {
+          autoComplete: 'off',
+          spellCheck: false,
+        })}
       </div>
 
       <fieldset>
@@ -209,6 +216,7 @@ export function ApplicantStep({ draft, update, errors }: StepProps) {
                 <input
                   type="radio"
                   name="relation"
+                  aria-invalid={!!errors.relation}
                   className="mt-1 accent-[var(--accent)]"
                   checked={a.relation === value}
                   onChange={() => set({ relation: value })}
@@ -229,8 +237,10 @@ export function ApplicantStep({ draft, update, errors }: StepProps) {
         >
           <input
             id="relationOther"
+            name="relationOther"
+            autoComplete="off"
             className={inputClass(errors.relationOther)}
-            aria-invalid={!!errors.relationOther}
+            {...fieldAria('relationOther', errors.relationOther)}
             value={a.relationOther}
             onChange={(e) => set({ relationOther: e.target.value })}
           />
@@ -249,26 +259,33 @@ export function DocsStep({ draft, update, errors }: StepProps) {
         หรือรูปภาพ
       </Muted>
       <ul className="space-y-3">
-        {docs.map((doc) => {
+        {docs.map((doc, i) => {
           const file = draft.docs[doc];
           const error = errors[`doc:${doc}`];
           return (
             <li
               key={doc}
-              className="rounded-xl border p-4"
-              style={{ borderColor: error ? 'var(--danger)' : 'var(--border)' }}
+              className="animate-stagger rounded-xl border p-4"
+              style={
+                {
+                  borderColor: error ? 'var(--danger)' : 'var(--border)',
+                  '--i': Math.min(i, 7),
+                } as React.CSSProperties
+              }
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
                   {file ? (
                     <IconCircleCheckFilled
                       size={20}
+                      aria-hidden="true"
                       className="shrink-0"
                       style={{ color: 'var(--accent)' }}
                     />
                   ) : (
                     <IconCircleDashed
                       size={20}
+                      aria-hidden="true"
                       className="shrink-0"
                       style={{ color: 'var(--ink-faint)' }}
                     />
@@ -279,6 +296,9 @@ export function DocsStep({ draft, update, errors }: StepProps) {
                   {file ? 'เปลี่ยนไฟล์' : 'เลือกไฟล์'}
                   <input
                     type="file"
+                    name={doc}
+                    aria-label={`เลือกไฟล์ ${doc}`}
+                    aria-invalid={!!error}
                     accept=".pdf,image/*"
                     className="sr-only"
                     onChange={(e) => {
@@ -365,6 +385,8 @@ export function ReviewStep({ draft, update, errors }: StepProps) {
           <label className="mt-4 flex items-center gap-2 text-sm font-semibold cursor-pointer">
             <input
               type="checkbox"
+              name="pledged"
+              aria-invalid={!!errors.pledged}
               className="w-4 h-4 accent-[var(--accent)]"
               checked={draft.pledged}
               onChange={(e) => update({ pledged: e.target.checked })}

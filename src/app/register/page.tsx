@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IconPill } from '@tabler/icons-react';
-import { Field, inputClass } from '@/components/common/Field';
+import { Field, fieldAria, inputClass } from '@/components/common/Field';
 import { Stepper } from '@/components/common/Stepper';
+import { focusFirstError } from '@/lib/a11y';
 import { api } from '@/lib/api';
 import type { Registration } from '@/types/api';
 
@@ -21,6 +22,15 @@ const FIELDS: [keyof Registration, string][] = [
   ['email', 'อีเมล'],
 ];
 
+const inputProps: Partial<
+  Record<keyof Registration, React.InputHTMLAttributes<HTMLInputElement>>
+> = {
+  email: { type: 'email', autoComplete: 'email', spellCheck: false },
+  phone: { type: 'tel', autoComplete: 'tel', inputMode: 'tel' },
+  operatorLicense: { spellCheck: false },
+  licenseNo: { spellCheck: false },
+};
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterPage() {
@@ -29,6 +39,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState<Registration | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const lookup = async () => {
     setBusy(true);
@@ -38,6 +49,7 @@ export default function RegisterPage() {
       setErrors({
         licenseNo: 'ไม่พบเลขที่ใบอนุญาตนี้ ตรวจสอบรูปแบบ เช่น กท.28/2565',
       });
+      focusFirstError(cardRef.current);
       return;
     }
     setErrors({});
@@ -52,7 +64,10 @@ export default function RegisterPage() {
     if (form.email && !EMAIL.test(form.email.trim()))
       e.email = 'อีเมลไม่ถูกต้อง';
     setErrors(e);
-    if (Object.keys(e).length) return;
+    if (Object.keys(e).length) {
+      focusFirstError(cardRef.current);
+      return;
+    }
     setBusy(true);
     await api.registrations.create(form);
     toast.success(
@@ -72,7 +87,7 @@ export default function RegisterPage() {
             className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
             style={{ background: 'var(--accent)' }}
           >
-            <IconPill size={22} stroke={1.75} />
+            <IconPill size={22} stroke={1.75} aria-hidden="true" />
           </span>
           <div>
             <h1 className="text-xl font-extrabold tracking-tight">
@@ -89,7 +104,7 @@ export default function RegisterPage() {
           current={form ? 1 : 0}
         />
 
-        <div className="card">
+        <div className="card" ref={cardRef}>
           {!form ? (
             <form
               onSubmit={(e) => {
@@ -106,11 +121,18 @@ export default function RegisterPage() {
               >
                 <input
                   id="licenseNo"
+                  name="licenseNo"
+                  autoComplete="off"
+                  spellCheck={false}
                   className={inputClass(errors.licenseNo)}
-                  aria-invalid={!!errors.licenseNo}
+                  {...fieldAria(
+                    'licenseNo',
+                    errors.licenseNo,
+                    'ระบบจะดึงข้อมูลร้านจาก อย. ให้อัตโนมัติ',
+                  )}
                   value={licenseNo}
                   onChange={(e) => setLicenseNo(e.target.value)}
-                  placeholder="กท.28/2565"
+                  placeholder="กท.28/2565…"
                 />
               </Field>
               <button type="submit" className="btn-primary" disabled={busy}>
@@ -132,8 +154,11 @@ export default function RegisterPage() {
                   >
                     <input
                       id={key}
+                      name={key}
+                      autoComplete="off"
                       className={inputClass(errors[key])}
-                      aria-invalid={!!errors[key]}
+                      {...fieldAria(key, errors[key])}
+                      {...inputProps[key]}
                       value={form[key]}
                       onChange={(e) =>
                         setForm({ ...form, [key]: e.target.value })

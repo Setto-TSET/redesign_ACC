@@ -4,12 +4,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { AdminLayout } from '@/components/layout';
 import { Stepper } from '@/components/common/Stepper';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { useAuth } from '@/contexts/AuthContext';
+import { focusFirstError } from '@/lib/a11y';
 import { api } from '@/lib/api';
 import { requestTypes } from '@/lib/constants';
 import { isAlive, validateStep, type StepErrors } from '@/lib/requestRules';
@@ -46,6 +47,7 @@ export default function NewRequestPage() {
   const [active, setActive] = useState<AccRequest | null | undefined>();
   const [restored, setRestored] = useState(false);
   const [saving, setSaving] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // กู้ร่างจาก sessionStorage (อ่านหลัง mount เพื่อไม่ให้ hydration ไม่ตรง)
   useEffect(() => {
@@ -90,6 +92,7 @@ export default function NewRequestPage() {
   const check = () => {
     const e = validateStep(step, draft, requestTypes);
     setErrors(e);
+    if (Object.keys(e).length > 0) focusFirstError(cardRef.current);
     return Object.keys(e).length === 0;
   };
 
@@ -150,7 +153,7 @@ export default function NewRequestPage() {
     <AdminLayout title="ยื่นคำขอรับรอง">
       <div className="max-w-3xl">
         <Stepper steps={STEPS} current={step} />
-        <div className="card">
+        <div className="card" ref={cardRef}>
           <h2 className="text-lg font-bold mb-5">{STEPS[step]}</h2>
           {step === 0 && (
             <TypeStep draft={draft} update={update} errors={errors} />
