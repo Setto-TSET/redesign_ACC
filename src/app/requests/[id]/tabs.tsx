@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { IconFileText } from '@tabler/icons-react';
-import { Field, inputClass } from '@/components/common/Field';
+import { Field, fieldAria, inputClass } from '@/components/common/Field';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import {
   actionLabels,
@@ -10,6 +10,7 @@ import {
   typeLabel,
   visitMethodLabels,
 } from '@/lib/constants';
+import { focusFirstError } from '@/lib/a11y';
 import { gppSections } from '@/lib/gppItems';
 import { isAlive, stepDays } from '@/lib/requestRules';
 import { GPP_PASS_PERCENT, scoreGpp } from '@/lib/gppRules';
@@ -148,8 +149,14 @@ export function DocsTab({
   const [files, setFiles] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const formRef = useRef<HTMLElement>(null);
 
   const submit = async () => {
+    if (files.length === 0) {
+      setError('แนบไฟล์อย่างน้อย 1 ไฟล์ แล้วกดส่งอีกครั้ง');
+      focusFirstError(formRef.current);
+      return;
+    }
     setBusy(true);
     try {
       const res = await onResubmit(
@@ -159,13 +166,16 @@ export function DocsTab({
           uploadedAt: today(),
         })),
       );
-      if ('error' in res) setError(res.error);
-      else {
+      if ('error' in res) {
+        setError(res.error);
+        focusFirstError(formRef.current);
+      } else {
         setFiles([]);
         setError('');
       }
     } catch {
       setError('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
+      focusFirstError(formRef.current);
     } finally {
       setBusy(false);
     }
@@ -181,6 +191,7 @@ export function DocsTab({
             <li key={`${d.name}-${i}`} className="flex items-start gap-3 py-3">
               <IconFileText
                 size={20}
+                aria-hidden="true"
                 className="shrink-0 mt-0.5"
                 style={{ color: 'var(--ink-tertiary)' }}
               />
@@ -200,6 +211,7 @@ export function DocsTab({
 
       {canResubmit && (
         <section
+          ref={formRef}
           className="rounded-xl border p-5"
           style={{ borderColor: 'var(--border)' }}
         >
@@ -211,6 +223,9 @@ export function DocsTab({
             เลือกไฟล์
             <input
               type="file"
+              name="newDocs"
+              aria-invalid={!!error}
+              aria-label="เลือกไฟล์เอกสารเพิ่มเติม"
               multiple
               accept=".pdf,image/*"
               className="sr-only"
@@ -224,7 +239,11 @@ export function DocsTab({
           {files.length > 0 && (
             <ul className="mt-3 space-y-1 text-sm">
               {files.map((f, i) => (
-                <li key={`${f}-${i}`} className="break-words">
+                <li
+                  key={`${f}-${i}`}
+                  className="break-words animate-stagger"
+                  style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+                >
                   {f}
                 </li>
               ))}
@@ -258,23 +277,30 @@ export function PaymentsTab({
   const [fileName, setFileName] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const formRef = useRef<HTMLElement>(null);
 
   const submit = async () => {
     const e: Record<string, string> = {};
     if (!(Number(amount) > 0)) e.amount = 'กรอกจำนวนเงินมากกว่า 0';
     if (!fileName) e.file = 'แนบหลักฐานการโอน';
     setErrors(e);
-    if (Object.keys(e).length) return;
+    if (Object.keys(e).length) {
+      focusFirstError(formRef.current);
+      return;
+    }
     setBusy(true);
     try {
       const res = await onAdd({ amount: Number(amount), fileName });
-      if ('error' in res) setErrors({ file: res.error });
-      else {
+      if ('error' in res) {
+        setErrors({ file: res.error });
+        focusFirstError(formRef.current);
+      } else {
         setAmount('');
         setFileName('');
       }
     } catch {
       setErrors({ file: 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง' });
+      focusFirstError(formRef.current);
     } finally {
       setBusy(false);
     }
@@ -300,8 +326,8 @@ export function PaymentsTab({
                   {formatDate(p.paidAt)}
                 </p>
               </div>
-              <span className="text-sm font-semibold">
-                {p.amount.toLocaleString('th-TH')} บาท
+              <span className="text-sm font-semibold tabular-nums">
+                {new Intl.NumberFormat('th-TH').format(p.amount)} บาท
               </span>
             </li>
           ))}
@@ -310,6 +336,7 @@ export function PaymentsTab({
 
       {canAdd && (
         <section
+          ref={formRef}
           className="rounded-xl border p-5 space-y-4"
           style={{ borderColor: 'var(--border)' }}
         >
@@ -322,11 +349,14 @@ export function PaymentsTab({
             >
               <input
                 id="amount"
+                name="amount"
                 type="number"
                 min="0"
                 inputMode="decimal"
+                autoComplete="off"
+                placeholder="1500…"
                 className={inputClass(errors.amount)}
-                aria-invalid={!!errors.amount}
+                {...fieldAria('amount', errors.amount)}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -339,6 +369,9 @@ export function PaymentsTab({
                 {fileName ? 'เปลี่ยนไฟล์' : 'เลือกไฟล์'}
                 <input
                   type="file"
+                  name="slip"
+                  aria-invalid={!!errors.file}
+                  aria-label="เลือกไฟล์หลักฐานการโอน"
                   accept=".pdf,image/*"
                   className="sr-only"
                   onChange={(e) => {
@@ -384,11 +417,14 @@ export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
           <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
             คะแนน GPP (ผู้ตรวจ)
           </span>
-          <span className="text-3xl font-extrabold">
+          <span className="text-3xl font-extrabold tabular-nums">
             {req.gppScore.toFixed(2)}%
           </span>
           {score && (
-            <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+            <span
+              className="text-sm tabular-nums"
+              style={{ color: 'var(--ink-secondary)' }}
+            >
               {score.got}/{score.max} คะแนน · เกณฑ์ {GPP_PASS_PERCENT}%
             </span>
           )}
@@ -397,7 +433,10 @@ export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
       {self && (
         <p className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
           ร้านประเมินตนเอง{' '}
-          <span className="font-semibold" style={{ color: 'var(--ink)' }}>
+          <span
+            className="font-semibold tabular-nums"
+            style={{ color: 'var(--ink)' }}
+          >
             {self.percent.toFixed(2)}%
           </span>{' '}
           ({self.got}/{self.max})
@@ -416,13 +455,13 @@ export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
               </span>
               <span className="shrink-0 text-right">
                 {score && (
-                  <span className="font-semibold">
+                  <span className="font-semibold tabular-nums">
                     {score.sections[i].percent}%
                   </span>
                 )}
                 {self && (
                   <span
-                    className="block text-xs"
+                    className="block text-xs tabular-nums"
                     style={{ color: 'var(--ink-secondary)' }}
                   >
                     ร้าน {self.sections[i].percent}%
@@ -477,7 +516,11 @@ export function HistoryTab({ req }: { req: AccRequest }) {
       </p>
       <ol className="space-y-5">
         {[...req.messages].reverse().map((m, i) => (
-          <li key={`${m.at}-${i}`} className="flex gap-3">
+          <li
+            key={`${m.at}-${i}`}
+            className="flex gap-3 animate-stagger"
+            style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+          >
             <span
               className="mt-1.5 w-2.5 h-2.5 shrink-0 rounded-full"
               style={{ background: 'var(--accent)' }}
@@ -502,7 +545,7 @@ export function HistoryTab({ req }: { req: AccRequest }) {
                 {m.text}
               </p>
               <p
-                className="mt-0.5 text-xs"
+                className="mt-0.5 text-xs tabular-nums"
                 style={{ color: 'var(--ink-secondary)' }}
               >
                 {m.from} · {formatDateTime(m.at)} · ใช้เวลา {steps[last - i]}{' '}

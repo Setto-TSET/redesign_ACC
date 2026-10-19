@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 import { doneLabels } from '@/lib/constants';
 import { formatDate } from '@/lib/format';
+import { useQueryState } from '@/lib/useQueryState';
 import { actionsFor, canAddPayment, canSelfAssess } from '@/lib/requestRules';
 import type {
   AccRequest,
@@ -22,13 +23,14 @@ import { RequestHeader } from './RequestHeader';
 import { DocsTab, HistoryTab, InfoTab, PaymentsTab, ResultTab } from './tabs';
 
 const TABS = [
-  'ข้อมูล',
-  'เอกสาร',
-  'การชำระเงิน',
-  'ผลประเมิน',
-  'ประวัติ',
+  { key: 'info', label: 'ข้อมูล' },
+  { key: 'docs', label: 'เอกสาร' },
+  { key: 'payments', label: 'การชำระเงิน' },
+  { key: 'result', label: 'ผลประเมิน' },
+  { key: 'history', label: 'ประวัติ' },
 ] as const;
-type Tab = (typeof TABS)[number];
+type Tab = (typeof TABS)[number]['key'];
+const TAB_KEYS = TABS.map((t) => t.key);
 
 /** action ที่ไม่ต้องกรอกอะไร — กดแล้วทำเลย */
 const IMMEDIATE: RequestAction[] = ['start_review', 'to_committee'];
@@ -42,7 +44,7 @@ export default function RequestDetailPage() {
   const [shop, setShop] = useState<Pharmacy | null>(null);
   const [assessors, setAssessors] = useState<Assessor[]>([]);
   const [loads, setLoads] = useState<Record<number, number>>({});
-  const [tab, setTab] = useState<Tab>('ข้อมูล');
+  const [tab, setTab] = useQueryState<Tab>('tab', 'info', TAB_KEYS);
   const [dialog, setDialog] = useState<RequestAction | null>(null);
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function RequestDetailPage() {
   };
 
   const onAction = async (action: RequestAction) => {
-    if (action === 'resubmit_docs') return setTab('เอกสาร');
+    if (action === 'resubmit_docs') return setTab('docs');
     if (action === 'submit_assessment')
       return router.push(`/requests/${req.id}/assess`);
     if (IMMEDIATE.includes(action)) {
@@ -119,8 +121,8 @@ export default function RequestDetailPage() {
   };
 
   const counts: Partial<Record<Tab, number>> = {
-    เอกสาร: req.docs.length,
-    ประวัติ: req.messages.length,
+    docs: req.docs.length,
+    history: req.messages.length,
   };
 
   return (
@@ -131,7 +133,7 @@ export default function RequestDetailPage() {
           className="inline-block text-sm font-semibold"
           style={{ color: 'var(--accent)' }}
         >
-          ← กลับไปรายการคำขอ
+          <span aria-hidden="true">←</span> กลับไปรายการคำขอ
         </Link>
 
         <RequestHeader
@@ -187,14 +189,16 @@ export default function RequestDetailPage() {
           >
             {TABS.map((t) => (
               <button
-                key={t}
+                key={t.key}
+                id={`tab-${t.key}`}
                 type="button"
                 role="tab"
-                aria-selected={t === tab}
-                onClick={() => setTab(t)}
+                aria-controls="tab-panel"
+                aria-selected={t.key === tab}
+                onClick={() => setTab(t.key)}
                 className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px"
                 style={
-                  t === tab
+                  t.key === tab
                     ? { borderColor: 'var(--accent)', color: 'var(--accent)' }
                     : {
                         borderColor: 'transparent',
@@ -202,31 +206,43 @@ export default function RequestDetailPage() {
                       }
                 }
               >
-                {t}
-                {counts[t] !== undefined && ` (${counts[t]})`}
+                {t.label}
+                {counts[t.key] !== undefined && (
+                  <>
+                    {' ('}
+                    <span className="tabular-nums">{counts[t.key]}</span>
+                    {')'}
+                  </>
+                )}
               </button>
             ))}
           </div>
-          <div role="tabpanel" className="p-5 sm:p-6">
-            {tab === 'ข้อมูล' && (
+          <div
+            role="tabpanel"
+            id="tab-panel"
+            aria-labelledby={`tab-${tab}`}
+            key={tab}
+            className="p-5 sm:p-6 animate-fade"
+          >
+            {tab === 'info' && (
               <InfoTab req={req} shop={shop} assessors={assessors} />
             )}
-            {tab === 'เอกสาร' && (
+            {tab === 'docs' && (
               <DocsTab
                 req={req}
                 canResubmit={actions.includes('resubmit_docs')}
                 onResubmit={(newDocs) => run('resubmit_docs', { newDocs })}
               />
             )}
-            {tab === 'การชำระเงิน' && (
+            {tab === 'payments' && (
               <PaymentsTab
                 req={req}
                 canAdd={canAddPayment(req, user)}
                 onAdd={addPayment}
               />
             )}
-            {tab === 'ผลประเมิน' && <ResultTab req={req} role={user.role} />}
-            {tab === 'ประวัติ' && <HistoryTab req={req} />}
+            {tab === 'result' && <ResultTab req={req} role={user.role} />}
+            {tab === 'history' && <HistoryTab req={req} />}
           </div>
         </div>
       </div>

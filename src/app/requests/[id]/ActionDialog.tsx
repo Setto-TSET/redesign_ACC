@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Field, inputClass } from '@/components/common/Field';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Field, fieldAria, inputClass } from '@/components/common/Field';
 import { certExpiry } from '@/lib/certRules';
+import { focusFirstError, useFocusTrap } from '@/lib/a11y';
 import {
   actionLabels,
   replyTemplates,
@@ -68,13 +69,24 @@ export function ActionDialog({
   const [busy, setBusy] = useState(false);
   const messageLabel = MESSAGE_LABEL[action];
 
+  const boxRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(boxRef, true);
+  const dirty = message.trim() !== '' || picked.length > 0 || status !== '';
+
+  /** ปิดได้เมื่อไม่ได้กำลังบันทึก — ถ้าพิมพ์ค้างไว้ถามก่อน */
+  const requestClose = useCallback(() => {
+    if (busy) return;
+    if (dirty && !window.confirm('ทิ้งข้อความที่กรอกไว้?')) return;
+    onClose();
+  }, [busy, dirty, onClose]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') requestClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [requestClose]);
 
   const errorFor = (f: keyof ActionInput) =>
     error?.field === f ? error.text : undefined;
@@ -99,23 +111,32 @@ export function ActionDialog({
         ...(action === 'assign' ? { visit: { method, date: visitDate } } : {}),
         ...(action === 'approve' ? { cert: { no: '', issued, expires } } : {}),
       });
-      if ('error' in res) setError({ field: res.field, text: res.error });
-      else onClose();
+      if ('error' in res) {
+        setError({ field: res.field, text: res.error });
+        focusFirstError(boxRef.current);
+      } else onClose();
     } catch {
       setError({ text: 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง' });
+      focusFirstError(boxRef.current);
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="modal-overlay" role="presentation" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      role="presentation"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) requestClose();
+      }}
+    >
       <div
+        ref={boxRef}
         className="modal-content max-w-lg p-6 max-h-[90vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="action-title"
-        onClick={(e) => e.stopPropagation()}
       >
         <h2 id="action-title" className="text-lg font-bold">
           {actionLabels[action]}
@@ -132,6 +153,7 @@ export function ActionDialog({
                 <Field label="วันที่ออกใบรับรอง" htmlFor="issued">
                   <input
                     id="issued"
+                    name="issued"
                     type="date"
                     className={inputClass(errorFor('cert'))}
                     value={issued}
@@ -146,9 +168,10 @@ export function ActionDialog({
                   <div className="flex gap-2">
                     <input
                       id="expires"
+                      name="expires"
                       type="date"
                       className={inputClass(errorFor('cert'))}
-                      aria-invalid={!!errorFor('cert')}
+                      {...fieldAria('expires', errorFor('cert'))}
                       value={expires}
                       onChange={(e) => setExpires(e.target.value)}
                     />
@@ -174,8 +197,9 @@ export function ActionDialog({
             >
               <select
                 id="status"
+                name="status"
                 className={inputClass(errorFor('status'))}
-                aria-invalid={!!errorFor('status')}
+                {...fieldAria('status', errorFor('status'))}
                 value={status}
                 onChange={(e) => setStatus(e.target.value as RequestStatus)}
               >
@@ -204,6 +228,8 @@ export function ActionDialog({
                   >
                     <input
                       type="checkbox"
+                      name="assessorIds"
+                      aria-invalid={!!errorFor('assessorIds')}
                       className="w-4 h-4 accent-[var(--accent)]"
                       checked={picked.includes(a.id)}
                       onChange={() =>
@@ -273,9 +299,10 @@ export function ActionDialog({
               >
                 <input
                   id="visitDate"
+                  name="visitDate"
                   type="date"
                   className={inputClass(errorFor('visit'))}
-                  aria-invalid={!!errorFor('visit')}
+                  {...fieldAria('visitDate', errorFor('visit'))}
                   value={visitDate}
                   onChange={(e) => setVisitDate(e.target.value)}
                 />
@@ -306,9 +333,11 @@ export function ActionDialog({
               )}
               <textarea
                 id="message"
+                name="message"
                 rows={4}
+                data-autofocus={action !== 'override' ? true : undefined}
                 className={inputClass(errorFor('message'))}
-                aria-invalid={!!errorFor('message')}
+                {...fieldAria('message', errorFor('message'))}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
@@ -327,13 +356,18 @@ export function ActionDialog({
         </div>
 
         <div className="mt-6 flex flex-wrap justify-end gap-2">
-          <button type="button" className="btn-secondary" onClick={onClose}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={requestClose}
+          >
             ปิด
           </button>
           <button
             type="button"
             className={DANGER.includes(action) ? 'btn-danger' : 'btn-primary'}
             disabled={busy}
+            data-autofocus={action === 'approve' ? true : undefined}
             onClick={submit}
           >
             {busy ? 'กำลังบันทึก…' : `ยืนยัน${actionLabels[action]}`}

@@ -109,7 +109,7 @@ export function RequestHeader({
           className="flex gap-2 rounded-xl p-4 text-sm"
           style={{ background: 'var(--danger-soft)', color: 'var(--danger)' }}
         >
-          <IconCircleX size={20} className="shrink-0" />
+          <IconCircleX size={20} className="shrink-0" aria-hidden="true" />
           <div className="min-w-0">
             <p className="font-semibold">{requestStatusLabels[req.status]}</p>
             <p className="mt-1 whitespace-pre-line break-words">
@@ -127,7 +127,11 @@ export function RequestHeader({
           className="flex gap-2 rounded-xl p-4 text-sm"
           style={{ background: 'var(--warn-soft)', color: 'var(--warn)' }}
         >
-          <IconAlertTriangle size={20} className="shrink-0" />
+          <IconAlertTriangle
+            size={20}
+            className="shrink-0"
+            aria-hidden="true"
+          />
           <div className="min-w-0">
             <p className="font-semibold">สรร. ขอเอกสารเพิ่มเติม</p>
             <p
