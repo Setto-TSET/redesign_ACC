@@ -1,4 +1,4 @@
-// กฎของคำขอรับรอง — pure function ไม่มี import ที่เป็นค่า (type ถูกลบตอนรัน)
+// กฎของคำขอรับรอง — pure function, import ค่าได้เฉพาะไฟล์ใน lib/ ด้วย path สัมพัทธ์ + .ts
 // จึงรันเทสต์ด้วย node --test ได้ตรง ๆ
 import type {
   AccRequest,
@@ -12,6 +12,7 @@ import type {
   RequestType,
   UserRole,
 } from '@/types/api';
+import { certDateError } from './certRules.ts';
 
 /** ประเภทหลัก — เลือกได้ทีละ 1 (ระบบเดิม: chkType1/7/2 ล้างกันเองใน CheckedChanged) */
 export const MAIN_TYPE_IDS = [1, 7, 2];
@@ -252,6 +253,15 @@ export function applyAction(
       return { error: 'เลือกผู้ตรวจอย่างน้อย 1 คน', field: 'assessorIds' };
     patch.assessorIds = input.assessorIds;
   }
+  if (action === 'approve') {
+    const c = input.cert;
+    const err = c
+      ? certDateError(c.issued, c.expires)
+      : 'กรอกวันที่ออกใบรับรอง';
+    if (err || !c?.no)
+      return { error: err ?? 'ยังไม่มีเลขรับรอง', field: 'cert' };
+    patch.cert = c;
+  }
   if (action === 'submit_assessment') {
     if (!input.assessment || input.gppScore === undefined)
       return { error: 'ยังไม่มีผลประเมิน', field: 'assessment' };
@@ -274,10 +284,14 @@ export function applyAction(
   const needs = NEEDS_TEXT[action];
   if (needs && !text) return { error: needs, field: 'message' };
 
+  const fallback =
+    action === 'approve' && patch.cert
+      ? `ผ่านคณะกรรมการรับรองแล้ว เลขรับรอง ${patch.cert.no}`
+      : DEFAULT_TEXT[action];
   const message: RequestMessage = {
     from: actor.name,
     at: now,
-    text: text || DEFAULT_TEXT[action] || '',
+    text: text || fallback || '',
     status,
     ...(action === 'override' ? { override: true } : {}),
   };

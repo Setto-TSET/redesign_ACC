@@ -134,6 +134,15 @@ export interface AccRequest {
   visit?: { method: VisitMethod; date: string };
   /** ผลตรวจประเมิน GPP ที่ผู้ตรวจส่งแล้ว */
   assessment?: GppAssessment;
+  /** ใบรับรองที่ออกเมื่อผ่านคณะกรรมการ */
+  cert?: Certificate;
+}
+
+export interface Certificate {
+  /** เลขรับรอง เช่น QP-2569-0001 */
+  no: string;
+  issued: string;
+  expires: string;
 }
 
 export type VisitMethod = 'onsite' | 'online' | 'hybrid';
@@ -236,6 +245,8 @@ export interface ActionInput {
   assessment?: GppAssessment;
   /** คำนวณจาก assessment ที่ lib/api.ts ก่อนส่งเข้า applyAction */
   gppScore?: number;
+  /** วันที่ใบรับรอง (approve) — เลขรับรองออกที่ lib/api.ts */
+  cert?: Certificate;
 }
 
 /** ผลของ action: คำขอชุดใหม่ หรือ error พร้อมช่องที่ผิด */

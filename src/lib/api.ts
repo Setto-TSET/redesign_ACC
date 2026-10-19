@@ -17,6 +17,7 @@ import { assessors, pharmacies, seedRequests, users } from '@/mock';
 import { requestTypes } from '@/lib/constants';
 import { gppSections } from '@/lib/gppItems';
 import { scoreGpp } from '@/lib/gppRules';
+import { nextCertNo, withLatestCert } from '@/lib/certRules';
 import {
   applyAction,
   canAddPayment,
@@ -77,11 +78,14 @@ export const api = {
   },
 
   pharmacies: {
+    // PoC: ใบรับรองที่ออกระหว่าง demo อยู่ในคำขอ — รวมเข้ากับข้อมูลร้านตอนอ่าน
     async list(): Promise<Pharmacy[]> {
-      return pharmacies;
+      const reqs = loadRequests();
+      return pharmacies.map((p) => withLatestCert(p, reqs));
     },
     async get(id: number): Promise<Pharmacy | null> {
-      return pharmacies.find((p) => p.id === id) ?? null;
+      const p = pharmacies.find((x) => x.id === id);
+      return p ? withLatestCert(p, loadRequests()) : null;
     },
   },
 
@@ -130,6 +134,16 @@ export const api = {
             field: 'assessment',
           };
         input = { ...input, gppScore: score.percent };
+      }
+      if (action === 'approve' && input.cert?.issued) {
+        const used = [
+          ...pharmacies.map((p) => p.qualityNo ?? ''),
+          ...all.map((r) => r.cert?.no ?? ''),
+        ];
+        input = {
+          ...input,
+          cert: { ...input.cert, no: nextCertNo(used, input.cert.issued) },
+        };
       }
       const res = applyAction(
         req,

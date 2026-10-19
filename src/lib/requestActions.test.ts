@@ -152,6 +152,34 @@ test('ผู้ตรวจส่งผลประเมิน: ต้องม
   );
 });
 
+test('approve ต้องมีใบรับรองที่วันถูกต้อง และบันทึกเลขรับรองใน timeline', () => {
+  const req = at('committee');
+  assert.deepEqual(applyAction(req, 'approve', {}, admin, NOW), {
+    error: 'กรอกวันที่ออกใบรับรอง',
+    field: 'cert',
+  });
+  const cert = {
+    no: 'QP-2569-0001',
+    issued: '2026-10-20',
+    expires: '2029-10-19',
+  };
+  assert.ok(
+    'error' in
+      applyAction(
+        req,
+        'approve',
+        { cert: { ...cert, expires: '2026-01-01' } },
+        admin,
+        NOW,
+      ),
+  );
+  const res = applyAction(req, 'approve', { cert }, admin, NOW);
+  assert.ok('request' in res);
+  assert.equal(res.request.status, 'approved');
+  assert.deepEqual(res.request.cert, cert);
+  assert.match(res.request.messages.at(-1)!.text, /QP-2569-0001/);
+});
+
 test('applyAction เปลี่ยนสถานะ ต่อ timeline และไม่แก้ของเดิม', () => {
   const req = at('submitted');
   const res = applyAction(req, 'start_review', {}, admin, NOW);
