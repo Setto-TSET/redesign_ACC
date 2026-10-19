@@ -130,6 +130,51 @@ export interface AccRequest {
   payments: Payment[];
   /** คะแนน GPP เป็นเปอร์เซ็นต์ (มีหลังประเมิน) */
   gppScore?: number;
+  /** นัดตรวจประเมิน (กำหนดตอนมอบหมายผู้ตรวจ) */
+  visit?: { method: VisitMethod; date: string };
+  /** ผลตรวจประเมิน GPP ที่ผู้ตรวจส่งแล้ว */
+  assessment?: GppAssessment;
+}
+
+export type VisitMethod = 'onsite' | 'online' | 'hybrid';
+
+export interface GppItem {
+  /** เลขข้อ เช่น '1.1' */
+  id: string;
+  text: string;
+  /** ค่าถ่วงน้ำหนัก — คะแนนข้อ = ระดับ × น้ำหนัก */
+  weight: number;
+  /** ระดับที่เลือกได้ เช่น [0, 2] หรือ [0, 1, 2] */
+  levels: number[];
+  /** มีตัวเลือก "ไม่มี" — ข้อนี้ไม่นับคะแนนเต็ม */
+  canNa?: boolean;
+  /** Critical Defect */
+  critical?: boolean;
+}
+
+export interface GppSection {
+  id: number;
+  title: string;
+  items: GppItem[];
+}
+
+export interface GppAnswer {
+  /** ระดับที่เลือก, 'na' = ไม่มี, ไม่มีค่า = ยังไม่ประเมิน (กรอกหมายเหตุ/รูปไว้ก่อนได้) */
+  level?: number | 'na';
+  remark?: string;
+  /** ชื่อไฟล์รูปหลักฐาน (สูงสุด 4) */
+  photos?: string[];
+}
+
+export interface GppAssessment {
+  /** เลขข้อ → คำตอบ */
+  answers: Record<string, GppAnswer>;
+  /** ข้อเสนอแนะ — ร้านยาเห็น */
+  summary: string;
+  /** บันทึกภายใน — เฉพาะเจ้าหน้าที่และผู้ตรวจ */
+  internalNote: string;
+  by?: string;
+  at?: string;
 }
 
 /** ร่างคำขอระหว่างกรอก stepper (เก็บใน sessionStorage) */
@@ -163,6 +208,7 @@ export type RequestAction =
   | 'request_docs'
   | 'assign'
   | 'resubmit_docs'
+  | 'submit_assessment'
   | 'to_committee'
   | 'approve'
   | 'reject'
@@ -187,6 +233,9 @@ export interface ActionInput {
   assessorIds?: number[];
   newDocs?: RequestDoc[];
   status?: RequestStatus;
+  assessment?: GppAssessment;
+  /** คำนวณจาก assessment ที่ lib/api.ts ก่อนส่งเข้า applyAction */
+  gppScore?: number;
 }
 
 /** ผลของ action: คำขอชุดใหม่ หรือ error พร้อมช่องที่ผิด */

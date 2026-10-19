@@ -343,6 +343,51 @@ export const seedRequests: AccRequest[] = [
       },
     ],
   },
+  {
+    id: 'r6',
+    no: 'NEW-6900011',
+    pharmacyId: 4,
+    assessorIds: [2, 6],
+    payments: [
+      {
+        amount: 3000,
+        fileName: 'สลิป-ขอนแก่นฟาร์มา.jpg',
+        paidAt: '2026-09-10T11:00:00',
+      },
+    ],
+    typeIds: [1],
+    submittedAt: '2026-09-08T09:30:00',
+    status: 'assigned',
+    visit: { method: 'onsite', date: '2026-10-22' },
+    applicant: applicant(
+      'สุนิสา',
+      'แก่นใจ',
+      'sunisa@example.com',
+      '0810000004',
+      1,
+    ),
+    docs: [
+      {
+        name: 'ขย5-ขอนแก่นฟาร์มา.pdf',
+        type: 'สำเนาใบอนุญาตขายยา (ขย.5)',
+        uploadedAt: '2026-09-08',
+      },
+    ],
+    messages: [
+      {
+        from: 'ระบบ',
+        at: '2026-09-08T09:30:00',
+        text: 'ได้รับคำขอแล้ว',
+        status: 'submitted',
+      },
+      {
+        from: 'พิมพ์ใจ บริหาร',
+        at: '2026-09-15T14:00:00',
+        text: 'มอบหมายผู้ตรวจประเมินแล้ว นัดตรวจแบบ On Site วันที่ 22 ต.ค. 2569',
+        status: 'assigned',
+      },
+    ],
+  },
 ];
 
 /** ผู้ตรวจประเมิน — id 2 ตรงกับบัญชีทดลอง assessor01 */

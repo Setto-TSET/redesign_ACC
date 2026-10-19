@@ -173,7 +173,7 @@ export function pharmacyTodos(
 // ต้องเทียบกับตาราง AssessmentStatus ใน DB ระบบเดิมก่อนต่อ backend — แก้ที่ FLOW จุดเดียว
 type Step = {
   action: RequestAction;
-  by: 'staff' | 'pharmacy';
+  by: 'staff' | 'pharmacy' | 'assessor';
   to: RequestStatus;
 };
 
@@ -184,7 +184,7 @@ const FLOW: Partial<Record<RequestStatus, Step[]>> = {
     { action: 'assign', by: 'staff', to: 'assigned' },
   ],
   need_docs: [{ action: 'resubmit_docs', by: 'pharmacy', to: 'doc_review' }],
-  // assigned → assessed ทำโดยผู้ตรวจใน F3
+  assigned: [{ action: 'submit_assessment', by: 'assessor', to: 'assessed' }],
   assessed: [{ action: 'to_committee', by: 'staff', to: 'committee' }],
   committee: [
     { action: 'approve', by: 'staff', to: 'approved' },
@@ -204,7 +204,7 @@ export function actionsFor(
 ): RequestAction[] {
   const staff = STAFF.includes(role);
   const out = (FLOW[status] ?? [])
-    .filter((s) => (s.by === 'staff' ? staff : role === 'pharmacy'))
+    .filter((s) => (s.by === 'staff' ? staff : role === s.by))
     .map((s) => s.action);
   if (staff && isAlive(status)) out.push('reply', 'cancel');
   if (role === 'pharmacy' && BEFORE_ASSIGN.includes(status)) out.push('cancel');
@@ -226,6 +226,7 @@ const DEFAULT_TEXT: Partial<Record<RequestAction, string>> = {
   start_review: 'อยู่ระหว่างการดำเนินการตรวจสอบเอกสาร',
   assign: 'มอบหมายผู้ตรวจประเมินแล้ว',
   resubmit_docs: 'ส่งเอกสารเพิ่มเติมแล้ว',
+  submit_assessment: 'ผู้ตรวจส่งผลการตรวจประเมิน GPP แล้ว',
   to_committee:
     'สรร. ได้ตรวจประเมินเรียบร้อยแล้ว อยู่ระหว่างยื่นคณะกรรมการรับรอง',
   approve: 'ผ่านคณะกรรมการรับรองแล้ว',
@@ -250,6 +251,12 @@ export function applyAction(
     if (!input.assessorIds?.length)
       return { error: 'เลือกผู้ตรวจอย่างน้อย 1 คน', field: 'assessorIds' };
     patch.assessorIds = input.assessorIds;
+  }
+  if (action === 'submit_assessment') {
+    if (!input.assessment || input.gppScore === undefined)
+      return { error: 'ยังไม่มีผลประเมิน', field: 'assessment' };
+    patch.assessment = { ...input.assessment, by: actor.name, at: now };
+    patch.gppScore = input.gppScore;
   }
   if (action === 'resubmit_docs') {
     if (!input.newDocs?.length)

@@ -5,6 +5,7 @@ import type {
   RequestAction,
   RequestStatus,
   RequestType,
+  VisitMethod,
 } from '@/types/api';
 
 export const requestStatusLabels: Record<RequestStatus, string> = {
@@ -122,6 +123,7 @@ export const actionLabels: Record<RequestAction, string> = {
   request_docs: 'ขอเอกสารเพิ่มเติม',
   assign: 'มอบหมายผู้ตรวจ',
   resubmit_docs: 'ส่งเอกสารเพิ่มแล้ว',
+  submit_assessment: 'บันทึกผลประเมิน GPP',
   to_committee: 'ส่งคณะกรรมการ',
   approve: 'ผ่านการรับรอง',
   reject: 'ไม่ผ่าน',
@@ -135,12 +137,19 @@ export const doneLabels: Record<RequestAction, string> = {
   request_docs: 'ส่งคำขอเอกสารเพิ่มเติมแล้ว',
   assign: 'มอบหมายผู้ตรวจแล้ว',
   resubmit_docs: 'ส่งเอกสารเพิ่มเติมแล้ว',
+  submit_assessment: 'ส่งผลประเมินแล้ว',
   to_committee: 'ส่งคณะกรรมการแล้ว',
   approve: 'บันทึกผ่านการรับรองแล้ว',
   reject: 'บันทึกไม่ผ่านการรับรองแล้ว',
   reply: 'ส่งข้อความถึงร้านยาแล้ว',
   cancel: 'ยกเลิกคำขอแล้ว',
   override: 'เปลี่ยนสถานะแล้ว',
+};
+
+export const visitMethodLabels: Record<VisitMethod, string> = {
+  onsite: 'On Site',
+  online: 'Online',
+  hybrid: 'Hybrid',
 };
 
 /** template ข้อความตอบกลับ (TemplateText ของระบบเดิม ตาม AdminManual ข้อ 13) */

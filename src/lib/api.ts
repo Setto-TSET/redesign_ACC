@@ -5,6 +5,7 @@ import type {
   ActionInput,
   ActionResult,
   Assessor,
+  GppAssessment,
   LoginResponse,
   Pharmacy,
   Registration,
@@ -14,6 +15,8 @@ import type {
 } from '@/types/api';
 import { assessors, pharmacies, seedRequests, users } from '@/mock';
 import { requestTypes } from '@/lib/constants';
+import { gppSections } from '@/lib/gppItems';
+import { scoreGpp } from '@/lib/gppRules';
 import {
   applyAction,
   canAddPayment,
@@ -119,6 +122,15 @@ export const api = {
       const all = loadRequests();
       const req = all.find((r) => r.id === id);
       if (!req || !canView(req, user)) return { error: 'ไม่พบคำขอ' };
+      if (action === 'submit_assessment' && input.assessment) {
+        const score = scoreGpp(gppSections, input.assessment.answers);
+        if (score.missing.length)
+          return {
+            error: `ยังไม่ได้ประเมิน ${score.missing.length} ข้อ`,
+            field: 'assessment',
+          };
+        input = { ...input, gppScore: score.percent };
+      }
       const res = applyAction(
         req,
         action,
@@ -182,6 +194,35 @@ export const api = {
       };
       saveRequests([req, ...all]);
       return req;
+    },
+  },
+
+  // PoC: ร่างผลประเมินเก็บใน sessionStorage ต่อคำขอ — ระบบจริงบันทึกที่ API
+  assessmentDrafts: {
+    load(requestId: string): GppAssessment | null {
+      try {
+        const raw = sessionStorage.getItem(`accpharm_gpp_${requestId}`);
+        return raw ? (JSON.parse(raw) as GppAssessment) : null;
+      } catch {
+        return null;
+      }
+    },
+    save(requestId: string, draft: GppAssessment) {
+      try {
+        sessionStorage.setItem(
+          `accpharm_gpp_${requestId}`,
+          JSON.stringify(draft),
+        );
+      } catch {
+        // บันทึกร่างไม่ได้ก็ยังกรอกต่อได้
+      }
+    },
+    clear(requestId: string) {
+      try {
+        sessionStorage.removeItem(`accpharm_gpp_${requestId}`);
+      } catch {
+        // ไม่มีร่างให้ลบ
+      }
     },
   },
 

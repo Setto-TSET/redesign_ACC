@@ -108,7 +108,7 @@ test('actionsFor ครบทุกสถานะ × role', () => {
           : [];
     const expected = {
       pharmacy,
-      assessor: [],
+      assessor: status === 'assigned' ? ['submit_assessment'] : [],
       admin: staff,
       ppho: [],
       superadmin: staff,
@@ -121,6 +121,35 @@ test('actionsFor ครบทุกสถานะ × role', () => {
       );
     }
   }
+});
+
+test('ผู้ตรวจส่งผลประเมิน: ต้องมีผลและคะแนน แล้วไปสถานะ assessed', () => {
+  const req = at('assigned', { assessorIds: [2] });
+  const assessor = { name: 'ภญ.วรรณา ตรวจไว', role: 'assessor' } as const;
+  const missing = applyAction(req, 'submit_assessment', {}, assessor, NOW);
+  assert.deepEqual(missing, {
+    error: 'ยังไม่มีผลประเมิน',
+    field: 'assessment',
+  });
+
+  const assessment = { answers: {}, summary: 'ดี', internalNote: '' };
+  const res = applyAction(
+    req,
+    'submit_assessment',
+    { assessment, gppScore: 91.23 },
+    assessor,
+    NOW,
+  );
+  assert.ok('request' in res);
+  assert.equal(res.request.status, 'assessed');
+  assert.equal(res.request.gppScore, 91.23);
+  assert.equal(res.request.assessment?.by, assessor.name);
+  assert.equal(res.request.assessment?.at, NOW);
+
+  assert.ok(
+    'error' in
+      applyAction(req, 'submit_assessment', { assessment }, admin, NOW),
+  );
 });
 
 test('applyAction เปลี่ยนสถานะ ต่อ timeline และไม่แก้ของเดิม', () => {
