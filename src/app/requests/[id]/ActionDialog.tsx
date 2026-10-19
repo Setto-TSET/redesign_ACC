@@ -378,7 +378,6 @@ export function ActionDialog({
             type="button"
             className={DANGER.includes(action) ? 'btn-danger' : 'btn-primary'}
             disabled={busy}
-            data-autofocus={action === 'approve' ? true : undefined}
             onClick={submit}
           >
             {busy ? 'กำลังบันทึก…' : `ยืนยัน${actionLabels[action]}`}

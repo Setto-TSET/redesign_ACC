@@ -157,11 +157,6 @@ export function DocsTab({
   const formRef = useRef<HTMLElement>(null);
 
   const submit = async () => {
-    if (files.length === 0) {
-      setError('แนบไฟล์อย่างน้อย 1 ไฟล์ แล้วกดส่งอีกครั้ง');
-      focusFirstError(formRef.current);
-      return;
-    }
     setBusy(true);
     try {
       const res = await onResubmit(

@@ -399,7 +399,9 @@ function ConfirmDialog({
     <div
       className="modal-overlay"
       role="presentation"
-      onClick={() => !busy && onCancel()}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget && !busy) onCancel();
+      }}
     >
       <div
         ref={boxRef}

@@ -187,12 +187,23 @@ export default function RequestDetailPage() {
             aria-label="ส่วนของคำขอ"
             className="flex gap-1 overflow-x-auto border-b border-zinc-100 px-2"
             onKeyDown={(e) => {
-              const d =
-                e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-              if (!d) return;
+              const el = (e.target as HTMLElement).closest('[role=tab]');
+              if (!el) return;
+              const i = TAB_KEYS.indexOf(el.id.slice(4) as Tab);
+              const n = TABS.length;
+              const j =
+                e.key === 'ArrowRight'
+                  ? (i + 1) % n
+                  : e.key === 'ArrowLeft'
+                    ? (i - 1 + n) % n
+                    : e.key === 'Home'
+                      ? 0
+                      : e.key === 'End'
+                        ? n - 1
+                        : -1;
+              if (j < 0) return;
               e.preventDefault();
-              const next =
-                TABS[(TAB_KEYS.indexOf(tab) + d + TABS.length) % TABS.length];
+              const next = TABS[j];
               setTab(next.key);
               document.getElementById(`tab-${next.key}`)?.focus();
             }}

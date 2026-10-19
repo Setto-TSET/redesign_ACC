@@ -1,11 +1,12 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 /**
  * เก็บ state ใน query string (Web Interface Guidelines: URL reflects state)
  * ค่าเริ่มต้นไม่ใส่ใน URL — หน้าที่เรียกต้องอยู่ใต้ <Suspense> เมื่อเป็นหน้า static
+ * เขียนผ่าน History API จาก URL ปัจจุบัน (Next ซิงก์เข้า useSearchParams) เพื่อไม่ให้การเขียนซ้อนกันทับกัน
  */
 export function useQueryState<T extends string>(
   key: string,
@@ -13,8 +14,6 @@ export function useQueryState<T extends string>(
   allowed?: readonly T[],
 ) {
   const params = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const raw = params.get(key);
   const value = (
@@ -25,13 +24,17 @@ export function useQueryState<T extends string>(
 
   const setValue = useCallback(
     (next: T) => {
-      const p = new URLSearchParams(params.toString());
+      const p = new URLSearchParams(window.location.search);
       if (next === defaultValue || next === '') p.delete(key);
       else p.set(key, next);
       const qs = p.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      window.history.replaceState(
+        null,
+        '',
+        qs ? `${window.location.pathname}?${qs}` : window.location.pathname,
+      );
     },
-    [params, router, pathname, key, defaultValue],
+    [key, defaultValue],
   );
 
   return [value, setValue] as const;

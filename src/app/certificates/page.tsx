@@ -58,7 +58,7 @@ export default function CertificatesPage() {
           />
         </div>
 
-        <div className="card !p-0 overflow-x-auto">
+        <div className="card relative !p-0 overflow-x-auto">
           <table className="data-table">
             <thead>
               <tr>
