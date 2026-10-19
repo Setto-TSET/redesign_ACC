@@ -11,6 +11,7 @@ import {
   visitMethodLabels,
 } from '@/lib/constants';
 import { gppSections } from '@/lib/gppItems';
+import { isAlive, stepDays } from '@/lib/requestRules';
 import { GPP_PASS_PERCENT, scoreGpp } from '@/lib/gppRules';
 import { formatDate, formatDateTime } from '@/lib/format';
 import type {
@@ -368,28 +369,44 @@ export function PaymentsTab({
 }
 
 export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
-  if (req.gppScore === undefined) return <Empty text="ยังไม่มีผลประเมิน" />;
   const a = req.assessment;
   const score = a ? scoreGpp(gppSections, a.answers) : null;
+  const self = req.selfAssessment
+    ? scoreGpp(gppSections, req.selfAssessment.answers)
+    : null;
+  if (req.gppScore === undefined && !self)
+    return <Empty text="ยังไม่มีผลประเมิน" />;
+  const parts = score ?? self;
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-baseline gap-3">
-        <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
-          คะแนน GPP
-        </span>
-        <span className="text-3xl font-extrabold">
-          {req.gppScore.toFixed(2)}%
-        </span>
-        {score && (
+      {req.gppScore !== undefined && (
+        <div className="flex flex-wrap items-baseline gap-3">
           <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
-            {score.got}/{score.max} คะแนน · เกณฑ์ {GPP_PASS_PERCENT}%
+            คะแนน GPP (ผู้ตรวจ)
           </span>
-        )}
-      </div>
+          <span className="text-3xl font-extrabold">
+            {req.gppScore.toFixed(2)}%
+          </span>
+          {score && (
+            <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+              {score.got}/{score.max} คะแนน · เกณฑ์ {GPP_PASS_PERCENT}%
+            </span>
+          )}
+        </div>
+      )}
+      {self && (
+        <p className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+          ร้านประเมินตนเอง{' '}
+          <span className="font-semibold" style={{ color: 'var(--ink)' }}>
+            {self.percent.toFixed(2)}%
+          </span>{' '}
+          ({self.got}/{self.max})
+        </p>
+      )}
 
-      {score && (
+      {parts && (
         <ul className="grid gap-2 sm:grid-cols-2">
-          {score.sections.map((s) => (
+          {parts.sections.map((s, i) => (
             <li
               key={s.id}
               className="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 px-4 py-3 text-sm"
@@ -397,7 +414,21 @@ export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
               <span className="min-w-0">
                 หมวด {s.id} {s.title}
               </span>
-              <span className="shrink-0 font-semibold">{s.percent}%</span>
+              <span className="shrink-0 text-right">
+                {score && (
+                  <span className="font-semibold">
+                    {score.sections[i].percent}%
+                  </span>
+                )}
+                {self && (
+                  <span
+                    className="block text-xs"
+                    style={{ color: 'var(--ink-secondary)' }}
+                  >
+                    ร้าน {self.sections[i].percent}%
+                  </span>
+                )}
+              </span>
             </li>
           ))}
         </ul>
@@ -427,42 +458,60 @@ export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
 
 export function HistoryTab({ req }: { req: AccRequest }) {
   if (req.messages.length === 0) return <Empty text="ยังไม่มีประวัติ" />;
+  const d = new Date();
+  const now = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 19);
+  const { steps, total } = stepDays(req, now);
+  const last = req.messages.length - 1;
   return (
-    <ol className="space-y-5">
-      {[...req.messages].reverse().map((m, i) => (
-        <li key={`${m.at}-${i}`} className="flex gap-3">
-          <span
-            className="mt-1.5 w-2.5 h-2.5 shrink-0 rounded-full"
-            style={{ background: 'var(--accent)' }}
-            aria-hidden="true"
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              {m.status && <StatusBadge status={m.status} />}
-              {m.override && (
-                <span
-                  className="badge"
-                  style={{
-                    background: 'var(--warn-soft)',
-                    color: 'var(--warn)',
-                  }}
-                >
-                  แก้สถานะ
-                </span>
-              )}
+    <div className="space-y-5">
+      <p
+        className="rounded-xl px-4 py-3 text-sm"
+        style={{ background: 'var(--border-light)' }}
+      >
+        ใช้เวลารวม <span className="font-bold">{total} วัน</span>{' '}
+        {isAlive(req.status)
+          ? 'นับจากวันยื่นถึงวันนี้ (ยังไม่ปิด)'
+          : 'นับจากวันยื่นจนปิดคำขอ'}
+      </p>
+      <ol className="space-y-5">
+        {[...req.messages].reverse().map((m, i) => (
+          <li key={`${m.at}-${i}`} className="flex gap-3">
+            <span
+              className="mt-1.5 w-2.5 h-2.5 shrink-0 rounded-full"
+              style={{ background: 'var(--accent)' }}
+              aria-hidden="true"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                {m.status && <StatusBadge status={m.status} />}
+                {m.override && (
+                  <span
+                    className="badge"
+                    style={{
+                      background: 'var(--warn-soft)',
+                      color: 'var(--warn)',
+                    }}
+                  >
+                    แก้สถานะ
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-sm whitespace-pre-line break-words">
+                {m.text}
+              </p>
+              <p
+                className="mt-0.5 text-xs"
+                style={{ color: 'var(--ink-secondary)' }}
+              >
+                {m.from} · {formatDateTime(m.at)} · ใช้เวลา {steps[last - i]}{' '}
+                วันจากขั้นก่อน
+              </p>
             </div>
-            <p className="mt-1 text-sm whitespace-pre-line break-words">
-              {m.text}
-            </p>
-            <p
-              className="mt-0.5 text-xs"
-              style={{ color: 'var(--ink-secondary)' }}
-            >
-              {m.from} · {formatDateTime(m.at)}
-            </p>
-          </div>
-        </li>
-      ))}
-    </ol>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

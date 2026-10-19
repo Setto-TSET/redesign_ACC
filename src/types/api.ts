@@ -134,6 +134,8 @@ export interface AccRequest {
   visit?: { method: VisitMethod; date: string };
   /** ผลตรวจประเมิน GPP ที่ผู้ตรวจส่งแล้ว */
   assessment?: GppAssessment;
+  /** ร้านประเมินตนเอง (ก่อนมอบหมายผู้ตรวจ) */
+  selfAssessment?: GppAssessment;
   /** ใบรับรองที่ออกเมื่อผ่านคณะกรรมการ */
   cert?: Certificate;
 }
@@ -243,6 +245,8 @@ export interface ActionInput {
   newDocs?: RequestDoc[];
   status?: RequestStatus;
   assessment?: GppAssessment;
+  /** นัดตรวจ (assign) */
+  visit?: { method: VisitMethod; date: string };
   /** คำนวณจาก assessment ที่ lib/api.ts ก่อนส่งเข้า applyAction */
   gppScore?: number;
   /** วันที่ใบรับรอง (approve) — เลขรับรองออกที่ lib/api.ts */

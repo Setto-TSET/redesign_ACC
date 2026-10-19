@@ -7,6 +7,7 @@ import {
   actionLabels,
   replyTemplates,
   requestStatusLabels,
+  visitMethodLabels,
 } from '@/lib/constants';
 import type {
   ActionInput,
@@ -14,6 +15,7 @@ import type {
   Assessor,
   RequestAction,
   RequestStatus,
+  VisitMethod,
 } from '@/types/api';
 
 /** ป้ายของช่องข้อความ — action ที่ไม่อยู่ในนี้ไม่มีช่องข้อความ */
@@ -40,18 +42,23 @@ export function ActionDialog({
   action,
   current,
   assessors,
+  loads = {},
   onClose,
   onSubmit,
 }: {
   action: RequestAction;
   current: RequestStatus;
   assessors: Assessor[];
+  /** ผู้ตรวจ id → จำนวนนัดที่ยังไม่ส่งผล */
+  loads?: Record<number, number>;
   onClose: () => void;
   onSubmit: (input: ActionInput) => Promise<ActionResult>;
 }) {
   const [message, setMessage] = useState('');
   const [picked, setPicked] = useState<number[]>([]);
   const [status, setStatus] = useState<RequestStatus | ''>('');
+  const [method, setMethod] = useState<VisitMethod>('onsite');
+  const [visitDate, setVisitDate] = useState('');
   const [issued, setIssued] = useState(today);
   const [expires, setExpires] = useState(() => certExpiry(today()));
   const [error, setError] = useState<{
@@ -75,7 +82,7 @@ export function ActionDialog({
   /** ช่องที่ action นี้แสดงจริง — error ของช่องอื่นต้องขึ้นเป็นข้อความรวม */
   const renderedFields: (keyof ActionInput)[] = [
     ...(action === 'override' ? (['status'] as const) : []),
-    ...(action === 'assign' ? (['assessorIds'] as const) : []),
+    ...(action === 'assign' ? (['assessorIds', 'visit'] as const) : []),
     ...(action === 'approve' ? (['cert'] as const) : []),
     ...(messageLabel ? (['message'] as const) : []),
   ];
@@ -89,6 +96,7 @@ export function ActionDialog({
         message,
         assessorIds: picked,
         status: status || undefined,
+        ...(action === 'assign' ? { visit: { method, date: visitDate } } : {}),
         ...(action === 'approve' ? { cert: { no: '', issued, expires } } : {}),
       });
       if ('error' in res) setError({ field: res.field, text: res.error });
@@ -206,7 +214,17 @@ export function ActionDialog({
                         )
                       }
                     />
-                    {a.name}
+                    <span className="flex-1">{a.name}</span>
+                    <span
+                      className="text-xs"
+                      style={{
+                        color: loads[a.id]
+                          ? 'var(--warn)'
+                          : 'var(--ink-tertiary)',
+                      }}
+                    >
+                      รอประเมิน {loads[a.id] ?? 0} ร้าน
+                    </span>
                   </label>
                 ))}
               </div>
@@ -220,6 +238,49 @@ export function ActionDialog({
                 </p>
               )}
             </fieldset>
+          )}
+
+          {action === 'assign' && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <fieldset>
+                <legend className="block text-[13px] font-semibold text-zinc-700 mb-2">
+                  วิธีตรวจ
+                </legend>
+                <div className="flex flex-wrap gap-2">
+                  {(Object.keys(visitMethodLabels) as VisitMethod[]).map(
+                    (m) => (
+                      <label
+                        key={m}
+                        className="flex cursor-pointer items-center gap-1.5 text-sm"
+                      >
+                        <input
+                          type="radio"
+                          name="method"
+                          className="accent-[var(--accent)]"
+                          checked={method === m}
+                          onChange={() => setMethod(m)}
+                        />
+                        {visitMethodLabels[m]}
+                      </label>
+                    ),
+                  )}
+                </div>
+              </fieldset>
+              <Field
+                label="วันนัดตรวจ"
+                htmlFor="visitDate"
+                error={errorFor('visit')}
+              >
+                <input
+                  id="visitDate"
+                  type="date"
+                  className={inputClass(errorFor('visit'))}
+                  aria-invalid={!!errorFor('visit')}
+                  value={visitDate}
+                  onChange={(e) => setVisitDate(e.target.value)}
+                />
+              </Field>
+            </div>
           )}
 
           {messageLabel && (

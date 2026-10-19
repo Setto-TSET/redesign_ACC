@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 import { doneLabels } from '@/lib/constants';
 import { formatDate } from '@/lib/format';
-import { actionsFor, canAddPayment } from '@/lib/requestRules';
+import { actionsFor, canAddPayment, canSelfAssess } from '@/lib/requestRules';
 import type {
   AccRequest,
   ActionInput,
@@ -41,15 +41,25 @@ export default function RequestDetailPage() {
   const [req, setReq] = useState<AccRequest | null | undefined>();
   const [shop, setShop] = useState<Pharmacy | null>(null);
   const [assessors, setAssessors] = useState<Assessor[]>([]);
+  const [loads, setLoads] = useState<Record<number, number>>({});
   const [tab, setTab] = useState<Tab>('ข้อมูล');
   const [dialog, setDialog] = useState<RequestAction | null>(null);
 
   useEffect(() => {
     if (!user) return;
-    Promise.all([api.requests.get(id, user), api.assessors.list()])
-      .then(([r, list]) => {
+    Promise.all([
+      api.requests.get(id, user),
+      api.assessors.list(),
+      api.requests.list(),
+    ])
+      .then(([r, list, all]) => {
         setReq(r);
         setAssessors(list);
+        // ภาระงานผู้ตรวจ = นัดที่มอบหมายแล้วแต่ยังไม่ส่งผล
+        const count: Record<number, number> = {};
+        for (const x of all.filter((x) => x.status === 'assigned'))
+          for (const a of x.assessorIds) count[a] = (count[a] ?? 0) + 1;
+        setLoads(count);
         if (r) return api.pharmacies.get(r.pharmacyId).then(setShop);
       })
       .catch(() => {
@@ -132,6 +142,22 @@ export default function RequestDetailPage() {
           onAction={onAction}
         />
 
+        {canSelfAssess(req, user) && (
+          <div
+            className="card flex flex-wrap items-center justify-between gap-3"
+            style={{ background: 'var(--info-soft)' }}
+          >
+            <p className="text-sm">
+              {req.selfAssessment
+                ? 'ประเมินตนเองแล้ว แก้ไขได้จนกว่า สรร. จะมอบหมายผู้ตรวจ'
+                : 'ประเมินตนเองตามเกณฑ์ GPP ก่อนผู้ตรวจลงพื้นที่'}
+            </p>
+            <Link href={`/requests/${req.id}/assess`} className="btn-primary">
+              {req.selfAssessment ? 'แก้ไขผลประเมินตนเอง' : 'ประเมินตนเอง'}
+            </Link>
+          </div>
+        )}
+
         {req.cert && (
           <div
             className="card flex flex-wrap items-center justify-between gap-3"
@@ -210,6 +236,7 @@ export default function RequestDetailPage() {
           action={dialog}
           current={req.status}
           assessors={assessors}
+          loads={loads}
           onClose={() => setDialog(null)}
           onSubmit={(input) => run(dialog, input)}
         />

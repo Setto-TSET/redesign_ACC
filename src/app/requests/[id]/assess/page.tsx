@@ -19,7 +19,7 @@ import { visitMethodLabels } from '@/lib/constants';
 import { formatDate } from '@/lib/format';
 import { gppSections } from '@/lib/gppItems';
 import { GPP_PASS_PERCENT, scoreGpp } from '@/lib/gppRules';
-import { actionsFor } from '@/lib/requestRules';
+import { actionsFor, canSelfAssess } from '@/lib/requestRules';
 import type {
   AccRequest,
   GppAnswer,
@@ -48,27 +48,41 @@ export default function AssessPage() {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  // ร้านยาใช้หน้านี้ประเมินตนเอง ผู้ตรวจใช้บันทึกผลจริง — ร่างแยกกัน
+  const isSelf = user?.role === 'pharmacy';
+  const draftKey = isSelf ? `${id}-self` : id;
+  const title = isSelf ? 'ประเมินตนเอง GPP' : 'ประเมิน GPP';
+
   useEffect(() => {
     if (!user) return;
     api.requests
       .get(id, user)
       .then((r) => {
         setReq(r);
-        setDraft(api.assessmentDrafts.load(id) ?? empty);
+        setDraft(
+          api.assessmentDrafts.load(draftKey) ??
+            (isSelf ? r?.selfAssessment : undefined) ??
+            empty,
+        );
         if (r) return api.pharmacies.get(r.pharmacyId).then(setShop);
       })
       .catch(() => {
         toast.error('โหลดคำขอไม่สำเร็จ');
         setReq(null);
       });
-  }, [id, user]);
+  }, [id, user, draftKey, isSelf]);
 
   if (!user || req === undefined)
-    return <AdminLayout title="ประเมิน GPP">{null}</AdminLayout>;
+    return <AdminLayout title={title}>{null}</AdminLayout>;
 
-  if (!req || !actionsFor(req.status, user.role).includes('submit_assessment'))
+  const allowed =
+    req &&
+    (isSelf
+      ? canSelfAssess(req, user)
+      : actionsFor(req.status, user.role).includes('submit_assessment'));
+  if (!req || !allowed)
     return (
-      <AdminLayout title="ประเมิน GPP">
+      <AdminLayout title={title}>
         <div className="card text-center py-12">
           <p className="font-semibold">ประเมินคำขอนี้ไม่ได้</p>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
@@ -87,7 +101,7 @@ export default function AssessPage() {
 
   const update = (next: GppAssessment) => {
     setDraft(next);
-    api.assessmentDrafts.save(req.id, next);
+    api.assessmentDrafts.save(draftKey, next);
   };
   const setAnswer = (itemId: string, patch: Partial<GppAnswer>) => {
     const prev = draft.answers[itemId];
@@ -114,7 +128,16 @@ export default function AssessPage() {
       goTo(gppSections.findIndex((s) => s.items.some((i) => i.id === first)));
       return;
     }
+    if (isSelf) return saveSelf();
     setConfirming(true);
+  };
+
+  const saveSelf = async () => {
+    const res = await api.requests.saveSelfAssessment(req.id, draft, user);
+    if ('error' in res) return toast.error(res.error);
+    api.assessmentDrafts.clear(draftKey);
+    toast.success('บันทึกผลประเมินตนเองแล้ว');
+    router.push(`/requests/${req.id}`);
   };
 
   const submit = async () => {
@@ -127,13 +150,13 @@ export default function AssessPage() {
     );
     setBusy(false);
     if ('error' in res) return toast.error(res.error);
-    api.assessmentDrafts.clear(req.id);
+    api.assessmentDrafts.clear(draftKey);
     toast.success('ส่งผลประเมินแล้ว');
     router.push(`/requests/${req.id}`);
   };
 
   return (
-    <AdminLayout title="ประเมิน GPP">
+    <AdminLayout title={title}>
       <div className="max-w-4xl space-y-5">
         <Link
           href={`/requests/${req.id}`}
@@ -251,12 +274,15 @@ export default function AssessPage() {
               key={item.id}
               item={item}
               answer={draft.answers[item.id]}
+              selfLevel={
+                isSelf ? undefined : req.selfAssessment?.answers[item.id]?.level
+              }
               onChange={(patch) => setAnswer(item.id, patch)}
             />
           ))}
         </section>
 
-        {isLast && (
+        {isLast && !isSelf && (
           <section className="card space-y-4">
             <h3 className="font-bold">สรุปผลการตรวจ</h3>
             <Field
@@ -301,7 +327,7 @@ export default function AssessPage() {
           </button>
           {isLast ? (
             <button type="button" className="btn-primary" onClick={trySubmit}>
-              ส่งผลประเมิน
+              {isSelf ? 'บันทึกผลประเมินตนเอง' : 'ส่งผลประเมิน'}
             </button>
           ) : (
             <button
@@ -369,10 +395,13 @@ export default function AssessPage() {
 function ItemCard({
   item,
   answer,
+  selfLevel,
   onChange,
 }: {
   item: GppItem;
   answer?: GppAnswer;
+  /** คะแนนที่ร้านประเมินตนเอง (แสดงให้ผู้ตรวจเทียบ) */
+  selfLevel?: number | 'na';
   onChange: (patch: Partial<GppAnswer>) => void;
 }) {
   const photos = answer?.photos ?? [];
@@ -402,6 +431,14 @@ function ItemCard({
             <span>น้ำหนัก {item.weight}</span>
             {item.critical && (
               <span className="badge badge-error">Critical Defect</span>
+            )}
+            {selfLevel !== undefined && (
+              <span className="badge badge-info">
+                ร้านประเมิน:{' '}
+                {selfLevel === 'na'
+                  ? 'ไม่มี'
+                  : `${levelLabels[selfLevel]} (${selfLevel})`}
+              </span>
             )}
           </p>
         </div>

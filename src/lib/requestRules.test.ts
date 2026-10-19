@@ -16,6 +16,8 @@ import {
   setMainType,
   toggleChangeType,
   validateStep,
+  staffTodos,
+  stepDays,
 } from './requestRules.ts';
 
 const types: RequestType[] = [
@@ -175,5 +177,63 @@ test('งานที่รอร้านยา', () => {
       today,
     )[0].cta,
     'ยื่นคำขอ',
+  );
+});
+
+test('งานที่รอเจ้าหน้าที่และผู้ตรวจ', () => {
+  const r = (
+    id: string,
+    status: AccRequest['status'],
+    assessorIds: number[] = [],
+  ) =>
+    ({
+      id,
+      no: id.toUpperCase(),
+      status,
+      assessorIds,
+    }) as unknown as AccRequest;
+  const reqs = [
+    r('a', 'submitted'),
+    r('b', 'doc_review'),
+    r('c', 'doc_review'),
+    r('d', 'assigned', [2]),
+    r('e', 'assigned', [6]),
+    r('f', 'approved'),
+  ];
+  const admin = staffTodos(reqs, { id: 3, role: 'admin' });
+  assert.deepEqual(
+    admin.map((t) => [t.status, t.href]),
+    [
+      ['submitted', '/requests/a'],
+      ['doc_review', '/requests'],
+    ],
+  );
+  assert.equal(admin[1].title, 'รอตรวจเอกสารและมอบหมายผู้ตรวจ (2)');
+
+  const mine = staffTodos(reqs, { id: 2, role: 'assessor' });
+  assert.deepEqual(
+    mine.map((t) => [t.title, t.detail]),
+    [['รอประเมิน 1 ร้าน', 'D']],
+  );
+  assert.deepEqual(staffTodos(reqs, { id: 4, role: 'ppho' }), []);
+});
+
+test('จำนวนวันแต่ละขั้นและรวม', () => {
+  const req = {
+    submittedAt: '2026-09-01T09:00:00',
+    status: 'assigned',
+    messages: [
+      { at: '2026-09-01T09:00:00' },
+      { at: '2026-09-04T08:00:00' },
+      { at: '2026-09-15T14:00:00' },
+    ],
+  } as unknown as AccRequest;
+  assert.deepEqual(stepDays(req, '2026-10-01T09:00:00'), {
+    steps: [0, 2, 11],
+    total: 30,
+  });
+  assert.equal(
+    stepDays({ ...req, status: 'approved' }, '2026-12-31T00:00:00').total,
+    14,
   );
 });

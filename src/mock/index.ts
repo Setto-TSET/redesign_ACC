@@ -346,12 +346,12 @@ export const seedRequests: AccRequest[] = [
   {
     id: 'r6',
     no: 'NEW-6900011',
-    pharmacyId: 4,
+    pharmacyId: 5,
     assessorIds: [2, 6],
     payments: [
       {
         amount: 3000,
-        fileName: 'สลิป-ขอนแก่นฟาร์มา.jpg',
+        fileName: 'สลิป-ใกล้บ้านรังสิต.jpg',
         paidAt: '2026-09-10T11:00:00',
       },
     ],
@@ -368,7 +368,7 @@ export const seedRequests: AccRequest[] = [
     ),
     docs: [
       {
-        name: 'ขย5-ขอนแก่นฟาร์มา.pdf',
+        name: 'ขย5-ใกล้บ้านรังสิต.pdf',
         type: 'สำเนาใบอนุญาตขายยา (ขย.5)',
         uploadedAt: '2026-09-08',
       },

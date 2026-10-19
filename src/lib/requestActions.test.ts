@@ -205,16 +205,23 @@ test('applyAction ตรวจ input ที่ต้องมี', () => {
     applyAction(at('doc_review'), 'assign', { assessorIds: [] }, admin, NOW),
     { error: 'เลือกผู้ตรวจอย่างน้อย 1 คน', field: 'assessorIds' },
   );
+  assert.deepEqual(
+    applyAction(at('doc_review'), 'assign', { assessorIds: [2] }, admin, NOW),
+    { error: 'กำหนดวันนัดตรวจ', field: 'visit' },
+  );
+  const visit = { method: 'hybrid', date: '2026-11-03' } as const;
   const assigned = applyAction(
     at('doc_review'),
     'assign',
-    { assessorIds: [2, 6] },
+    { assessorIds: [2, 6], visit },
     admin,
     NOW,
   );
   assert.ok('request' in assigned);
   assert.equal(assigned.request.status, 'assigned');
   assert.deepEqual(assigned.request.assessorIds, [2, 6]);
+  assert.deepEqual(assigned.request.visit, visit);
+  assert.match(assigned.request.messages.at(-1)!.text, /Hybrid/);
 
   assert.deepEqual(
     applyAction(

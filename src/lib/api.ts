@@ -21,6 +21,7 @@ import { nextCertNo, withLatestCert } from '@/lib/certRules';
 import {
   applyAction,
   canAddPayment,
+  canSelfAssess,
   canView,
   isAlive,
   nextRequestNo,
@@ -168,6 +169,33 @@ export const api = {
       const request = {
         ...req,
         payments: [...req.payments, { ...payment, paidAt: localNow() }],
+      };
+      replaceRequest(all, request);
+      return { request };
+    },
+
+    /** ร้านบันทึกผลประเมินตนเอง — ไม่เปลี่ยนสถานะ บันทึกซ้ำได้จนกว่าจะมอบหมายผู้ตรวจ */
+    async saveSelfAssessment(
+      id: string,
+      assessment: GppAssessment,
+      user: User,
+    ): Promise<ActionResult> {
+      const all = loadRequests();
+      const req = all.find((r) => r.id === id);
+      if (!req || !canSelfAssess(req, user))
+        return { error: 'ประเมินตนเองไม่ได้ในสถานะนี้' };
+      const missing = scoreGpp(gppSections, assessment.answers).missing;
+      if (missing.length)
+        return { error: `ยังไม่ได้ประเมิน ${missing.length} ข้อ` };
+      const request = {
+        ...req,
+        selfAssessment: {
+          answers: assessment.answers,
+          summary: '',
+          internalNote: '',
+          by: user.name,
+          at: localNow(),
+        },
       };
       replaceRequest(all, request);
       return { request };

@@ -10,28 +10,39 @@ import {
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { api } from '@/lib/api';
 import { typeLabel } from '@/lib/constants';
-import { pharmacyTodos, type Todo } from '@/lib/requestRules';
-import type { AccRequest } from '@/types/api';
+import { pharmacyTodos, staffTodos, type Todo } from '@/lib/requestRules';
+import type { AccRequest, User } from '@/types/api';
 
 const toneStyle: Record<Todo['tone'], { bg: string; fg: string }> = {
   warning: { bg: 'var(--warn-soft)', fg: 'var(--warn)' },
   info: { bg: 'var(--info-soft)', fg: 'var(--info)' },
 };
 
-/** หน้าแรกของร้านยา: งานที่ต้องทำก่อน แล้วตามด้วยคำขอล่าสุด (หลักการ UX ข้อ 1) */
-export function PharmacyHome({ pharmacyId }: { pharmacyId: number }) {
+/** หน้าแรก: งานที่ต้องทำก่อน แล้วตามด้วยคำขอล่าสุด (หลักการ UX ข้อ 1) */
+export function HomeTasks({ user }: { user: User }) {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [recent, setRecent] = useState<AccRequest[]>([]);
+  const isShop = user.role === 'pharmacy';
 
   useEffect(() => {
-    Promise.all([
-      api.pharmacies.get(pharmacyId),
-      api.requests.list({ pharmacyId }),
-    ]).then(([shop, reqs]) => {
-      setTodos(shop ? pharmacyTodos(shop, reqs, new Date()) : []);
-      setRecent(reqs.slice(0, 3));
-    });
-  }, [pharmacyId]);
+    if (user.role === 'pharmacy') {
+      const pharmacyId = user.pharmacyId;
+      Promise.all([
+        pharmacyId ? api.pharmacies.get(pharmacyId) : null,
+        api.requests.list({ pharmacyId }),
+      ]).then(([shop, reqs]) => {
+        setTodos(shop ? pharmacyTodos(shop, reqs, new Date()) : []);
+        setRecent(reqs.slice(0, 3));
+      });
+      return;
+    }
+    api.requests
+      .list(user.role === 'assessor' ? { assessorId: user.id } : {})
+      .then((reqs) => {
+        setTodos(staffTodos(reqs, user));
+        setRecent(reqs.slice(0, 5));
+      });
+  }, [user]);
 
   if (!todos) return null;
 
@@ -43,7 +54,9 @@ export function PharmacyHome({ pharmacyId }: { pharmacyId: number }) {
           <div className="card flex items-center gap-3">
             <IconCircleCheck size={22} style={{ color: 'var(--accent)' }} />
             <p className="text-sm">
-              ไม่มีงานค้าง ใบรับรองของร้านยังไม่ใกล้หมดอายุ
+              {isShop
+                ? 'ไม่มีงานค้าง ใบรับรองของร้านยังไม่ใกล้หมดอายุ'
+                : 'ไม่มีงานค้าง'}
             </p>
           </div>
         ) : (
@@ -96,7 +109,7 @@ export function PharmacyHome({ pharmacyId }: { pharmacyId: number }) {
         </div>
         {recent.length === 0 ? (
           <p className="text-sm py-4" style={{ color: 'var(--ink-secondary)' }}>
-            ยังไม่เคยยื่นคำขอ
+            {isShop ? 'ยังไม่เคยยื่นคำขอ' : 'ยังไม่มีคำขอ'}
           </p>
         ) : (
           <ul className="divide-y divide-zinc-100">

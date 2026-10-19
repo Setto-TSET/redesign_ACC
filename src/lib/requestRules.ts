@@ -13,6 +13,8 @@ import type {
   UserRole,
 } from '@/types/api';
 import { certDateError } from './certRules.ts';
+import { visitMethodLabels } from './constants.ts';
+import { formatDate } from './format.ts';
 
 /** ประเภทหลัก — เลือกได้ทีละ 1 (ระบบเดิม: chkType1/7/2 ล้างกันเองใน CheckedChanged) */
 export const MAIN_TYPE_IDS = [1, 7, 2];
@@ -168,6 +170,55 @@ export function pharmacyTodos(
   ];
 }
 
+/** งานที่เจ้าหน้าที่ต้องทำต่อ ต่อสถานะ (เรียงตามลำดับ flow) */
+const STAFF_TODO: [RequestStatus, string][] = [
+  ['submitted', 'คำขอใหม่รอรับตรวจ'],
+  ['doc_review', 'รอตรวจเอกสารและมอบหมายผู้ตรวจ'],
+  ['assessed', 'ผู้ตรวจส่งผลแล้ว รอส่งคณะกรรมการ'],
+  ['committee', 'รอบันทึกผลคณะกรรมการ'],
+];
+
+/** งานที่รอเจ้าหน้าที่/ผู้ตรวจ — หน้าแรก (หลักการ UX ข้อ 1) */
+export function staffTodos(
+  reqs: AccRequest[],
+  user: { id: number; role: UserRole },
+): Todo[] {
+  const one = (list: AccRequest[], fallback: string) =>
+    list.length === 1 ? `/requests/${list[0].id}` : fallback;
+
+  if (user.role === 'assessor') {
+    const mine = reqs.filter(
+      (r) => r.status === 'assigned' && r.assessorIds.includes(user.id),
+    );
+    if (!mine.length) return [];
+    return [
+      {
+        tone: 'warning',
+        title: `รอประเมิน ${mine.length} ร้าน`,
+        detail: mine.map((r) => r.no).join(', '),
+        href: '/schedule',
+        cta: 'ดูตารางนัด',
+        status: 'assigned',
+      },
+    ];
+  }
+  if (!STAFF.includes(user.role)) return [];
+  return STAFF_TODO.flatMap(([status, title]) => {
+    const list = reqs.filter((r) => r.status === status);
+    if (!list.length) return [];
+    return [
+      {
+        tone: status === 'submitted' ? 'warning' : 'info',
+        title: `${title} (${list.length})`,
+        detail: list.map((r) => r.no).join(', '),
+        href: one(list, '/requests'),
+        cta: list.length === 1 ? 'เปิดคำขอ' : 'ดูรายการ',
+        status,
+      } satisfies Todo,
+    ];
+  });
+}
+
 // ---------- F2: การทำงานกับคำขอ ----------
 
 // ponytail: ตารางสถานะเป็นของชั่วคราว ประกอบจาก AdminManual + RequestDetail.aspx.vb
@@ -251,7 +302,9 @@ export function applyAction(
   if (action === 'assign') {
     if (!input.assessorIds?.length)
       return { error: 'เลือกผู้ตรวจอย่างน้อย 1 คน', field: 'assessorIds' };
+    if (!input.visit?.date) return { error: 'กำหนดวันนัดตรวจ', field: 'visit' };
     patch.assessorIds = input.assessorIds;
+    patch.visit = input.visit;
   }
   if (action === 'approve') {
     const c = input.cert;
@@ -287,7 +340,9 @@ export function applyAction(
   const fallback =
     action === 'approve' && patch.cert
       ? `ผ่านคณะกรรมการรับรองแล้ว เลขรับรอง ${patch.cert.no}`
-      : DEFAULT_TEXT[action];
+      : action === 'assign' && patch.visit
+        ? `มอบหมายผู้ตรวจประเมินแล้ว นัดตรวจแบบ ${visitMethodLabels[patch.visit.method]} วันที่ ${formatDate(patch.visit.date)}`
+        : DEFAULT_TEXT[action];
   const message: RequestMessage = {
     from: actor.name,
     at: now,
@@ -323,4 +378,24 @@ export function canAddPayment(req: AccRequest, user: Viewer): boolean {
     canView(req, user) &&
     BEFORE_ASSIGN.includes(req.status)
   );
+}
+
+/** ร้านประเมินตนเองได้ช่วงเดียวกับที่แก้ข้อมูลคำขอได้ (ก่อนมอบหมายผู้ตรวจ) */
+export const canSelfAssess = canAddPayment;
+
+/** จำนวนวันเต็มจาก a ถึง b (ISO วันเวลาท้องถิ่น) */
+const daysBetween = (a: string, b: string) =>
+  Math.max(0, Math.floor((Date.parse(b) - Date.parse(a)) / DAY));
+
+/**
+ * เวลาที่ใช้ในแต่ละขั้น — ใช้ติดตาม KPI ว่าคำขอค้างที่ขั้นไหน (ประชุม 14 ต.ค.)
+ * steps[i] = วันจากรายการก่อนหน้า (หรือวันยื่น) ถึงรายการที่ i
+ * total = วันยื่นถึงรายการสุดท้ายถ้าจบแล้ว หรือถึงตอนนี้ถ้ายังค้าง
+ */
+export function stepDays(req: AccRequest, now: string) {
+  const steps = req.messages.map((m, i) =>
+    daysBetween(i ? req.messages[i - 1].at : req.submittedAt, m.at),
+  );
+  const end = isAlive(req.status) ? now : (req.messages.at(-1)?.at ?? now);
+  return { steps, total: daysBetween(req.submittedAt, end) };
 }
