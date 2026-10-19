@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { AdminLayout } from '@/components/layout';
@@ -35,6 +35,7 @@ const IMMEDIATE: RequestAction[] = ['start_review', 'to_committee'];
 export default function RequestDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const router = useRouter();
   // undefined = กำลังโหลด, null = ไม่พบหรือไม่มีสิทธิ์
   const [req, setReq] = useState<AccRequest | null | undefined>();
   const [shop, setShop] = useState<Pharmacy | null>(null);
@@ -87,6 +88,8 @@ export default function RequestDetailPage() {
 
   const onAction = async (action: RequestAction) => {
     if (action === 'resubmit_docs') return setTab('เอกสาร');
+    if (action === 'submit_assessment')
+      return router.push(`/requests/${req.id}/assess`);
     if (IMMEDIATE.includes(action)) {
       const res = await run(action);
       if ('error' in res) toast.error(res.error);
@@ -174,7 +177,7 @@ export default function RequestDetailPage() {
                 onAdd={addPayment}
               />
             )}
-            {tab === 'ผลประเมิน' && <ResultTab req={req} />}
+            {tab === 'ผลประเมิน' && <ResultTab req={req} role={user.role} />}
             {tab === 'ประวัติ' && <HistoryTab req={req} />}
           </div>
         </div>

@@ -4,7 +4,14 @@ import { useState } from 'react';
 import { IconFileText } from '@tabler/icons-react';
 import { Field, inputClass } from '@/components/common/Field';
 import { StatusBadge } from '@/components/common/StatusBadge';
-import { actionLabels, relationLabels, typeLabel } from '@/lib/constants';
+import {
+  actionLabels,
+  relationLabels,
+  typeLabel,
+  visitMethodLabels,
+} from '@/lib/constants';
+import { gppSections } from '@/lib/gppItems';
+import { GPP_PASS_PERCENT, scoreGpp } from '@/lib/gppRules';
 import { formatDate, formatDateTime } from '@/lib/format';
 import type {
   AccRequest,
@@ -12,6 +19,7 @@ import type {
   Assessor,
   Pharmacy,
   RequestDoc,
+  UserRole,
 } from '@/types/api';
 
 function Rows({ rows }: { rows: [string, string][] }) {
@@ -75,6 +83,11 @@ export function InfoTab({
     'ผู้ตรวจประเมิน',
     names.length ? names.join(', ') : 'ยังไม่ได้มอบหมาย',
   ]);
+  if (req.visit)
+    requestRows.push([
+      'นัดตรวจประเมิน',
+      `${visitMethodLabels[req.visit.method]} · ${formatDate(req.visit.date)}`,
+    ]);
 
   return (
     <div className="space-y-6">
@@ -354,16 +367,60 @@ export function PaymentsTab({
   );
 }
 
-export function ResultTab({ req }: { req: AccRequest }) {
+export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
   if (req.gppScore === undefined) return <Empty text="ยังไม่มีผลประเมิน" />;
+  const a = req.assessment;
+  const score = a ? scoreGpp(gppSections, a.answers) : null;
   return (
-    <div className="flex items-baseline gap-3">
-      <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
-        คะแนน GPP
-      </span>
-      <span className="text-3xl font-extrabold">
-        {req.gppScore.toFixed(2)}%
-      </span>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-baseline gap-3">
+        <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+          คะแนน GPP
+        </span>
+        <span className="text-3xl font-extrabold">
+          {req.gppScore.toFixed(2)}%
+        </span>
+        {score && (
+          <span className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+            {score.got}/{score.max} คะแนน · เกณฑ์ {GPP_PASS_PERCENT}%
+          </span>
+        )}
+      </div>
+
+      {score && (
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {score.sections.map((s) => (
+            <li
+              key={s.id}
+              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 px-4 py-3 text-sm"
+            >
+              <span className="min-w-0">
+                หมวด {s.id} {s.title}
+              </span>
+              <span className="shrink-0 font-semibold">{s.percent}%</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {a && (
+        <Rows
+          rows={[
+            ['ข้อเสนอแนะถึงร้านยา', a.summary || '-'],
+            // บันทึกภายในไม่แสดงให้ร้านยา (ตามที่ตกลงในประชุม 14 ต.ค.)
+            ...(role === 'pharmacy'
+              ? []
+              : ([['บันทึกภายใน', a.internalNote || '-']] as [
+                  string,
+                  string,
+                ][])),
+            [
+              'ผู้ตรวจ',
+              `${a.by ?? '-'} · ${a.at ? formatDateTime(a.at) : '-'}`,
+            ],
+          ]}
+        />
+      )}
     </div>
   );
 }
