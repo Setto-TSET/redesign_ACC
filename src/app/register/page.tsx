@@ -28,7 +28,6 @@ const inputProps: Partial<
   email: { type: 'email', autoComplete: 'email', spellCheck: false },
   phone: { type: 'tel', autoComplete: 'tel', inputMode: 'tel' },
   operatorLicense: { spellCheck: false },
-  licenseNo: { spellCheck: false },
 };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

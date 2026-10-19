@@ -71,6 +71,7 @@ export function TypeStep({ draft, update, errors }: StepProps) {
         <div className="grid gap-2">
           {mainOptions.map((o) => (
             <label key={o.id ?? 0} className={optionClass(main === o.id)}>
+              {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- focus-first-error target */}
               <input
                 type="radio"
                 name="mainType"
@@ -213,6 +214,7 @@ export function ApplicantStep({ draft, update, errors }: StepProps) {
             const value = Number(v) as ApplicantRelation;
             return (
               <label key={v} className={optionClass(a.relation === value)}>
+                {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- focus-first-error target */}
                 <input
                   type="radio"
                   name="relation"
@@ -297,7 +299,7 @@ export function DocsStep({ draft, update, errors }: StepProps) {
                   <input
                     type="file"
                     name={doc}
-                    aria-label={`เลือกไฟล์ ${doc}`}
+                    aria-label={`${file ? 'เปลี่ยนไฟล์' : 'เลือกไฟล์'} ${doc}`}
                     aria-invalid={!!error}
                     accept=".pdf,image/*"
                     className="sr-only"
