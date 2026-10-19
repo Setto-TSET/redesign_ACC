@@ -28,11 +28,13 @@ export function useFocusTrap(
         (n) => n.getClientRects().length > 0,
       );
 
-    (
-      box.querySelector<HTMLElement>('[data-autofocus]') ??
-      items()[0] ??
-      box
-    ).focus();
+    const target =
+      box.querySelector<HTMLElement>('[data-autofocus]') ?? items()[0];
+    if (target) target.focus();
+    else {
+      if (!box.hasAttribute('tabindex')) box.setAttribute('tabindex', '-1');
+      box.focus();
+    }
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
@@ -40,18 +42,23 @@ export function useFocusTrap(
       if (list.length === 0) return;
       const first = list[0];
       const last = list[list.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
+      const active = document.activeElement;
+      const inside = box.contains(active) && active !== box;
+      if (!inside) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      } else if (e.shiftKey && active === first) {
         e.preventDefault();
         last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
+      } else if (!e.shiftKey && active === last) {
         e.preventDefault();
         first.focus();
       }
     };
-    box.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
     return () => {
-      box.removeEventListener('keydown', onKey);
-      previous?.focus?.();
+      document.removeEventListener('keydown', onKey);
+      if (!box.contains(previous)) previous?.focus?.();
     };
   }, [ref, active]);
 }
