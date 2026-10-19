@@ -45,13 +45,18 @@ function RequestsList() {
   const [query, setQuery] = useState(q);
   // sync from URL on external change (back/forward) — adjust state during render
   const [prevQ, setPrevQ] = useState(q);
+  const [written, setWritten] = useState<string | null>(null);
   if (q !== prevQ) {
     setPrevQ(q);
-    setQuery(q);
+    // skip our own echo so in-flight typing is kept; adopt only back/forward changes
+    if (q !== written) setQuery(q);
   }
   useEffect(() => {
     if (query === q) return;
-    const t = setTimeout(() => setQ(query), 300);
+    const t = setTimeout(() => {
+      setWritten(query);
+      setQ(query);
+    }, 300);
     return () => clearTimeout(t);
   }, [query, q, setQ]);
   const isPharmacy = user?.role === 'pharmacy';
