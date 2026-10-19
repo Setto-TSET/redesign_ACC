@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -22,11 +22,15 @@ export function Header({ title, onMenuClick }: HeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const { user, login, logout } = useAuth();
   const router = useRouter();
+  const profileBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!showProfileMenu) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowProfileMenu(false);
+      if (e.key === 'Escape') {
+        setShowProfileMenu(false);
+        profileBtnRef.current?.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -77,10 +81,10 @@ export function Header({ title, onMenuClick }: HeaderProps) {
 
           <div className="relative">
             <button
+              ref={profileBtnRef}
               type="button"
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               aria-expanded={showProfileMenu}
-              aria-haspopup="menu"
               aria-label={`เมนูของ ${user?.name ?? 'ผู้ใช้'}`}
               className="flex items-center gap-2 hover:bg-zinc-50 rounded-lg p-1.5 transition-colors"
             >
