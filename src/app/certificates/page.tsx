@@ -41,13 +41,17 @@ export default function CertificatesPage() {
       <div className="max-w-5xl space-y-5">
         <div className="relative">
           <IconSearch
+            aria-hidden="true"
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2"
             style={{ color: 'var(--ink-tertiary)' }}
           />
           <input
+            type="search"
+            name="q"
+            autoComplete="off"
             className="input-field-search"
-            placeholder="ค้นหาชื่อร้าน เลขรับรอง หรือจังหวัด"
+            placeholder="ค้นหาชื่อร้าน เลขรับรอง หรือจังหวัด…"
             aria-label="ค้นหาใบรับรอง"
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -63,7 +67,9 @@ export default function CertificatesPage() {
                 <th>ให้ไว้</th>
                 <th>หมดอายุ</th>
                 <th>สถานะ</th>
-                <th />
+                <th>
+                  <span className="sr-only">การทำงาน</span>
+                </th>
               </tr>
             </thead>
             <tbody>

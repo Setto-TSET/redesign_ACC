@@ -48,9 +48,14 @@ const Empty = ({ text }: { text: string }) => (
   </p>
 );
 
-const ErrorText = ({ text }: { text?: string }) =>
+const ErrorText = ({ id, text }: { id?: string; text?: string }) =>
   text ? (
-    <p className="mt-1 text-xs" style={{ color: 'var(--danger)' }} role="alert">
+    <p
+      id={id}
+      className="mt-1 text-xs"
+      style={{ color: 'var(--danger)' }}
+      role="alert"
+    >
       {text}
     </p>
   ) : null;
@@ -225,6 +230,7 @@ export function DocsTab({
               type="file"
               name="newDocs"
               aria-invalid={!!error}
+              aria-describedby={error ? 'newDocs-error' : undefined}
               aria-label="เลือกไฟล์เอกสารเพิ่มเติม"
               multiple
               accept=".pdf,image/*"
@@ -232,6 +238,7 @@ export function DocsTab({
               onChange={(e) => {
                 const picked = [...(e.target.files ?? [])].map((f) => f.name);
                 setFiles((prev) => [...prev, ...picked]);
+                setError('');
                 e.target.value = '';
               }}
             />
@@ -249,7 +256,7 @@ export function DocsTab({
               ))}
             </ul>
           )}
-          <ErrorText text={error} />
+          <ErrorText id="newDocs-error" text={error} />
           <button
             type="button"
             className="btn-primary mt-4"
@@ -371,12 +378,14 @@ export function PaymentsTab({
                   type="file"
                   name="slip"
                   aria-invalid={!!errors.file}
+                  aria-describedby={errors.file ? 'slip-error' : undefined}
                   aria-label="เลือกไฟล์หลักฐานการโอน"
                   accept=".pdf,image/*"
                   className="sr-only"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
                     if (f) setFileName(f.name);
+                    setErrors((prev) => ({ ...prev, file: '' }));
                     e.target.value = '';
                   }}
                 />
@@ -384,7 +393,7 @@ export function PaymentsTab({
               {fileName && (
                 <p className="mt-2 text-xs break-words">{fileName}</p>
               )}
-              <ErrorText text={errors.file} />
+              <ErrorText id="slip-error" text={errors.file} />
             </div>
           </div>
           <button

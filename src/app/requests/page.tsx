@@ -142,7 +142,7 @@ function RequestsList() {
                   type="button"
                   aria-pressed={on}
                   onClick={() => setGroup(g.key)}
-                  className="rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-colors"
+                  className="rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-colors hover:bg-zinc-50"
                   style={
                     on
                       ? {

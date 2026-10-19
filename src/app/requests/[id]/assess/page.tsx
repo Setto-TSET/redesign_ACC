@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   IconAlertTriangle,
@@ -15,6 +15,7 @@ import { Field } from '@/components/common/Field';
 import { AdminLayout } from '@/components/layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
+import { useFocusTrap } from '@/lib/a11y';
 import { visitMethodLabels } from '@/lib/constants';
 import { formatDate } from '@/lib/format';
 import { gppSections } from '@/lib/gppItems';
@@ -167,7 +168,7 @@ export default function AssessPage() {
         </Link>
 
         {/* สรุปคะแนนสด — ติดบนจอเมื่อเลื่อน */}
-        <div className="card sticky top-2 z-10 space-y-3">
+        <div className="card md:sticky md:top-20 z-10 space-y-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="font-mono text-lg font-bold">{req.no}</h2>
@@ -200,13 +201,14 @@ export default function AssessPage() {
               style={{ background: 'var(--border-light)' }}
               role="progressbar"
               aria-valuenow={score.answered}
+              aria-valuemin={0}
               aria-valuemax={score.total}
               aria-label="ความคืบหน้า"
             >
               <div
-                className="h-full rounded-full transition-all"
+                className="h-full w-full origin-left rounded-full transition-transform duration-200 motion-reduce:transition-none"
                 style={{
-                  width: `${(score.answered / score.total) * 100}%`,
+                  transform: `scaleX(${score.answered / score.total})`,
                   background: 'var(--accent)',
                 }}
               />
@@ -227,11 +229,19 @@ export default function AssessPage() {
                 color: 'var(--danger)',
               }}
             >
-              <IconAlertTriangle size={16} className="shrink-0" />
+              <IconAlertTriangle
+                aria-hidden="true"
+                size={16}
+                className="shrink-0"
+              />
               Critical Defect ได้ 0: ข้อ {score.criticalFails.join(', ')}
             </p>
           )}
-          <div className="flex gap-2 overflow-x-auto pb-1" role="tablist">
+          <div
+            className="flex gap-2 overflow-x-auto pb-1"
+            role="group"
+            aria-label="หมวดการประเมิน"
+          >
             {gppSections.map((s, i) => {
               const part = score.sections[i];
               const left = s.items.filter((it) =>
@@ -241,10 +251,9 @@ export default function AssessPage() {
                 <button
                   key={s.id}
                   type="button"
-                  role="tab"
-                  aria-selected={i === section}
+                  aria-current={i === section ? 'step' : undefined}
                   onClick={() => goTo(i)}
-                  className="shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold"
+                  className="shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-zinc-50"
                   style={
                     i === section
                       ? {
@@ -292,6 +301,8 @@ export default function AssessPage() {
             >
               <textarea
                 id="summary"
+                name="summary"
+                autoComplete="off"
                 rows={3}
                 className="input-field"
                 value={draft.summary}
@@ -305,6 +316,8 @@ export default function AssessPage() {
             >
               <textarea
                 id="internal"
+                name="internalNote"
+                autoComplete="off"
                 rows={3}
                 className="input-field"
                 value={draft.internalNote}
@@ -323,7 +336,7 @@ export default function AssessPage() {
             disabled={section === 0}
             onClick={() => goTo(section - 1)}
           >
-            <IconChevronLeft size={16} /> หมวดก่อนหน้า
+            <IconChevronLeft aria-hidden="true" size={16} /> หมวดก่อนหน้า
           </button>
           {isLast ? (
             <button type="button" className="btn-primary" onClick={trySubmit}>
@@ -335,60 +348,93 @@ export default function AssessPage() {
               className="btn-primary"
               onClick={() => goTo(section + 1)}
             >
-              หมวดถัดไป <IconChevronRight size={16} />
+              หมวดถัดไป <IconChevronRight aria-hidden="true" size={16} />
             </button>
           )}
         </div>
       </div>
 
       {confirming && (
-        <div
-          className="modal-overlay"
-          role="presentation"
-          onClick={() => !busy && setConfirming(false)}
-        >
-          <div
-            className="modal-content max-w-md p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="confirm-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 id="confirm-title" className="text-lg font-bold">
-              ส่งผลประเมิน GPP
-            </h2>
-            <p
-              className="mt-3 text-sm"
-              style={{ color: 'var(--ink-secondary)' }}
-            >
+        <ConfirmDialog
+          busy={busy}
+          summary={
+            <>
               คะแนน {score.percent.toFixed(2)}% ({score.got}/{score.max})
               {score.criticalFails.length > 0 &&
                 ` · Critical ได้ 0 จำนวน ${score.criticalFails.length} ข้อ`}
               <br />
               ส่งแล้วแก้ไขไม่ได้ คำขอจะไปรอ สรร. ตรวจสอบ
-            </p>
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                type="button"
-                className="btn-secondary"
-                disabled={busy}
-                onClick={() => setConfirming(false)}
-              >
-                ยกเลิก
-              </button>
-              <button
-                type="button"
-                className="btn-primary"
-                disabled={busy}
-                onClick={submit}
-              >
-                ยืนยันส่งผล
-              </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+          onCancel={() => setConfirming(false)}
+          onConfirm={submit}
+        />
       )}
     </AdminLayout>
+  );
+}
+
+function ConfirmDialog({
+  busy,
+  summary,
+  onCancel,
+  onConfirm,
+}: {
+  busy: boolean;
+  summary: React.ReactNode;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const boxRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(boxRef, true);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !busy) onCancel();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [busy, onCancel]);
+
+  return (
+    <div
+      className="modal-overlay"
+      role="presentation"
+      onClick={() => !busy && onCancel()}
+    >
+      <div
+        ref={boxRef}
+        className="modal-content max-w-md p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="confirm-title" className="text-lg font-bold">
+          ส่งผลประเมิน GPP
+        </h2>
+        <p className="mt-3 text-sm" style={{ color: 'var(--ink-secondary)' }}>
+          {summary}
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            type="button"
+            className="btn-secondary"
+            disabled={busy}
+            onClick={onCancel}
+          >
+            ยกเลิก
+          </button>
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={busy}
+            onClick={onConfirm}
+          >
+            ยืนยันส่งผล
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -446,7 +492,7 @@ function ItemCard({
 
       <div
         className="flex flex-wrap gap-2"
-        role="radiogroup"
+        role="group"
         aria-label={`ระดับคะแนนข้อ ${item.id}`}
       >
         {options.map((o) => {
@@ -455,10 +501,9 @@ function ItemCard({
             <button
               key={o}
               type="button"
-              role="radio"
-              aria-checked={selected}
+              aria-pressed={selected}
               onClick={() => onChange({ level: o })}
-              className="min-h-11 rounded-xl border px-4 text-sm font-semibold"
+              className="min-h-11 rounded-xl border px-4 text-sm font-semibold hover:bg-zinc-50"
               style={
                 selected
                   ? o === 0
@@ -493,7 +538,9 @@ function ItemCard({
       <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-start">
         <input
           className="input-field"
-          placeholder="หมายเหตุ (ถ้ามี)"
+          name={`remark-${item.id}`}
+          autoComplete="off"
+          placeholder="หมายเหตุ (ถ้ามี)…"
           aria-label={`หมายเหตุข้อ ${item.id}`}
           value={answer?.remark ?? ''}
           onChange={(e) => onChange({ remark: e.target.value })}
@@ -501,9 +548,11 @@ function ItemCard({
         <label
           className={`btn-secondary cursor-pointer ${photos.length >= MAX_PHOTOS ? 'opacity-50 pointer-events-none' : ''}`}
         >
-          <IconCamera size={16} /> แนบรูป ({photos.length}/{MAX_PHOTOS})
+          <IconCamera aria-hidden="true" size={16} /> แนบรูป ({photos.length}/
+          {MAX_PHOTOS})
           <input
             type="file"
+            name={`photos-${item.id}`}
             accept="image/*"
             multiple
             className="sr-only"
@@ -530,7 +579,7 @@ function ItemCard({
                   onChange({ photos: photos.filter((_, j) => j !== i) })
                 }
               >
-                <IconX size={12} />
+                <IconX aria-hidden="true" size={12} />
               </button>
             </li>
           ))}

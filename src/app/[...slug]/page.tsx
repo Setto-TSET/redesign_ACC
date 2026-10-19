@@ -13,7 +13,7 @@ export default function ComingSoonPage() {
           className="w-14 h-14 rounded-2xl flex items-center justify-center"
           style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}
         >
-          <IconTools size={26} stroke={1.5} />
+          <IconTools aria-hidden="true" size={26} stroke={1.5} />
         </span>
         <h2 className="mt-4 text-lg font-bold">
           หน้านี้อยู่ในขั้นที่ 2–3 ของแผน PoC

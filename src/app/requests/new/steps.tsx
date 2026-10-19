@@ -107,6 +107,7 @@ export function TypeStep({ draft, update, errors }: StepProps) {
                 <label className={optionClass(on)}>
                   <input
                     type="checkbox"
+                    name="changeType"
                     aria-invalid={!!errors.typeIds}
                     className="mt-1 accent-[var(--accent)]"
                     checked={on}
@@ -301,6 +302,7 @@ export function DocsStep({ draft, update, errors }: StepProps) {
                     name={doc}
                     aria-label={`${file ? 'เปลี่ยนไฟล์' : 'เลือกไฟล์'} ${doc}`}
                     aria-invalid={!!error}
+                    aria-describedby={error ? `doc-error-${i}` : undefined}
                     accept=".pdf,image/*"
                     className="sr-only"
                     onChange={(e) => {
@@ -320,6 +322,7 @@ export function DocsStep({ draft, update, errors }: StepProps) {
               )}
               {error && (
                 <p
+                  id={`doc-error-${i}`}
                   className="mt-2 pl-7 text-xs"
                   style={{ color: 'var(--danger)' }}
                   role="alert"

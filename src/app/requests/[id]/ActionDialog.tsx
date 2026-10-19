@@ -71,7 +71,13 @@ export function ActionDialog({
 
   const boxRef = useRef<HTMLDivElement>(null);
   useFocusTrap(boxRef, true);
-  const dirty = message.trim() !== '' || picked.length > 0 || status !== '';
+  const dirty =
+    message.trim() !== '' ||
+    picked.length > 0 ||
+    status !== '' ||
+    visitDate !== '' ||
+    issued !== today() ||
+    expires !== certExpiry(today());
 
   /** ปิดได้เมื่อไม่ได้กำลังบันทึก — ถ้าพิมพ์ค้างไว้ถามก่อน */
   const requestClose = useCallback(() => {
@@ -154,6 +160,7 @@ export function ActionDialog({
                   <input
                     id="issued"
                     name="issued"
+                    autoComplete="off"
                     type="date"
                     className={inputClass(errorFor('cert'))}
                     value={issued}
@@ -169,6 +176,7 @@ export function ActionDialog({
                     <input
                       id="expires"
                       name="expires"
+                      autoComplete="off"
                       type="date"
                       className={inputClass(errorFor('cert'))}
                       {...fieldAria('expires', errorFor('cert'))}
@@ -198,6 +206,7 @@ export function ActionDialog({
               <select
                 id="status"
                 name="status"
+                autoComplete="off"
                 className={inputClass(errorFor('status'))}
                 {...fieldAria('status', errorFor('status'))}
                 value={status}
@@ -300,6 +309,7 @@ export function ActionDialog({
                 <input
                   id="visitDate"
                   name="visitDate"
+                  autoComplete="off"
                   type="date"
                   className={inputClass(errorFor('visit'))}
                   {...fieldAria('visitDate', errorFor('visit'))}
@@ -334,6 +344,7 @@ export function ActionDialog({
               <textarea
                 id="message"
                 name="message"
+                autoComplete="off"
                 rows={4}
                 data-autofocus={action !== 'override' ? true : undefined}
                 className={inputClass(errorFor('message'))}

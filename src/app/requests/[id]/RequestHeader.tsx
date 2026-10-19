@@ -141,8 +141,7 @@ export function RequestHeader({
               {lastText(req, 'need_docs')}
             </p>
             <p className="mt-1">
-              แนบไฟล์ที่แท็บ &quot;เอกสาร&quot; แล้วกด &quot;
-              {actionLabels.resubmit_docs}&quot;
+              แนบไฟล์ที่แท็บ “เอกสาร” แล้วกด “{actionLabels.resubmit_docs}”
             </p>
           </div>
         </div>

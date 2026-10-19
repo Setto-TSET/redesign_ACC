@@ -38,7 +38,7 @@ export default function CertificatePage() {
               className="btn-primary"
               onClick={() => window.print()}
             >
-              <IconPrinter size={16} /> พิมพ์ใบรับรอง
+              <IconPrinter aria-hidden="true" size={16} /> พิมพ์ใบรับรอง
             </button>
           )}
         </div>

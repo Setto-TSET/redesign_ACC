@@ -22,6 +22,7 @@ export function Header({ title, onMenuClick }: HeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const { user, login, logout } = useAuth();
   const router = useRouter();
+  const profileRef = useRef<HTMLDivElement>(null);
   const profileBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -32,8 +33,16 @@ export function Header({ title, onMenuClick }: HeaderProps) {
         profileBtnRef.current?.focus();
       }
     };
+    const onDown = (e: PointerEvent) => {
+      if (!profileRef.current?.contains(e.target as Node))
+        setShowProfileMenu(false);
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onDown);
+    };
   }, [showProfileMenu]);
 
   // PoC เท่านั้น: สลับ role เพื่อ demo — ระบบจริงไม่มีตัวนี้
@@ -79,7 +88,7 @@ export function Header({ title, onMenuClick }: HeaderProps) {
             </select>
           </label>
 
-          <div className="relative">
+          <div className="relative" ref={profileRef}>
             <button
               ref={profileBtnRef}
               type="button"

@@ -18,9 +18,9 @@ export function CertificateSheet({ shop }: { shop: Pharmacy }) {
         >
           สภาเภสัชกรรม
         </p>
-        <h1 className="text-[clamp(18px,3.4vw,34px)] font-extrabold">
+        <h2 className="text-[clamp(18px,3.4vw,34px)] font-extrabold">
           ใบรับรองร้านยาคุณภาพ
-        </h1>
+        </h2>
         <p className="text-[clamp(10px,1.5vw,14px)]">ให้ไว้เพื่อแสดงว่า</p>
         <p className="text-[clamp(16px,2.8vw,28px)] font-bold">{shop.name}</p>
         <p className="max-w-[80%] text-[clamp(9px,1.3vw,13px)]">

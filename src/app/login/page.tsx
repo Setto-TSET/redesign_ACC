@@ -49,9 +49,9 @@ export default function LoginPage() {
           </span>
         </div>
         <div className="relative z-10 max-w-md">
-          <h2 className="text-4xl font-extrabold text-white leading-tight tracking-tight">
+          <p className="text-4xl font-extrabold text-white leading-tight tracking-tight">
             ระบบประเมินร้านยาคุณภาพ
-          </h2>
+          </p>
           <p className="mt-4 text-zinc-400 text-base leading-relaxed">
             ยื่นคำขอรับรอง ติดตามสถานะ และจัดการการตรวจประเมินร้านยา
             ได้ในที่เดียว

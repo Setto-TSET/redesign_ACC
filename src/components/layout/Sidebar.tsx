@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -139,7 +139,20 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [collapsed, setCollapsed] = useState<string[]>([]);
   const asideRef = useRef<HTMLElement>(null);
   // isOpen เป็น true เฉพาะ drawer บนมือถือ — desktop แสดงตลอดจึงไม่กัน focus
-  useFocusTrap(asideRef, isOpen);
+  // desktop (lg+) แสดง sidebar ตลอด; มือถือที่ปิดอยู่ใช้ inert ไม่ให้ Tab เข้าถึงลิงก์นอกจอ
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  // ขยายถึง lg ขณะ drawer เปิด → ปิด drawer (คืน overlay/focus trap)
+  useEffect(() => {
+    if (isDesktop && isOpen) onClose();
+  }, [isDesktop, isOpen, onClose]);
+  useFocusTrap(asideRef, isOpen && !isDesktop);
 
   const isActiveLink = (href: string) =>
     href === '/'
@@ -177,6 +190,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       ref={asideRef}
       className={`sidebar transform transition-transform duration-300 ease-out motion-reduce:transition-none overscroll-contain lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       aria-label="เมนูหลัก"
+      inert={!isOpen && !isDesktop}
     >
       <div className="flex items-center justify-between px-5 h-16 shrink-0">
         <Link href="/" className="flex items-center gap-2.5" onClick={onClose}>

@@ -46,7 +46,7 @@ export default function SchedulePage() {
           className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl text-xs font-bold"
           style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}
         >
-          <IconCalendarEvent size={18} />
+          <IconCalendarEvent aria-hidden="true" size={18} />
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-semibold">

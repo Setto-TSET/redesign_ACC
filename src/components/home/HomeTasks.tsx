@@ -49,7 +49,7 @@ export function HomeTasks({ user }: { user: User }) {
   return (
     <div className="space-y-6 max-w-4xl">
       <section>
-        <h3 className="font-bold tracking-tight mb-3">งานที่รอคุณ</h3>
+        <h2 className="font-bold tracking-tight mb-3">งานที่รอคุณ</h2>
         {todos.length === 0 ? (
           <div className="card flex items-center gap-3">
             <IconCircleCheck
@@ -103,7 +103,7 @@ export function HomeTasks({ user }: { user: User }) {
 
       <section className="card">
         <div className="flex items-center justify-between gap-3 mb-2">
-          <h3 className="font-bold tracking-tight">คำขอล่าสุด</h3>
+          <h2 className="font-bold tracking-tight">คำขอล่าสุด</h2>
           <Link
             href="/requests"
             className="text-sm font-semibold"

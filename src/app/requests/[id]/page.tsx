@@ -186,6 +186,16 @@ export default function RequestDetailPage() {
             role="tablist"
             aria-label="ส่วนของคำขอ"
             className="flex gap-1 overflow-x-auto border-b border-zinc-100 px-2"
+            onKeyDown={(e) => {
+              const d =
+                e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+              if (!d) return;
+              e.preventDefault();
+              const next =
+                TABS[(TAB_KEYS.indexOf(tab) + d + TABS.length) % TABS.length];
+              setTab(next.key);
+              document.getElementById(`tab-${next.key}`)?.focus();
+            }}
           >
             {TABS.map((t) => (
               <button
@@ -195,8 +205,9 @@ export default function RequestDetailPage() {
                 role="tab"
                 aria-controls="tab-panel"
                 aria-selected={t.key === tab}
+                tabIndex={t.key === tab ? 0 : -1}
                 onClick={() => setTab(t.key)}
-                className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px"
+                className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px hover:bg-zinc-50"
                 style={
                   t.key === tab
                     ? { borderColor: 'var(--accent)', color: 'var(--accent)' }

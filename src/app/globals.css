@@ -61,10 +61,19 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* หยุด rubber-band ของหน้าเฉพาะเมาส์/trackpad — จอสัมผัสคง pull-to-refresh */
+@media (pointer: fine) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+
 /* Layered so Tailwind utilities can override these defaults */
 @layer base {
   /* ╌╌╌ BASE (Web Interface Guidelines) ╌╌╌╌╌╌╌╌╌╌╌╌ */
   html {
+    /* sticky header (h-16) ต้องไม่บังช่องที่ focus/เลื่อนไปหา */
+    scroll-padding-top: 5rem;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
@@ -298,6 +307,7 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .data-table td {
+  font-variant-numeric: tabular-nums;
   padding: 14px 16px;
   color: var(--ink-secondary);
   border-bottom: 1px solid var(--border-light);
