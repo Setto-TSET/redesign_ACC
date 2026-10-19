@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { IconFilePlus, IconSearch } from '@tabler/icons-react';
 import { AdminLayout } from '@/components/layout';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -10,10 +10,14 @@ import { api } from '@/lib/api';
 import { typeLabel } from '@/lib/constants';
 import { formatDate } from '@/lib/format';
 import { isAlive } from '@/lib/requestRules';
+import { useQueryState } from '@/lib/useQueryState';
 import type { AccRequest, Pharmacy, RequestStatus } from '@/types/api';
 
+const GROUP_KEYS = ['all', 'active', 'need_docs', 'closed'] as const;
+type GroupKey = (typeof GROUP_KEYS)[number];
+
 const groups: {
-  key: string;
+  key: GroupKey;
   label: string;
   match: (s: RequestStatus) => boolean;
 }[] = [
@@ -31,12 +35,25 @@ const groups: {
   { key: 'closed', label: 'เสร็จสิ้น', match: (s) => !isAlive(s) },
 ];
 
-export default function RequestsPage() {
+function RequestsList() {
   const { user } = useAuth();
   const [rows, setRows] = useState<AccRequest[] | null>(null);
   const [shops, setShops] = useState<Record<number, Pharmacy>>({});
-  const [q, setQ] = useState('');
-  const [group, setGroup] = useState('all');
+  const [q, setQ] = useQueryState<string>('q', '');
+  const [group, setGroup] = useQueryState<GroupKey>('group', 'all', GROUP_KEYS);
+  // local input state: filter instantly, write to the URL only after typing pauses
+  const [query, setQuery] = useState(q);
+  // sync from URL on external change (back/forward) — adjust state during render
+  const [prevQ, setPrevQ] = useState(q);
+  if (q !== prevQ) {
+    setPrevQ(q);
+    setQuery(q);
+  }
+  useEffect(() => {
+    if (query === q) return;
+    const t = setTimeout(() => setQ(query), 300);
+    return () => clearTimeout(t);
+  }, [query, q, setQ]);
   const isPharmacy = user?.role === 'pharmacy';
 
   useEffect(() => {
@@ -58,7 +75,7 @@ export default function RequestsPage() {
 
   const all = rows ?? [];
   const match = groups.find((g) => g.key === group)!.match;
-  const term = q.trim().toLowerCase();
+  const term = query.trim().toLowerCase();
   const visible = all.filter(
     (r) =>
       match(r.status) &&
@@ -82,7 +99,7 @@ export default function RequestsPage() {
         </div>
         {isPharmacy && (
           <Link href="/requests/new" className="btn-primary gap-2">
-            <IconFilePlus size={18} stroke={1.75} />
+            <IconFilePlus aria-hidden="true" size={18} stroke={1.75} />
             ยื่นคำขอใหม่
           </Link>
         )}
@@ -92,16 +109,21 @@ export default function RequestsPage() {
         <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
           <div className="relative">
             <IconSearch
+              aria-hidden="true"
               size={18}
               className="absolute left-3.5 top-1/2 -translate-y-1/2"
               style={{ color: 'var(--ink-tertiary)' }}
             />
             <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
+              type="search"
+              name="q"
+              autoComplete="off"
+              spellCheck={false}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               className="input-field !pl-10"
               placeholder={
-                isPharmacy ? 'ค้นหาเลขที่คำขอ' : 'ค้นหาเลขที่คำขอหรือชื่อร้าน'
+                isPharmacy ? 'ค้นหาเลขที่คำขอ…' : 'ค้นหาเลขที่คำขอหรือชื่อร้าน…'
               }
               aria-label="ค้นหาคำขอ"
             />
@@ -129,7 +151,11 @@ export default function RequestsPage() {
                         }
                   }
                 >
-                  {g.label} ({all.filter((r) => g.match(r.status)).length})
+                  {g.label} (
+                  <span className="tabular-nums">
+                    {all.filter((r) => g.match(r.status)).length}
+                  </span>
+                  )
                 </button>
               );
             })}
@@ -162,8 +188,12 @@ export default function RequestsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {visible.map((r) => (
-                    <tr key={r.id}>
+                  {visible.map((r, i) => (
+                    <tr
+                      key={r.id}
+                      className="animate-stagger"
+                      style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+                    >
                       <td>
                         <Link
                           href={`/requests/${r.id}`}
@@ -179,7 +209,9 @@ export default function RequestsPage() {
                         </td>
                       )}
                       <td>{typeLabel(r.typeIds)}</td>
-                      <td>{formatDate(r.submittedAt)}</td>
+                      <td className="tabular-nums">
+                        {formatDate(r.submittedAt)}
+                      </td>
                       <td>
                         <StatusBadge status={r.status} />
                       </td>
@@ -190,8 +222,12 @@ export default function RequestsPage() {
             </div>
 
             <ul className="md:hidden divide-y divide-zinc-100">
-              {visible.map((r) => (
-                <li key={r.id}>
+              {visible.map((r, i) => (
+                <li
+                  key={r.id}
+                  className="animate-stagger"
+                  style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+                >
                   <Link
                     href={`/requests/${r.id}`}
                     className="block px-4 py-4 hover:bg-zinc-50"
@@ -221,5 +257,14 @@ export default function RequestsPage() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+// useSearchParams ต้องอยู่ใต้ Suspense ในหน้า static ของ Next 16
+export default function RequestsPage() {
+  return (
+    <Suspense fallback={null}>
+      <RequestsList />
+    </Suspense>
   );
 }
