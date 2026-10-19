@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_Thai, Outfit } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   title: 'Acc-Pharm — ระบบประเมินร้านยาคุณภาพ',
   description: 'สำนักงานรับรองร้านยาคุณภาพ สภาเภสัชกรรม (PoC)',
   robots: { index: false, follow: false },
+};
+
+// สีแถบเบราว์เซอร์มือถือ = --bg
+export const viewport: Viewport = {
+  themeColor: '#fafaf9',
 };
 
 export default function RootLayout({
