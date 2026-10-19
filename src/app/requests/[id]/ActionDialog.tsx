@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Field, inputClass } from '@/components/common/Field';
+import { certExpiry } from '@/lib/certRules';
 import {
   actionLabels,
   replyTemplates,
@@ -24,6 +25,14 @@ const MESSAGE_LABEL: Partial<Record<RequestAction, string>> = {
   override: 'เหตุผลที่แก้สถานะ',
 };
 
+/** วันนี้ตามเวลาท้องถิ่น YYYY-MM-DD */
+const today = () => {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
+};
+
 const WITH_TEMPLATES: RequestAction[] = ['reply', 'request_docs'];
 const DANGER: RequestAction[] = ['reject', 'cancel', 'override'];
 
@@ -43,6 +52,8 @@ export function ActionDialog({
   const [message, setMessage] = useState('');
   const [picked, setPicked] = useState<number[]>([]);
   const [status, setStatus] = useState<RequestStatus | ''>('');
+  const [issued, setIssued] = useState(today);
+  const [expires, setExpires] = useState(() => certExpiry(today()));
   const [error, setError] = useState<{
     field?: keyof ActionInput;
     text: string;
@@ -65,6 +76,7 @@ export function ActionDialog({
   const renderedFields: (keyof ActionInput)[] = [
     ...(action === 'override' ? (['status'] as const) : []),
     ...(action === 'assign' ? (['assessorIds'] as const) : []),
+    ...(action === 'approve' ? (['cert'] as const) : []),
     ...(messageLabel ? (['message'] as const) : []),
   ];
   const showGenericError =
@@ -77,6 +89,7 @@ export function ActionDialog({
         message,
         assessorIds: picked,
         status: status || undefined,
+        ...(action === 'approve' ? { cert: { no: '', issued, expires } } : {}),
       });
       if ('error' in res) setError({ field: res.field, text: res.error });
       else onClose();
@@ -102,10 +115,47 @@ export function ActionDialog({
 
         <div className="mt-5 space-y-5">
           {action === 'approve' && (
-            <p className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
-              ยืนยันว่าคำขอนี้ผ่านคณะกรรมการรับรองแล้ว
-              รายละเอียดใบรับรองบันทึกได้ภายหลัง
-            </p>
+            <>
+              <p className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+                ยืนยันว่าคำขอนี้ผ่านคณะกรรมการรับรองแล้ว
+                ระบบออกเลขรับรองให้อัตโนมัติเมื่อบันทึก
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="วันที่ออกใบรับรอง" htmlFor="issued">
+                  <input
+                    id="issued"
+                    type="date"
+                    className={inputClass(errorFor('cert'))}
+                    value={issued}
+                    onChange={(e) => setIssued(e.target.value)}
+                  />
+                </Field>
+                <Field
+                  label="วันหมดอายุ"
+                  htmlFor="expires"
+                  error={errorFor('cert')}
+                >
+                  <div className="flex gap-2">
+                    <input
+                      id="expires"
+                      type="date"
+                      className={inputClass(errorFor('cert'))}
+                      aria-invalid={!!errorFor('cert')}
+                      value={expires}
+                      onChange={(e) => setExpires(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="btn-secondary shrink-0"
+                      disabled={!issued}
+                      onClick={() => setExpires(certExpiry(issued))}
+                    >
+                      +3 ปี
+                    </button>
+                  </div>
+                </Field>
+              </div>
+            </>
           )}
 
           {action === 'override' && (

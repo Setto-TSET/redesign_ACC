@@ -8,6 +8,7 @@ import { AdminLayout } from '@/components/layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 import { doneLabels } from '@/lib/constants';
+import { formatDate } from '@/lib/format';
 import { actionsFor, canAddPayment } from '@/lib/requestRules';
 import type {
   AccRequest,
@@ -34,7 +35,7 @@ const IMMEDIATE: RequestAction[] = ['start_review', 'to_committee'];
 
 export default function RequestDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, hasAccess } = useAuth();
   const router = useRouter();
   // undefined = กำลังโหลด, null = ไม่พบหรือไม่มีสิทธิ์
   const [req, setReq] = useState<AccRequest | null | undefined>();
@@ -130,6 +131,27 @@ export default function RequestDetailPage() {
           actions={actions}
           onAction={onAction}
         />
+
+        {req.cert && (
+          <div
+            className="card flex flex-wrap items-center justify-between gap-3"
+            style={{ background: 'var(--accent-soft)' }}
+          >
+            <p className="text-sm">
+              ออกใบรับรองแล้ว{' '}
+              <span className="font-mono font-bold">{req.cert.no}</span> ·
+              ใช้ได้ถึง {formatDate(req.cert.expires)}
+            </p>
+            {hasAccess('/certificates') && (
+              <Link
+                href={`/certificates/${req.pharmacyId}`}
+                className="btn-secondary"
+              >
+                ดู / พิมพ์ใบรับรอง
+              </Link>
+            )}
+          </div>
+        )}
 
         <div className="card !p-0 overflow-hidden">
           <div
