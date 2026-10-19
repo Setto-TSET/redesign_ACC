@@ -63,7 +63,7 @@ export default function RegisterPage() {
 
   return (
     <div
-      className="min-h-screen px-4 py-10"
+      className="min-h-screen animate-page px-4 py-10"
       style={{ background: 'var(--bg)' }}
     >
       <div className="max-w-2xl mx-auto">

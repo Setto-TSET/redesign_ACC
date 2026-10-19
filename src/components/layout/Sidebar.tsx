@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -27,6 +27,7 @@ import {
   type Icon,
 } from '@tabler/icons-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFocusTrap } from '@/lib/a11y';
 
 type MenuItem =
   | { type: 'category'; label: string }
@@ -136,6 +137,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const router = useRouter();
   const { hasAccess, logout } = useAuth();
   const [collapsed, setCollapsed] = useState<string[]>([]);
+  const asideRef = useRef<HTMLElement>(null);
+  // isOpen เป็น true เฉพาะ drawer บนมือถือ — desktop แสดงตลอดจึงไม่กัน focus
+  useFocusTrap(asideRef, isOpen);
 
   const isActiveLink = (href: string) =>
     href === '/'
@@ -170,7 +174,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`sidebar transform transition-transform duration-300 ease-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      ref={asideRef}
+      className={`sidebar transform transition-transform duration-300 ease-out motion-reduce:transition-none overscroll-contain lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       aria-label="เมนูหลัก"
     >
       <div className="flex items-center justify-between px-5 h-16 shrink-0">
@@ -179,7 +184,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             className="w-7 h-7 rounded-lg flex items-center justify-center"
             style={{ background: 'var(--accent)' }}
           >
-            <IconPill size={16} className="text-white" />
+            <IconPill aria-hidden="true" size={16} className="text-white" />
           </span>
           <span className="text-white font-bold text-sm tracking-tight">
             Acc-Pharm
@@ -190,7 +195,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           className="lg:hidden p-1.5 hover:bg-white/10 rounded-lg text-zinc-500"
           aria-label="ปิดเมนู"
         >
-          <IconX size={18} />
+          <IconX aria-hidden="true" size={18} />
         </button>
       </div>
 
@@ -218,7 +223,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     aria-current={active ? 'page' : undefined}
                     className={`sidebar-link ${active ? 'active' : ''}`}
                   >
-                    <ItemIcon size={18} stroke={1.5} />
+                    <ItemIcon aria-hidden="true" size={18} stroke={1.5} />
                     <span>{item.label}</span>
                   </Link>
                 </li>
@@ -242,12 +247,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   className={`sidebar-link w-full justify-between ${active ? '!text-white' : ''}`}
                 >
                   <span className="flex items-center gap-3">
-                    <ItemIcon size={18} stroke={1.5} />
+                    <ItemIcon aria-hidden="true" size={18} stroke={1.5} />
                     <span>{item.label}</span>
                   </span>
                   <IconChevronDown
+                    aria-hidden="true"
                     size={14}
-                    className={`text-zinc-600 transition-transform duration-200 ${expanded ? 'rotate-0' : '-rotate-90'}`}
+                    className={`text-zinc-600 transition-transform duration-200 motion-reduce:transition-none ${expanded ? 'rotate-0' : '-rotate-90'}`}
                   />
                 </button>
                 {expanded && (
@@ -263,6 +269,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                             className={`flex items-center gap-2.5 text-[13px] font-medium py-1.5 pl-14 pr-4 mx-2.5 rounded-md transition-colors duration-150 ${childActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
                           >
                             <span
+                              aria-hidden="true"
                               className="w-1 h-1 rounded-full shrink-0"
                               style={{
                                 background: childActive
@@ -291,7 +298,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           }}
           className="sidebar-link w-full !text-zinc-500 hover:!text-red-400 hover:!bg-red-500/10"
         >
-          <IconLogout size={18} stroke={1.5} />
+          <IconLogout aria-hidden="true" size={18} stroke={1.5} />
           <span>ออกจากระบบ</span>
         </button>
       </div>

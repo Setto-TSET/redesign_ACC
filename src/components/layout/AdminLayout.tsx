@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 
@@ -12,12 +12,26 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, title }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Esc ปิด drawer บนมือถือ
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSidebarOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [sidebarOpen]);
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+      <a href="#main" className="skip-link">
+        ข้ามไปยังเนื้อหาหลัก
+      </a>
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm z-40 lg:hidden animate-fade"
           onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -26,7 +40,13 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
           title={title}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
-        <main className="p-5 md:p-8 lg:p-10 max-w-[1600px]">{children}</main>
+        <main
+          id="main"
+          tabIndex={-1}
+          className="p-5 md:p-8 lg:p-10 max-w-[1600px] animate-page"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

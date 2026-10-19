@@ -30,19 +30,31 @@ export function Stepper({
                     }
               }
             >
-              {done ? <IconCheck size={14} stroke={3} /> : i + 1}
+              {done ? (
+                <IconCheck size={14} stroke={3} aria-hidden="true" />
+              ) : (
+                i + 1
+              )}
             </span>
             <span
-              className={`text-sm truncate ${i === current ? 'font-semibold' : 'hidden sm:inline'}`}
+              className={`text-sm truncate ${i === current ? 'font-semibold' : 'sr-only sm:not-sr-only'}`}
               style={{ color: reached ? 'var(--ink)' : 'var(--ink-tertiary)' }}
             >
               {s}
             </span>
             {i < steps.length - 1 && (
               <span
-                className="h-px flex-1 min-w-3"
-                style={{ background: done ? 'var(--accent)' : 'var(--border)' }}
-              />
+                className="relative h-px flex-1 min-w-3 overflow-hidden"
+                style={{ background: 'var(--border)' }}
+                aria-hidden="true"
+              >
+                {done && (
+                  <span
+                    className="absolute inset-0 animate-grow-x"
+                    style={{ background: 'var(--accent)' }}
+                  />
+                )}
+              </span>
             )}
           </li>
         );

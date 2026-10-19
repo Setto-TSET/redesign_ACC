@@ -35,7 +35,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen animate-page grid lg:grid-cols-2">
       <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-zinc-900">
         <div className="flex items-center gap-2.5 relative z-10">
           <span

@@ -1,4 +1,4 @@
-/** label + ช่องกรอก + error ใต้ช่อง (หลักการ UX ข้อ 5) */
+/** label + ช่องกรอก + error ใต้ช่อง (หลักการ UX ข้อ 5) — error มี id `${htmlFor}-error` */
 export function Field({
   label,
   htmlFor,
@@ -22,12 +22,17 @@ export function Field({
       </label>
       {children}
       {hint && !error && (
-        <p className="mt-1 text-xs" style={{ color: 'var(--ink-tertiary)' }}>
+        <p
+          id={htmlFor ? `${htmlFor}-hint` : undefined}
+          className="mt-1 text-xs"
+          style={{ color: 'var(--ink-tertiary)' }}
+        >
           {hint}
         </p>
       )}
       {error && (
         <p
+          id={htmlFor ? `${htmlFor}-error` : undefined}
           className="mt-1 text-xs"
           style={{ color: 'var(--danger)' }}
           role="alert"
@@ -42,3 +47,9 @@ export function Field({
 /** class ของ input ตามสถานะ error */
 export const inputClass = (error?: string) =>
   `input-field ${error ? '!border-[var(--danger)]' : ''}`;
+
+/** aria ที่ผูก input กับ error/hint ของ Field */
+export const fieldAria = (id: string, error?: string, hint?: string) => ({
+  'aria-invalid': !!error,
+  'aria-describedby': error ? `${id}-error` : hint ? `${id}-hint` : undefined,
+});
