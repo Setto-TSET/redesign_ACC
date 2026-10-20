@@ -36,6 +36,7 @@ const rolePageAccess: Record<UserRole, string[]> = {
     '/',
     '/my-pharmacy',
     '/requests',
+    '/post-audit',
     '/news',
     '/documents',
     '/profile',
