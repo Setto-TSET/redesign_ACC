@@ -22,8 +22,11 @@ export interface FeedbackEntry {
   name: string;
 }
 
-const cell = (v: string) =>
-  /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+// ข้อความที่ขึ้นต้นด้วย = + - @ ใส่ ' นำหน้า ไม่ให้ Excel ตีความเป็นสูตร
+const cell = (raw: string) => {
+  const v = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
+  return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+};
 
 /** CSV ที่ Excel เปิดภาษาไทยได้ (BOM + CRLF ตาม RFC 4180) */
 export function toCsv(entries: FeedbackEntry[]): string {

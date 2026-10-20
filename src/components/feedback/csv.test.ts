@@ -43,3 +43,11 @@ test('ชื่อว่างได้ และหลายแถวคั่�
   assert.ok(lines[1].endsWith(','));
   assert.match(lines[2], /อยากให้มีเพิ่ม/);
 });
+
+test('ข้อความที่ขึ้นต้นเหมือนสูตร Excel ถูกใส่ apostrophe นำหน้า', () => {
+  const row = toCsv([{ ...base, message: '=1+1', name: '@x' }]).split(
+    '\r\n',
+  )[1];
+  assert.ok(row.includes(",'=1+1,"));
+  assert.ok(row.endsWith(",'@x"));
+});

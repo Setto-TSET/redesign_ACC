@@ -34,7 +34,8 @@ const download = (list: FeedbackEntry[]) => {
   a.href = url;
   a.download = `accpharm-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
-  URL.revokeObjectURL(url);
+  // คืน URL หลังเบราว์เซอร์เริ่มดาวน์โหลดแล้ว
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 };
 
 /** ปุ่มลอยเก็บข้อเสนอแนะจากผู้ทดสอบ — เก็บใน localStorage แล้วดาวน์โหลดเป็น CSV */
