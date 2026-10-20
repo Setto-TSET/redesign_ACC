@@ -24,6 +24,7 @@ const LAST = complaintSteps.length;
 function NotFound() {
   return (
     <AdminLayout title="ข้อร้องเรียน">
+      <PrototypeBadge />
       <div className="card text-center py-12">
         <p className="font-semibold">ไม่พบข้อร้องเรียนนี้</p>
         <Link href="/complaints" className="btn-secondary mt-6">
@@ -55,7 +56,10 @@ function Detail({ initial }: { initial: Complaint }) {
 
   const closeNow = () => {
     if (!window.confirm('ปิดเรื่องนี้โดยข้ามขั้นที่เหลือ?')) return;
-    const date = new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    const date = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
     setC((x) => ({
       ...x,
       step: LAST,
@@ -99,9 +103,9 @@ function Detail({ initial }: { initial: Complaint }) {
       <PrototypeBadge />
       <div className="max-w-6xl space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <p className="font-mono text-sm font-semibold">{c.no}</p>
-            <h2 className="text-xl font-extrabold tracking-tight mt-0.5">
+            <h2 className="text-xl font-extrabold tracking-tight mt-0.5 break-words">
               {c.issue}
             </h2>
           </div>

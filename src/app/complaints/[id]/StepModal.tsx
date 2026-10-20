@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Field, fieldAria, inputClass } from '@/components/common/Field';
 import { Modal } from '@/components/prototype/Modal';
+import { focusFirstError } from '@/lib/a11y';
 import {
   actionOptions,
   complaintSteps,
@@ -11,8 +12,13 @@ import {
   severities,
 } from '@/mock/prototype/complaints';
 
-const DATE_STEPS = [6, 8, 9, 11, 13];
-const today = () => new Date().toISOString().slice(0, 10);
+const DATE_STEPS = [6, 8, 9, 11, 13, 14];
+const today = () => {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
+};
 
 function RadioGroup({
   legend,
@@ -89,7 +95,8 @@ export function StepModal({
   const [closer, setCloser] = useState(defaultUser);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const hasDate = DATE_STEPS.includes(index) || index === 14;
+  const hasDate = DATE_STEPS.includes(index);
+  const boxRef = useRef<HTMLDivElement>(null);
   const warn = action.startsWith('ตักเตือน');
 
   const save = () => {
@@ -118,7 +125,11 @@ export function StepModal({
     if (index === 14) need(closer.trim(), 'closer', 'ระบุผู้ปิดเรื่อง');
     setErrors(Object.fromEntries(err.map(([k, m]) => [k, m])));
     if (err.length) {
-      requestAnimationFrame(() => document.getElementById(err[0][2])?.focus());
+      if (err[0][2].endsWith('-0'))
+        requestAnimationFrame(() =>
+          document.getElementById(err[0][2])?.focus(),
+        );
+      else focusFirstError(boxRef.current);
       return;
     }
 
@@ -128,8 +139,9 @@ export function StepModal({
     if (index === 11) parts.push(`ครั้งที่ ${round}`);
     if (index === 10) {
       parts.push(action);
-      if (stopDate) parts.push(`หยุดบริการ ${stopDate}`);
-      if (agency) parts.push(`หน่วยงาน ${agency.trim()}`);
+      if (action === 'แจ้งให้หยุดการบริการ')
+        parts.push(`หยุดบริการ ${stopDate}`);
+      if (action === 'ส่งเรื่อง สปสช.') parts.push(`หน่วยงาน ${agency.trim()}`);
       if (warn) parts.push(`โดย ${warnBy.trim()}`);
     }
     if (index === 12)
@@ -197,11 +209,15 @@ export function StepModal({
         </>
       }
     >
-      <div className="space-y-4">
-        {index === 14 && dateField('date', 'วันที่ปิด', date, setDate, true)}
-        {index !== 14 &&
-          DATE_STEPS.includes(index) &&
-          dateField('date', 'วันที่', date, setDate, true)}
+      <div ref={boxRef} className="space-y-4">
+        {hasDate &&
+          dateField(
+            'date',
+            index === 14 ? 'วันที่ปิด' : 'วันที่',
+            date,
+            setDate,
+            true,
+          )}
         {index === 11 && (
           <Field label="ครั้งที่" htmlFor="round" error={errors.round}>
             <input
@@ -299,7 +315,7 @@ export function StepModal({
             />
           </Field>
         ) : (
-          (DATE_STEPS.includes(index) || index === 14) && (
+          hasDate && (
             <Field label="รายละเอียด" htmlFor="detail">
               <textarea
                 id="detail"

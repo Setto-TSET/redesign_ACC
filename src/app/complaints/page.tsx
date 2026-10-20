@@ -164,8 +164,12 @@ function ComplaintList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {visible.map((c) => (
-                    <tr key={c.id}>
+                  {visible.map((c, i) => (
+                    <tr
+                      key={c.id}
+                      className="animate-stagger"
+                      style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+                    >
                       <td className="font-mono font-semibold whitespace-nowrap">
                         <Link
                           href={`/complaints/${c.id}`}
@@ -175,11 +179,11 @@ function ComplaintList() {
                           {c.no}
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap">
+                      <td className="whitespace-nowrap tabular-nums">
                         {formatDate(c.receivedAt)}
                       </td>
-                      <td>{shopName(c)}</td>
-                      <td>{c.issue}</td>
+                      <td className="break-words">{shopName(c)}</td>
+                      <td className="break-words">{c.issue}</td>
                       <td>
                         <SeverityBadge severity={c.severity} />
                       </td>
@@ -192,8 +196,12 @@ function ComplaintList() {
               </table>
             </div>
             <ul className="sm:hidden divide-y divide-zinc-100">
-              {visible.map((c) => (
-                <li key={c.id}>
+              {visible.map((c, i) => (
+                <li
+                  key={c.id}
+                  className="animate-stagger"
+                  style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
+                >
                   <Link
                     href={`/complaints/${c.id}`}
                     className="block px-4 py-4 hover:bg-zinc-50"
@@ -202,14 +210,19 @@ function ComplaintList() {
                       <p className="font-mono text-sm font-semibold">{c.no}</p>
                       <StageBadge stage={stageOfStep(c.step)} />
                     </div>
-                    <p className="font-medium mt-0.5">{shopName(c)}</p>
-                    <p className="text-sm mt-0.5">{c.issue}</p>
+                    <p className="font-medium mt-0.5 break-words">
+                      {shopName(c)}
+                    </p>
+                    <p className="text-sm mt-0.5 break-words">{c.issue}</p>
                     <div
                       className="flex items-center gap-2 mt-2 text-xs"
                       style={{ color: 'var(--ink-secondary)' }}
                     >
                       <SeverityBadge severity={c.severity} />
-                      รับ {formatDate(c.receivedAt)}
+                      รับ{' '}
+                      <span className="tabular-nums">
+                        {formatDate(c.receivedAt)}
+                      </span>
                     </div>
                   </Link>
                 </li>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Field, fieldAria, inputClass } from '@/components/common/Field';
 import { AdminLayout } from '@/components/layout';
@@ -14,6 +14,7 @@ import {
   severities,
   standards,
 } from '@/mock/prototype/complaints';
+import { focusFirstError } from '@/lib/a11y';
 import { protoPharmacies } from '@/mock/prototype/pharmacies';
 
 type Errors = Partial<
@@ -42,6 +43,7 @@ function NewComplaintForm({ defaultReceiver }: { defaultReceiver: string }) {
   const [detail, setDetail] = useState('');
   const [files, setFiles] = useState<string[]>([]);
   const [errors, setErrors] = useState<Errors>({});
+  const formRef = useRef<HTMLFormElement>(null);
 
   const term = shopQ.trim().toLowerCase();
   const results = term
@@ -80,7 +82,9 @@ function NewComplaintForm({ defaultReceiver }: { defaultReceiver: string }) {
     ];
     const first = order.find(([k]) => err[k]);
     if (first) {
-      requestAnimationFrame(() => document.getElementById(first[1])?.focus());
+      if (first[0] === 'severity')
+        requestAnimationFrame(() => document.getElementById(first[1])?.focus());
+      else focusFirstError(formRef.current);
       return;
     }
     toast.success(
@@ -90,7 +94,12 @@ function NewComplaintForm({ defaultReceiver }: { defaultReceiver: string }) {
   };
 
   return (
-    <form onSubmit={submit} noValidate className="max-w-3xl space-y-6">
+    <form
+      ref={formRef}
+      onSubmit={submit}
+      noValidate
+      className="max-w-3xl space-y-6"
+    >
       <fieldset className="card space-y-4">
         <legend className={legend}>1. ช่องทางการแจ้งเรื่อง</legend>
         <Field label="ช่องทาง" htmlFor="channel" error={errors.channel}>
