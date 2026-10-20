@@ -16,8 +16,8 @@ export function ToastProvider() {
           fontSize: '14px',
         },
         success: {
-          style: { background: '#0e6b45' },
-          iconTheme: { primary: '#fff', secondary: '#0e6b45' },
+          style: { background: '#059669' },
+          iconTheme: { primary: '#fff', secondary: '#059669' },
         },
         error: {
           style: { background: '#dc2626' },

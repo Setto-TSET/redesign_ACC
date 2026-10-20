@@ -208,13 +208,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           >
             <IconPill aria-hidden="true" size={16} className="text-white" />
           </span>
-          <span className="text-white font-bold text-sm tracking-tight">
+          <span className="text-slate-900 font-bold text-sm tracking-tight">
             Acc-Pharm
           </span>
         </Link>
         <button
           onClick={onClose}
-          className="lg:hidden p-1.5 hover:bg-white/10 rounded-lg text-zinc-500"
+          className="lg:hidden p-1.5 hover:bg-slate-100 rounded-lg text-slate-500"
           aria-label="ปิดเมนู"
         >
           <IconX aria-hidden="true" size={18} />
@@ -227,7 +227,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             if (item.type === 'category') {
               return (
                 <li key={item.label} className="px-5 pt-6 pb-1.5">
-                  <span className="text-[11px] font-semibold tracking-wide text-zinc-500">
+                  <span className="text-[11px] font-semibold tracking-wide text-slate-400">
                     {item.label}
                   </span>
                 </li>
@@ -268,7 +268,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     )
                   }
                   aria-expanded={expanded}
-                  className={`sidebar-link w-full justify-between ${active ? '!text-white' : ''}`}
+                  className={`sidebar-link w-full justify-between ${active ? '!text-slate-900 font-semibold' : ''}`}
                 >
                   <span className="flex items-center gap-3">
                     <ItemIcon aria-hidden="true" size={18} stroke={1.5} />
@@ -277,7 +277,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <IconChevronDown
                     aria-hidden="true"
                     size={14}
-                    className={`text-zinc-600 transition-transform duration-200 motion-reduce:transition-none ${expanded ? 'rotate-0' : '-rotate-90'}`}
+                    className={`text-slate-400 transition-transform duration-200 motion-reduce:transition-none ${expanded ? 'rotate-0' : '-rotate-90'}`}
                   />
                 </button>
                 {expanded && (
@@ -290,15 +290,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                             href={child.href}
                             onClick={onClose}
                             aria-current={childActive ? 'page' : undefined}
-                            className={`flex items-center gap-2.5 text-[13px] font-medium py-1.5 pl-14 pr-4 mx-2.5 rounded-md transition-colors duration-150 ${childActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                            className={`flex items-center gap-2.5 text-[13px] font-medium py-1.5 pl-14 pr-4 mx-2.5 rounded-md transition-colors duration-150 ${childActive ? 'text-emerald-700 font-semibold bg-emerald-50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`}
                           >
                             <span
                               aria-hidden="true"
                               className="w-1 h-1 rounded-full shrink-0"
                               style={{
                                 background: childActive
-                                  ? 'var(--accent-muted)'
-                                  : '#3f3f46',
+                                  ? 'var(--accent)'
+                                  : 'var(--ink-faint)',
                               }}
                             />
                             {child.label}
@@ -314,13 +314,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </ul>
       </nav>
 
-      <div className="p-2.5 border-t border-zinc-800/80 shrink-0">
+      <div className="p-2.5 border-t border-slate-100 shrink-0">
         <button
           onClick={() => {
             logout();
             router.replace('/login');
           }}
-          className="sidebar-link w-full !text-zinc-500 hover:!text-red-400 hover:!bg-red-500/10"
+          className="sidebar-link w-full !text-slate-500 hover:!text-rose-600 hover:!bg-rose-50"
         >
           <IconLogout aria-hidden="true" size={18} stroke={1.5} />
           <span>ออกจากระบบ</span>

@@ -123,8 +123,8 @@ function RegionMap() {
   const withShops = regionProvinces.filter((p) => p.shops.length);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-      <section className="card min-w-0 relative">
+    <div className="card grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+      <section className="min-w-0 relative">
         <div className="flex items-center justify-between gap-2 mb-2">
           <h2 className="font-extrabold">
             {region ? `ภาค${region}` : 'ประเทศไทย'}
@@ -205,23 +205,16 @@ function RegionMap() {
             {hover} · {byProvince[hover]?.length ?? 0} ร้าน
           </p>
         )}
-        {!region && (
-          <ul className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm">
-            {regions.map((r) => (
-              <li key={r} className="flex items-center gap-1.5">
-                <span
-                  className="inline-block size-3 rounded-sm"
-                  style={{ background: regionColor[r] }}
-                />
-                {r}
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
 
-      <section className="min-w-0">
-        <div className="card mb-4">
+      <section
+        className="min-w-0 lg:border-l lg:pl-6"
+        style={{ borderColor: 'var(--border)' }}
+      >
+        <div
+          className="mb-4 pb-4 border-b"
+          style={{ borderColor: 'var(--border)' }}
+        >
           <p className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
             {region ? `ร้านยาในภาค${region}` : 'ร้านยาทั้งหมด'}
           </p>
@@ -233,7 +226,7 @@ function RegionMap() {
         </div>
 
         {!region ? (
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="space-y-1">
             {regions.map((r, i) => {
               const s = byRegion(r);
               return (
@@ -247,10 +240,10 @@ function RegionMap() {
                     onClick={() => setRegion(r)}
                     onMouseEnter={() => setHover(r)}
                     onMouseLeave={() => setHover(null)}
-                    className="card w-full text-left hover:shadow-md"
+                    className={`w-full text-left rounded-xl px-3 py-2.5 transition-colors ${hover === r ? 'bg-slate-50' : 'hover:bg-slate-50'}`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-bold flex items-center gap-2">
+                      <h3 className="font-semibold text-sm flex items-center gap-2">
                         <span
                           aria-hidden="true"
                           className="inline-block size-3 shrink-0 rounded-sm"
@@ -258,13 +251,18 @@ function RegionMap() {
                         />
                         ภาค{r}
                       </h3>
-                      <IconChevronRight aria-hidden="true" size={16} />
+                      <span
+                        className="flex items-center gap-1 text-sm tabular-nums"
+                        style={{ color: 'var(--ink-secondary)' }}
+                      >
+                        <b style={{ color: 'var(--ink)' }}>{s.length}</b> ร้าน
+                        <IconChevronRight aria-hidden="true" size={14} />
+                      </span>
                     </div>
                     <p
-                      className="text-sm tabular-nums"
-                      style={{ color: 'var(--ink-secondary)' }}
+                      className="text-xs mt-0.5"
+                      style={{ color: 'var(--ink-tertiary)' }}
                     >
-                      {s.length} ร้าน ·{' '}
                       {provinceShapes.filter((p) => p.region === r).length}{' '}
                       จังหวัด
                     </p>
@@ -275,7 +273,7 @@ function RegionMap() {
             })}
           </ul>
         ) : (
-          <div className="card">
+          <div>
             <h3 className="font-bold mb-1">รายจังหวัด</h3>
             <p
               className="text-sm mb-2"
@@ -283,7 +281,7 @@ function RegionMap() {
             >
               มีร้าน {withShops.length} จาก {regionProvinces.length} จังหวัด
             </p>
-            <ul className="divide-y divide-zinc-100">
+            <ul className="divide-y divide-slate-100">
               {withShops.map(({ name, shops }) => (
                 <li
                   key={name}
@@ -292,7 +290,7 @@ function RegionMap() {
                 >
                   <Link
                     href={`/pharmacies?province=${encodeURIComponent(name)}`}
-                    className="block py-3 hover:bg-zinc-50"
+                    className="block py-3 px-2 -mx-2 rounded-lg hover:bg-slate-50"
                   >
                     <p className="font-semibold text-sm break-words">
                       {name}{' '}
