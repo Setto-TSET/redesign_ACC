@@ -28,10 +28,17 @@ import {
 } from '@tabler/icons-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFocusTrap } from '@/lib/a11y';
+import type { UserRole } from '@/types/api';
 
 type MenuItem =
   | { type: 'category'; label: string }
-  | { type: 'link'; href: string; label: string; icon: Icon }
+  | {
+      type: 'link';
+      href: string;
+      label: string;
+      icon: Icon;
+      roleLabel?: Partial<Record<UserRole, string>>;
+    }
   | {
       type: 'submenu';
       label: string;
@@ -75,6 +82,7 @@ const menuStructure: MenuItem[] = [
     href: '/post-audit',
     label: 'ตรวจรักษาคุณภาพ',
     icon: IconClipboardCheck,
+    roleLabel: { pharmacy: 'ผลตรวจรักษาคุณภาพ' },
   },
   {
     type: 'link',
@@ -135,7 +143,7 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { hasAccess, logout } = useAuth();
+  const { hasAccess, logout, user } = useAuth();
   const [collapsed, setCollapsed] = useState<string[]>([]);
   const asideRef = useRef<HTMLElement>(null);
   // isOpen เป็น true เฉพาะ drawer บนมือถือ — desktop แสดงตลอดจึงไม่กัน focus
@@ -238,7 +246,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     className={`sidebar-link ${active ? 'active' : ''}`}
                   >
                     <ItemIcon aria-hidden="true" size={18} stroke={1.5} />
-                    <span>{item.label}</span>
+                    <span>
+                      {(user && item.roleLabel?.[user.role]) ?? item.label}
+                    </span>
                   </Link>
                 </li>
               );
