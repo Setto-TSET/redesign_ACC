@@ -73,7 +73,7 @@ export function HistoryTab({ history }: { history: PostAudit['history'] }) {
   );
 }
 
-type Dialog = 'notify' | 'rework' | null;
+type Dialog = 'rework' | null;
 
 export function PartPanel({
   audit,
@@ -108,13 +108,13 @@ export function PartPanel({
       <CycleTimeline
         steps={cycleSteps.map((label, i) => ({
           label,
-          date: [
+          note: [
             audit.visitDate,
             r.notifiedAt,
             r.repliedAt,
             undefined,
             r.closedAt,
-          ][i],
+          ].map((d) => (d ? formatDate(d) : undefined))[i],
         }))}
         current={cycleIndex(r.status)}
       />
@@ -213,14 +213,21 @@ export function PartPanel({
         <button
           type="button"
           className="btn-primary"
-          onClick={() => setDialog('notify')}
+          onClick={() =>
+            window.confirm(`แจ้งร้านให้แก้ไข (${auditPartTitles[part]})?`) &&
+            onNotify()
+          }
         >
           แจ้งร้าน
         </button>
       )}
       {isStaff && r.status === 'replied' && (
         <div className="flex flex-wrap gap-2">
-          <button type="button" className="btn-primary" onClick={onClose}>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => window.confirm('ยืนยันปิดผลส่วนนี้?') && onClose()}
+          >
             ปิดผล
           </button>
           <button
@@ -236,38 +243,6 @@ export function PartPanel({
         <ReplyForm onReply={onReply} />
       )}
 
-      {dialog === 'notify' && (
-        <Modal
-          title="แจ้งร้านให้แก้ไข"
-          onClose={() => setDialog(null)}
-          footer={
-            <>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setDialog(null)}
-              >
-                ยกเลิก
-              </button>
-              <button
-                type="button"
-                className="btn-primary"
-                data-autofocus
-                onClick={() => {
-                  setDialog(null);
-                  onNotify();
-                }}
-              >
-                ยืนยันแจ้งร้าน
-              </button>
-            </>
-          }
-        >
-          <p className="text-sm">
-            ระบบจะแจ้งร้านให้แก้ไขตามผลตรวจส่วน “{auditPartTitles[part]}”
-          </p>
-        </Modal>
-      )}
       {dialog === 'rework' && (
         <ReworkModal
           onCancel={() => setDialog(null)}
@@ -317,6 +292,8 @@ function ReworkModal({
       <div ref={ref}>
         <Field label="เหตุผล" htmlFor="rework-reason" error={error}>
           <textarea
+            name="rework-reason"
+            autoComplete="off"
             id="rework-reason"
             data-autofocus
             rows={4}
@@ -363,6 +340,8 @@ function ReplyForm({
         error={errors.text}
       >
         <textarea
+          name="reply-text"
+          autoComplete="off"
           id="reply-text"
           rows={4}
           className={inputClass(errors.text)}
@@ -377,6 +356,8 @@ function ReplyForm({
         error={errors.files}
       >
         <input
+          name="reply-files"
+          autoComplete="off"
           id="reply-files"
           type="file"
           accept="image/*"

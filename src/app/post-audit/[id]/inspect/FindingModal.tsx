@@ -58,6 +58,8 @@ export function FindingModal({
           error={errors.text}
         >
           <textarea
+            name="finding-text"
+            autoComplete="off"
             id="finding-text"
             data-autofocus
             rows={3}
@@ -73,6 +75,8 @@ export function FindingModal({
           error={errors.files}
         >
           <input
+            name="finding-files"
+            autoComplete="off"
             id="finding-files"
             type="file"
             accept="image/*"

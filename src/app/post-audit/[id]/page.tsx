@@ -140,7 +140,7 @@ function Detail({ initial }: { initial: PostAudit }) {
               onRework={(reason) =>
                 change(
                   tab,
-                  { status: 'fixing' },
+                  { status: 'fixing', reply: undefined, repliedAt: undefined },
                   `ให้แก้ไขเพิ่ม (${auditPartTitles[tab]}): ${reason}`,
                 )
               }

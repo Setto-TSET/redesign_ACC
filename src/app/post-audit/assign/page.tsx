@@ -109,6 +109,8 @@ export default function AssignPage() {
               <div className="grid gap-4 sm:grid-cols-3">
                 <Field label="ปี" htmlFor="pa-year">
                   <select
+                    name="pa-year"
+                    autoComplete="off"
                     id="pa-year"
                     className="input-field"
                     value={year}
@@ -126,6 +128,7 @@ export default function AssignPage() {
                 </Field>
                 <Field label="ค้นหาร้าน" htmlFor="pa-term">
                   <input
+                    name="pa-term"
                     id="pa-term"
                     type="search"
                     className="input-field"
@@ -137,6 +140,8 @@ export default function AssignPage() {
                 </Field>
                 <Field label="จังหวัด" htmlFor="pa-province">
                   <select
+                    name="pa-province"
+                    autoComplete="off"
                     id="pa-province"
                     className="input-field"
                     value={province}
@@ -156,6 +161,8 @@ export default function AssignPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <label className="flex items-center gap-2 text-sm font-semibold">
                     <input
+                      name="pa-all"
+                      autoComplete="off"
                       type="checkbox"
                       checked={allShownPicked}
                       disabled={shown.length === 0}
@@ -197,6 +204,8 @@ export default function AssignPage() {
                       <li key={p.id}>
                         <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-50">
                           <input
+                            name="pa-shop"
+                            autoComplete="off"
                             type="checkbox"
                             checked={picked.includes(p.id)}
                             onChange={() => toggle(p.id)}
@@ -239,6 +248,8 @@ export default function AssignPage() {
                 error={errors.assessor}
               >
                 <select
+                  name="pa-assessor"
+                  autoComplete="off"
                   id="pa-assessor"
                   className={inputClass(errors.assessor)}
                   value={assessorId}
@@ -259,6 +270,8 @@ export default function AssignPage() {
                 error={errors.visitDate}
               >
                 <input
+                  name="pa-date"
+                  autoComplete="off"
                   id="pa-date"
                   type="date"
                   min={todayLocal()}
@@ -281,6 +294,7 @@ export default function AssignPage() {
                   ).map(([k, l]) => (
                     <label key={k} className="flex items-center gap-2 text-sm">
                       <input
+                        autoComplete="off"
                         type="radio"
                         name="method"
                         checked={method === k}

@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 import { AdminLayout } from '@/components/layout';
 import { Stepper } from '@/components/common/Stepper';
 import { Field, fieldAria, inputClass } from '@/components/common/Field';
-import { Modal } from '@/components/prototype/Modal';
 import { PrototypeBadge } from '@/components/prototype/PrototypeBadge';
 import { ScoreRing } from '@/components/prototype/ScoreRing';
 import { useAuth } from '@/contexts/AuthContext';
@@ -62,7 +61,6 @@ export default function InspectPage() {
     category: string;
     index: number;
   } | null>(null);
-  const [removing, setRemoving] = useState<number | null>(null);
 
   if (!user) return <AdminLayout title="บันทึกผลตรวจ">{null}</AdminLayout>;
   if (!['assessor', 'admin', 'superadmin'].includes(user.role))
@@ -160,7 +158,12 @@ export default function InspectPage() {
                                   type="button"
                                   className="text-xs font-semibold underline"
                                   style={{ color: 'var(--danger)' }}
-                                  onClick={() => setRemoving(i)}
+                                  onClick={() =>
+                                    window.confirm('ลบข้อนี้?') &&
+                                    setFindings((xs) =>
+                                      xs.filter((_, j) => j !== i),
+                                    )
+                                  }
                                 >
                                   ลบ
                                 </button>
@@ -185,6 +188,8 @@ export default function InspectPage() {
                 error={errors.qSummary}
               >
                 <textarea
+                  name="q-summary"
+                  autoComplete="off"
                   id="q-summary"
                   rows={4}
                   className={inputClass(errors.qSummary)}
@@ -227,6 +232,7 @@ export default function InspectPage() {
                                 className="flex items-center gap-1.5"
                               >
                                 <input
+                                  autoComplete="off"
                                   type="radio"
                                   name={`ci-${i}`}
                                   checked={answers[i] === v}
@@ -244,6 +250,8 @@ export default function InspectPage() {
                         <td>
                           {answers[i] === false && (
                             <input
+                              name={`note-${i}`}
+                              autoComplete="off"
                               id={`note-${i}`}
                               type="text"
                               aria-label={`ระบุข้อ ${i + 1}`}
@@ -295,6 +303,7 @@ export default function InspectPage() {
                       className="flex items-center gap-1.5 text-sm"
                     >
                       <input
+                        autoComplete="off"
                         type="radio"
                         name="satisfaction"
                         checked={satisfaction === i + 1}
@@ -320,6 +329,8 @@ export default function InspectPage() {
                 error={errors.ciSummary}
               >
                 <textarea
+                  name="ci-summary"
+                  autoComplete="off"
                   id="ci-summary"
                   rows={4}
                   className={inputClass(errors.ciSummary)}
@@ -436,36 +447,6 @@ export default function InspectPage() {
             setEditing(null);
           }}
         />
-      )}
-      {removing !== null && (
-        <Modal
-          title="ลบข้อนี้?"
-          onClose={() => setRemoving(null)}
-          footer={
-            <>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setRemoving(null)}
-              >
-                ยกเลิก
-              </button>
-              <button
-                type="button"
-                className="btn-danger"
-                data-autofocus
-                onClick={() => {
-                  setFindings((xs) => xs.filter((_, i) => i !== removing));
-                  setRemoving(null);
-                }}
-              >
-                ลบ
-              </button>
-            </>
-          }
-        >
-          <p className="text-sm">{findings[removing]?.text}</p>
-        </Modal>
       )}
     </AdminLayout>
   );
