@@ -36,12 +36,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen animate-page grid lg:grid-cols-2">
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-zinc-900">
+      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700">
         <div className="flex items-center gap-2.5 relative z-10">
-          <span
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'var(--accent)' }}
-          >
+          <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/20">
             <IconPill size={18} className="text-white" aria-hidden="true" />
           </span>
           <span className="text-white font-bold text-lg tracking-tight">
@@ -52,18 +49,18 @@ export default function LoginPage() {
           <p className="text-4xl font-extrabold text-white leading-tight tracking-tight">
             ระบบประเมินร้านยาคุณภาพ
           </p>
-          <p className="mt-4 text-zinc-400 text-base leading-relaxed">
+          <p className="mt-4 text-emerald-50/90 text-base leading-relaxed">
             ยื่นคำขอรับรอง ติดตามสถานะ และจัดการการตรวจประเมินร้านยา
             ได้ในที่เดียว
           </p>
         </div>
-        <p className="text-zinc-500 text-xs relative z-10">
+        <p className="text-emerald-50/75 text-xs relative z-10">
           สำนักงานรับรองร้านยาคุณภาพ สภาเภสัชกรรม
         </p>
         <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-[0.06]"
+          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-20"
           style={{
-            background: 'radial-gradient(circle, #0e6b45, transparent 70%)',
+            background: 'radial-gradient(circle, #ffffff, transparent 70%)',
           }}
         />
       </div>
