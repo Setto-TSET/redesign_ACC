@@ -3,6 +3,7 @@ import { Noto_Sans_Thai, Outfit } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { FeedbackButton } from '@/components/feedback/FeedbackButton';
 import { ToastProvider } from '@/components/common/ToastProvider';
 
 const outfit = Outfit({
@@ -39,6 +40,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <AuthGuard>{children}</AuthGuard>
+          <FeedbackButton />
           <ToastProvider />
         </AuthProvider>
       </body>
