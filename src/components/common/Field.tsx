@@ -16,7 +16,7 @@ export function Field({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-[13px] font-semibold text-zinc-700 mb-1.5"
+        className="block text-[13px] font-semibold text-slate-700 mb-1.5"
       >
         {label}
       </label>

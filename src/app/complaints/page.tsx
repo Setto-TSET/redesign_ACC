@@ -65,9 +65,6 @@ function ComplaintList() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            ข้อร้องเรียน
-          </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             ติดตามข้อร้องเรียนร้านยาตั้งแต่รับเรื่องจนปิดเรื่อง
           </p>
@@ -79,7 +76,7 @@ function ComplaintList() {
       </div>
 
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
+        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-slate-100">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-56">
               <IconSearch
@@ -100,7 +97,7 @@ function ComplaintList() {
                 aria-label="ค้นหาข้อร้องเรียน"
               />
             </div>
-            <label className="text-xs font-semibold text-zinc-700">
+            <label className="text-xs font-semibold text-slate-700">
               ตั้งแต่
               <input
                 type="date"
@@ -112,7 +109,7 @@ function ComplaintList() {
                 className="input-field mt-1 !w-auto block"
               />
             </label>
-            <label className="text-xs font-semibold text-zinc-700">
+            <label className="text-xs font-semibold text-slate-700">
               ถึง
               <input
                 type="date"
@@ -195,7 +192,7 @@ function ComplaintList() {
                 </tbody>
               </table>
             </div>
-            <ul className="sm:hidden divide-y divide-zinc-100">
+            <ul className="sm:hidden divide-y divide-slate-100">
               {visible.map((c, i) => (
                 <li
                   key={c.id}
@@ -204,7 +201,7 @@ function ComplaintList() {
                 >
                   <Link
                     href={`/complaints/${c.id}`}
-                    className="block px-4 py-4 hover:bg-zinc-50"
+                    className="block px-4 py-4 hover:bg-slate-50"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <p className="font-mono text-sm font-semibold">{c.no}</p>

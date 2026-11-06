@@ -37,7 +37,7 @@ function NewsDetail() {
       <PrototypeBadge />
       <Link
         href="/news"
-        className="text-sm font-semibold underline-offset-2 hover:underline"
+        className="inline-flex items-center min-h-10 sm:min-h-0 text-sm font-semibold underline-offset-2 hover:underline"
         style={{ color: 'var(--accent)' }}
       >
         ← ข่าวทั้งหมด

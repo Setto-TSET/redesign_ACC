@@ -55,30 +55,30 @@ export function Header({ title, onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-zinc-100 px-4 md:px-8 sticky top-0 z-30 flex items-center">
+    <header className="h-16 bg-white border-b border-slate-100 px-4 md:px-8 sticky top-0 z-30 flex items-center">
       <div className="flex items-center justify-between w-full gap-3">
         <div className="flex items-center gap-4 min-w-0">
           <button
             type="button"
             onClick={onMenuClick}
-            className="lg:hidden p-2 hover:bg-zinc-100 rounded-lg"
+            className="lg:hidden p-2 hover:bg-slate-100 rounded-lg"
             aria-label="เปิดเมนู"
           >
-            <IconMenu2 aria-hidden="true" size={20} className="text-zinc-500" />
+            <IconMenu2 aria-hidden="true" size={20} className="text-slate-500" />
           </button>
-          <h1 className="text-lg font-bold tracking-tight text-zinc-900 truncate">
+          <h1 className="text-lg font-bold tracking-tight text-slate-900 truncate">
             {title || 'หน้าหลัก'}
           </h1>
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="hidden sm:flex items-center gap-2 text-xs text-zinc-400">
+          <label className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
             Demo role
             <select
               name="demoRole"
               value={user?.username}
               onChange={(e) => switchRole(e.target.value)}
-              className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-zinc-300"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300"
             >
               {users.map((u) => (
                 <option key={u.id} value={u.username}>
@@ -95,7 +95,7 @@ export function Header({ title, onMenuClick }: HeaderProps) {
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               aria-expanded={showProfileMenu}
               aria-label={`เมนูของ ${user?.name ?? 'ผู้ใช้'}`}
-              className="flex items-center gap-2 hover:bg-zinc-50 rounded-lg p-1.5 transition-colors"
+              className="flex items-center gap-2 hover:bg-slate-50 rounded-lg p-1.5 transition-colors"
             >
               <span
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0"
@@ -104,36 +104,36 @@ export function Header({ title, onMenuClick }: HeaderProps) {
                 {user?.name.replace(/^(ภก\.|ภญ\.)/, '').charAt(0)}
               </span>
               <span className="hidden md:flex flex-col items-start">
-                <span className="text-[13px] font-semibold text-zinc-800 leading-tight">
+                <span className="text-[13px] font-semibold text-slate-800 leading-tight">
                   {user?.name}
                 </span>
-                <span className="text-[11px] text-zinc-400">
+                <span className="text-xs text-slate-500">
                   {user && roleLabels[user.role]}
                 </span>
               </span>
               <IconChevronDown
                 aria-hidden="true"
                 size={14}
-                className="text-zinc-400 hidden md:block"
+                className="text-slate-400 hidden md:block"
               />
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 top-full mt-1.5 w-56 bg-white rounded-xl shadow-lg border border-zinc-100 py-1.5 z-50 animate-scale-in">
-                <div className="px-3.5 py-2.5 border-b border-zinc-100">
-                  <p className="font-semibold text-zinc-800 text-[13px]">
+              <div className="absolute right-0 top-full mt-1.5 w-56 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50 animate-scale-in">
+                <div className="px-3.5 py-2.5 border-b border-slate-100">
+                  <p className="font-semibold text-slate-800 text-[13px]">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-zinc-400 mt-0.5">{user?.org}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{user?.org}</p>
                 </div>
                 <Link
                   href="/profile"
                   onClick={() => setShowProfileMenu(false)}
-                  className="flex items-center gap-2 px-3.5 py-2 hover:bg-zinc-50 text-zinc-600 text-[13px]"
+                  className="flex items-center gap-2 px-3.5 py-2 hover:bg-slate-50 text-slate-600 text-[13px]"
                 >
                   <IconUser aria-hidden="true" size={15} /> ข้อมูลส่วนตัว
                 </Link>
-                <div className="border-t border-zinc-100 mt-1 pt-1">
+                <div className="border-t border-slate-100 mt-1 pt-1">
                   <button
                     type="button"
                     onClick={() => {

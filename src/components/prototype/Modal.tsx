@@ -56,7 +56,7 @@ export function Modal({
             onClick={onClose}
             disabled={busy}
             aria-label="ปิด"
-            className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500"
+            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"
           >
             <IconX aria-hidden="true" size={18} />
           </button>

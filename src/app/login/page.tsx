@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { IconPill } from '@tabler/icons-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
@@ -24,7 +23,6 @@ export default function LoginPage() {
       const data = await api.auth.login({ username: name });
       if (data.success && data.user && data.token) {
         login(data.user, data.token);
-        toast.success(`ยินดีต้อนรับ ${data.user.name}`);
         router.push('/');
       } else {
         setError(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
@@ -36,8 +34,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen animate-page grid lg:grid-cols-2">
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700">
-        <div className="flex items-center gap-2.5 relative z-10">
+      <div
+        className="hidden lg:flex flex-col justify-between p-12"
+        style={{ background: 'var(--accent-hover)' }}
+      >
+        <div className="flex items-center gap-2.5">
           <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/20">
             <IconPill size={18} className="text-white" aria-hidden="true" />
           </span>
@@ -45,24 +46,18 @@ export default function LoginPage() {
             Acc-Pharm
           </span>
         </div>
-        <div className="relative z-10 max-w-md">
+        <div className="max-w-md">
           <p className="text-4xl font-extrabold text-white leading-tight tracking-tight">
             ระบบประเมินร้านยาคุณภาพ
           </p>
-          <p className="mt-4 text-emerald-50/90 text-base leading-relaxed">
+          <p className="mt-4 text-emerald-50 text-base leading-relaxed">
             ยื่นคำขอรับรอง ติดตามสถานะ และจัดการการตรวจประเมินร้านยา
             ได้ในที่เดียว
           </p>
         </div>
-        <p className="text-emerald-50/75 text-xs relative z-10">
+        <p className="text-emerald-50 text-xs">
           สำนักงานรับรองร้านยาคุณภาพ สภาเภสัชกรรม
         </p>
-        <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-20"
-          style={{
-            background: 'radial-gradient(circle, #ffffff, transparent 70%)',
-          }}
-        />
       </div>
 
       <div className="flex items-center justify-center p-6 bg-white">
@@ -74,15 +69,15 @@ export default function LoginPage() {
             >
               <IconPill size={16} className="text-white" aria-hidden="true" />
             </span>
-            <span className="font-bold text-zinc-900 tracking-tight">
+            <span className="font-bold text-slate-900 tracking-tight">
               Acc-Pharm
             </span>
           </div>
 
-          <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             เข้าสู่ระบบ
           </h1>
-          <p className="text-zinc-500 text-sm mt-1.5 mb-8">
+          <p className="text-slate-500 text-sm mt-1.5 mb-8">
             ใช้ชื่อผู้ใช้ หรือเลขที่ใบอนุญาต ขย.5
           </p>
 
@@ -105,7 +100,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="username"
-                className="block text-[13px] font-semibold text-zinc-700 mb-1.5"
+                className="block text-[13px] font-semibold text-slate-700 mb-1.5"
               >
                 ชื่อผู้ใช้
               </label>
@@ -124,7 +119,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-[13px] font-semibold text-zinc-700 mb-1.5"
+                className="block text-[13px] font-semibold text-slate-700 mb-1.5"
               >
                 รหัสผ่าน
               </label>
@@ -148,7 +143,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-5 text-sm text-center text-zinc-600">
+          <p className="mt-5 text-sm text-center text-slate-600">
             ร้านยายังไม่มีบัญชี?{' '}
             <Link
               href="/register"
@@ -160,7 +155,7 @@ export default function LoginPage() {
           </p>
 
           <div className="mt-8 px-4 py-3 rounded-xl bg-amber-50 border border-amber-100">
-            <p className="text-[11px] font-semibold text-amber-700 tracking-wide mb-2">
+            <p className="text-xs font-semibold text-amber-700 tracking-wide mb-2">
               บัญชีทดลอง (PoC)
             </p>
             <div className="grid gap-1.5">
@@ -171,10 +166,10 @@ export default function LoginPage() {
                   onClick={() => signIn(u.username)}
                   className="flex items-center justify-between rounded-lg px-3 py-2 text-left text-[13px] bg-white border border-amber-100 hover:border-amber-300"
                 >
-                  <span className="font-medium text-zinc-700">
+                  <span className="font-medium text-slate-700">
                     {roleLabels[u.role]}
                   </span>
-                  <span className="font-mono text-zinc-500">{u.username}</span>
+                  <span className="font-mono text-slate-500">{u.username}</span>
                 </button>
               ))}
             </div>

@@ -16,11 +16,9 @@ export default function TemplatesPage() {
     if (editing === 'new') {
       const id = Math.max(0, ...list.map((t) => t.id)) + 1;
       setList((xs) => [...xs, { ...d, id }]);
-      toast.success('เพิ่ม template แล้ว');
     } else if (editing) {
       const id = editing.id;
       setList((xs) => xs.map((t) => (t.id === id ? { ...t, ...d } : t)));
-      toast.success('บันทึก template แล้ว');
     }
     setEditing(null);
   };
@@ -36,9 +34,6 @@ export default function TemplatesPage() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            Template ข้อความตอบกลับ
-          </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             ข้อความสำเร็จรูปสำหรับตอบคำขอ ใช้ตัวแปรแทนชื่อร้านและเลขที่คำขอได้
           </p>

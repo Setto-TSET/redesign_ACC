@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import toast from 'react-hot-toast';
 import { AdminLayout } from '@/components/layout';
 import { PrototypeBadge } from '@/components/prototype/PrototypeBadge';
 import { useAuth } from '@/contexts/AuthContext';
@@ -53,7 +52,6 @@ function Gpp() {
     setRounds((all) =>
       all.map((x) => (x.id === r.id ? { ...x, open: false } : x)),
     );
-    toast.success(`ปิดรอบประเมินปี 2569 ของจังหวัด${r.province}แล้ว`);
   };
 
   return (
@@ -61,9 +59,6 @@ function Gpp() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            ประเมิน GPP
-          </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             ผลประเมินร้านยาในจังหวัด
           </p>
@@ -119,7 +114,7 @@ function Gpp() {
                   <th className="px-5 py-3 font-semibold">ผู้ประเมิน</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100">
+              <tbody className="divide-y divide-slate-100">
                 {rows.map(({ shop, result }, i) => (
                   <tr
                     key={shop.id}
@@ -135,14 +130,14 @@ function Gpp() {
                           <span className="tabular-nums w-10">
                             {result.score}%
                           </span>
-                          <div className="h-2 flex-1 rounded-full bg-zinc-100 overflow-hidden">
+                          <div className="h-2 flex-1 rounded-full bg-slate-100 overflow-hidden">
                             <div
                               className="animate-grow-x h-full"
                               style={{
                                 width: `${result.score}%`,
                                 background:
                                   result.score >= GPP_PASS
-                                    ? '#16a34a'
+                                    ? 'var(--accent)'
                                     : 'var(--danger)',
                               }}
                             />
@@ -160,7 +155,7 @@ function Gpp() {
                           {result.score >= GPP_PASS ? 'ผ่าน' : 'ไม่ผ่าน'}
                         </span>
                       ) : (
-                        <span className="badge bg-zinc-100 text-zinc-500">
+                        <span className="badge bg-slate-100 text-slate-600">
                           ยังไม่ประเมิน
                         </span>
                       )}
@@ -191,7 +186,7 @@ function Gpp() {
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-bold tabular-nums">รอบปี {r.year}</p>
                   <span
-                    className={`badge ${r.open ? 'badge-success' : 'bg-zinc-100 text-zinc-500'}`}
+                    className={`badge ${r.open ? 'badge-success' : 'bg-slate-100 text-slate-600'}`}
                   >
                     {r.open ? 'เปิดอยู่' : 'ปิดแล้ว'}
                   </span>

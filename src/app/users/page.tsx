@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import toast from 'react-hot-toast';
 import { IconPencil, IconPlus, IconSearch } from '@tabler/icons-react';
 import { AdminLayout } from '@/components/layout';
 import { FilterChips } from '@/components/prototype/FilterChips';
@@ -61,11 +60,9 @@ function UserList() {
     if (editing === 'new') {
       const id = Math.max(0, ...list.map((u) => u.id)) + 1;
       setList((xs) => [...xs, { ...d, id, active: true }]);
-      toast.success('เพิ่มผู้ใช้แล้ว');
     } else if (editing) {
       const id = editing.id;
       setList((xs) => xs.map((u) => (u.id === id ? { ...u, ...d } : u)));
-      toast.success('บันทึกการแก้ไขผู้ใช้แล้ว');
     }
     setEditing(null);
   };
@@ -75,7 +72,6 @@ function UserList() {
     setList((xs) =>
       xs.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x)),
     );
-    toast.success(u.active ? 'ปิดใช้งานบัญชีแล้ว' : 'เปิดใช้งานบัญชีแล้ว');
   };
 
   const actions = (u: ProtoUser) => {
@@ -110,7 +106,6 @@ function UserList() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">ผู้ใช้งาน</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             จัดการบัญชีและบทบาทของผู้ใช้ระบบ
           </p>
@@ -126,7 +121,7 @@ function UserList() {
       </div>
 
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
+        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-slate-100">
           <div className="relative">
             <IconSearch
               aria-hidden="true"
@@ -218,7 +213,7 @@ function UserList() {
                 </tbody>
               </table>
             </div>
-            <ul className="sm:hidden divide-y divide-zinc-100">
+            <ul className="sm:hidden divide-y divide-slate-100">
               {visible.map((u, i) => (
                 <li
                   key={u.id}

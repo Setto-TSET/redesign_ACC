@@ -1,11 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  IconBuildingStore,
-  IconCertificate,
-  IconFileCertificate,
-} from '@tabler/icons-react';
 import { AdminLayout } from '@/components/layout';
 import { HomeTasks } from '@/components/home/HomeTasks';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,7 +8,7 @@ import { api } from '@/lib/api';
 import { isAlive } from '@/lib/requestRules';
 import { roleLabels } from '@/mock';
 
-type Stat = { label: string; value: number; icon: typeof IconCertificate };
+type Stat = { label: string; value: number };
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -24,21 +19,16 @@ export default function DashboardPage() {
     if (!showStats) return;
     Promise.all([api.pharmacies.list(), api.requests.list()]).then(
       ([shops, reqs]) =>
+        // ตัวแรกคืองานที่ต้องลงมือ — แสดงเด่นสุด ที่เหลือเป็นบริบท
         setStats([
-          {
-            label: 'ร้านยาทั้งหมด',
-            value: shops.length,
-            icon: IconBuildingStore,
-          },
-          {
-            label: 'รับรองแล้ว',
-            value: shops.filter((s) => s.certStatus === 'A').length,
-            icon: IconCertificate,
-          },
           {
             label: 'คำขอที่กำลังดำเนินการ',
             value: reqs.filter((r) => isAlive(r.status)).length,
-            icon: IconFileCertificate,
+          },
+          { label: 'ร้านยาทั้งหมด', value: shops.length },
+          {
+            label: 'รับรองแล้ว',
+            value: shops.filter((s) => s.certStatus === 'A').length,
           },
         ]),
     );
@@ -56,29 +46,21 @@ export default function DashboardPage() {
       </div>
 
       {showStats && stats.length > 0 && (
-        <div className="mb-6 grid max-w-4xl gap-4 sm:grid-cols-3">
+        <dl className="card !p-0 mb-6 grid max-w-4xl divide-y divide-slate-100 sm:grid-cols-[1.5fr_1fr_1fr] sm:divide-x sm:divide-y-0">
           {stats.map((s, i) => (
-            <div
-              key={s.label}
-              className="stat-card animate-stagger"
-              style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
-            >
-              <div
-                className="stat-icon"
-                style={{
-                  background: 'var(--accent-soft)',
-                  color: 'var(--accent)',
-                }}
+            <div key={s.label} className="px-6 py-5">
+              <dt className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
+                {s.label}
+              </dt>
+              <dd
+                className={`mt-1.5 font-extrabold leading-none tabular-nums tracking-tight ${i === 0 ? 'text-4xl' : 'text-2xl'}`}
+                style={i === 0 ? { color: 'var(--accent)' } : undefined}
               >
-                <s.icon size={22} stroke={1.5} aria-hidden="true" />
-              </div>
-              <div>
-                <div className="stat-value tabular-nums">{s.value}</div>
-                <div className="stat-label">{s.label}</div>
-              </div>
+                {s.value}
+              </dd>
             </div>
           ))}
-        </div>
+        </dl>
       )}
 
       {user && <HomeTasks user={user} />}

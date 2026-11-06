@@ -26,7 +26,7 @@ import type {
 
 function Rows({ rows }: { rows: [string, string][] }) {
   return (
-    <dl className="divide-y divide-zinc-100">
+    <dl className="divide-y divide-slate-100">
       {rows.map(([k, v]) => (
         <div key={k} className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
           <dt className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
@@ -186,7 +186,7 @@ export function DocsTab({
       {req.docs.length === 0 ? (
         <Empty text="ยังไม่มีเอกสาร" />
       ) : (
-        <ul className="divide-y divide-zinc-100">
+        <ul className="divide-y divide-slate-100">
           {req.docs.map((d, i) => (
             <li key={`${d.name}-${i}`} className="flex items-start gap-3 py-3">
               <IconFileText
@@ -313,7 +313,7 @@ export function PaymentsTab({
       {req.payments.length === 0 ? (
         <Empty text="ยังไม่มีหลักฐานการโอนเงิน" />
       ) : (
-        <ul className="divide-y divide-zinc-100">
+        <ul className="divide-y divide-slate-100">
           {req.payments.map((p, i) => (
             <li
               key={`${p.fileName}-${i}`}
@@ -364,7 +364,7 @@ export function PaymentsTab({
               />
             </Field>
             <div>
-              <span className="block text-[13px] font-semibold text-zinc-700 mb-1.5">
+              <span className="block text-[13px] font-semibold text-slate-700 mb-1.5">
                 หลักฐานการโอน
               </span>
               <label className="btn-secondary cursor-pointer">
@@ -452,7 +452,7 @@ export function ResultTab({ req, role }: { req: AccRequest; role: UserRole }) {
           {parts.sections.map((s, i) => (
             <li
               key={s.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 px-4 py-3 text-sm"
+              className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3 text-sm"
             >
               <span className="min-w-0">
                 หมวด {s.id} {s.title}

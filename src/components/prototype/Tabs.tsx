@@ -24,7 +24,7 @@ export function Tabs<T extends string>({
       <div
         role="tablist"
         aria-label={label}
-        className="flex gap-1 overflow-x-auto border-b border-zinc-100 px-2"
+        className="flex gap-1 overflow-x-auto border-b border-slate-100 px-2"
         onKeyDown={(e) => {
           const el = (e.target as HTMLElement).closest('[role=tab]');
           if (!el) return;
@@ -56,7 +56,7 @@ export function Tabs<T extends string>({
             aria-selected={t.key === value}
             tabIndex={t.key === value ? 0 : -1}
             onClick={() => onChange(t.key)}
-            className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px hover:bg-zinc-50"
+            className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px hover:bg-slate-50"
             style={
               t.key === value
                 ? { borderColor: 'var(--accent)', color: 'var(--accent)' }

@@ -161,7 +161,7 @@ export default function AssessPage() {
       <div className="max-w-4xl space-y-5">
         <Link
           href={`/requests/${req.id}`}
-          className="inline-block text-sm font-semibold"
+          className="inline-flex items-center min-h-10 sm:min-h-0 text-sm font-semibold"
           style={{ color: 'var(--accent)' }}
         >
           ← กลับไปรายละเอียดคำขอ
@@ -253,7 +253,7 @@ export default function AssessPage() {
                   type="button"
                   aria-current={i === section ? 'step' : undefined}
                   onClick={() => goTo(i)}
-                  className="shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-zinc-50"
+                  className="min-h-10 sm:min-h-0 shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-slate-50"
                   style={
                     i === section
                       ? {
@@ -505,7 +505,7 @@ function ItemCard({
               type="button"
               aria-pressed={selected}
               onClick={() => onChange({ level: o })}
-              className="min-h-11 rounded-xl border px-4 text-sm font-semibold hover:bg-zinc-50"
+              className="min-h-11 rounded-xl border px-4 text-sm font-semibold hover:bg-slate-50"
               style={
                 selected
                   ? o === 0

@@ -44,7 +44,7 @@ export function FilterChips<T extends string>({
             aria-checked={on}
             tabIndex={on ? 0 : -1}
             onClick={() => onChange(o.key)}
-            className="rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-colors hover:bg-zinc-50"
+            className="min-h-10 sm:min-h-0 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-colors hover:bg-slate-50"
             style={
               on
                 ? {

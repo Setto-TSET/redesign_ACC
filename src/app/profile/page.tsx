@@ -40,7 +40,7 @@ function InfoCard() {
 
   return (
     <form ref={ref} onSubmit={submit} noValidate className="card space-y-4">
-      <h3 className="font-bold">ข้อมูลส่วนตัว</h3>
+      <h2 className="font-bold">ข้อมูลส่วนตัว</h2>
       <Field label="ชื่อ-สกุล" htmlFor="pf-name" error={errors.name}>
         <input
           id="pf-name"
@@ -108,7 +108,7 @@ function PasswordCard() {
 
   return (
     <form ref={ref} onSubmit={submit} noValidate className="card space-y-4">
-      <h3 className="font-bold">เปลี่ยนรหัสผ่าน</h3>
+      <h2 className="font-bold">เปลี่ยนรหัสผ่าน</h2>
       <Field label="รหัสผ่านเดิม" htmlFor="pw-cur" error={errors.cur}>
         <input
           id="pw-cur"
@@ -163,7 +163,6 @@ export default function ProfilePage() {
     <AdminLayout title="โปรไฟล์">
       <PrototypeBadge />
       <div className="mb-6">
-        <h2 className="text-2xl font-extrabold tracking-tight">โปรไฟล์</h2>
         <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
           ข้อมูลส่วนตัวและรหัสผ่านของบัญชีคุณ
         </p>

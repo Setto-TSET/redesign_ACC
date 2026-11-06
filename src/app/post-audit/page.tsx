@@ -75,7 +75,6 @@ function PostAuditList() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">{title}</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             {isPharmacy
               ? 'ผลการตรวจร้านยาหลังได้รับการรับรอง'
@@ -93,7 +92,7 @@ function PostAuditList() {
       </div>
 
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
+        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-slate-100">
           <div className="flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-56">
               <IconSearch
@@ -153,7 +152,7 @@ function PostAuditList() {
             </button>
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-100">
+          <ul className="divide-y divide-slate-100">
             {visible.map((a, i) => {
               const shop = findPharmacy(a.pharmacyId);
               return (
@@ -164,7 +163,7 @@ function PostAuditList() {
                 >
                   <Link
                     href={`/post-audit/${a.id}`}
-                    className="block px-4 sm:px-5 py-4 hover:bg-zinc-50"
+                    className="block px-4 sm:px-5 py-4 hover:bg-slate-50"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -185,12 +184,10 @@ function PostAuditList() {
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       <AuditStatusBadge
-                        small
                         prefix="คุณภาพ: "
                         status={a.parts.quality.status}
                       />
                       <AuditStatusBadge
-                        small
                         prefix="Common illness: "
                         status={a.parts.ci.status}
                       />

@@ -10,7 +10,7 @@ const requestTone: Record<RequestStatus, string> = {
   committee: 'badge-warning',
   approved: 'badge-success',
   rejected: 'badge-error',
-  cancelled: 'bg-zinc-100 text-zinc-500',
+  cancelled: 'bg-slate-100 text-slate-600',
 };
 
 const certTone: Record<CertStatus, string> = {

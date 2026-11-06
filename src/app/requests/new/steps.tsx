@@ -40,7 +40,7 @@ const optionClass = (on: boolean) =>
   `flex gap-3 items-start rounded-xl border p-4 cursor-pointer transition-colors ${
     on
       ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
-      : 'border-[var(--border)] hover:border-zinc-300'
+      : 'border-[var(--border)] hover:border-slate-300'
   }`;
 
 const Muted = ({ children }: { children: React.ReactNode }) => (
@@ -207,7 +207,7 @@ export function ApplicantStep({ draft, update, errors }: StepProps) {
       </div>
 
       <fieldset>
-        <legend className="block text-[13px] font-semibold text-zinc-700 mb-2">
+        <legend className="block text-[13px] font-semibold text-slate-700 mb-2">
           ความเกี่ยวข้องกับร้านยา
         </legend>
         <div className="grid gap-2 sm:grid-cols-2">
@@ -365,7 +365,7 @@ export function ReviewStep({ draft, update, errors }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <dl className="divide-y divide-zinc-100">
+      <dl className="divide-y divide-slate-100">
         {rows.map(([k, v]) => (
           <div key={k} className="grid gap-1 py-3 sm:grid-cols-[160px_1fr]">
             <dt className="text-sm" style={{ color: 'var(--ink-secondary)' }}>

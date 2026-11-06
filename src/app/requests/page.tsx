@@ -93,7 +93,6 @@ function RequestsList() {
     <AdminLayout title="คำขอรับรอง">
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">คำขอรับรอง</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             {isPharmacy
               ? 'คำขอทั้งหมดของร้านคุณ'
@@ -111,7 +110,7 @@ function RequestsList() {
       </div>
 
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
+        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-slate-100">
           <div className="relative">
             <IconSearch
               aria-hidden="true"
@@ -142,7 +141,7 @@ function RequestsList() {
                   type="button"
                   aria-pressed={on}
                   onClick={() => setGroup(g.key)}
-                  className="rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-colors hover:bg-zinc-50"
+                  className="min-h-10 sm:min-h-0 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-colors hover:bg-slate-50"
                   style={
                     on
                       ? {
@@ -209,7 +208,7 @@ function RequestsList() {
                         </Link>
                       </td>
                       {!isPharmacy && (
-                        <td className="!text-zinc-800 font-medium">
+                        <td className="!text-slate-800 font-medium">
                           {shops[r.pharmacyId]?.name}
                         </td>
                       )}
@@ -226,7 +225,7 @@ function RequestsList() {
               </table>
             </div>
 
-            <ul className="md:hidden divide-y divide-zinc-100">
+            <ul className="md:hidden divide-y divide-slate-100">
               {visible.map((r, i) => (
                 <li
                   key={r.id}
@@ -235,7 +234,7 @@ function RequestsList() {
                 >
                   <Link
                     href={`/requests/${r.id}`}
-                    className="block px-4 py-4 hover:bg-zinc-50"
+                    className="block px-4 py-4 hover:bg-slate-50"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <span className="font-mono text-sm font-semibold">

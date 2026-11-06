@@ -61,7 +61,7 @@ export function PharmacistTab({ shop }: { shop: Pharmacy }) {
             <Th>เวลา</Th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-zinc-100">
+        <tbody className="divide-y divide-slate-100">
           {shop.pharmacists.map((p, i) => (
             <tr key={i}>
               <td className="px-3 py-2 break-words">{p.name}</td>
@@ -106,7 +106,7 @@ export function CertHistoryTab({ shop }: { shop: Pharmacy }) {
             <Th>วันหมดอายุ</Th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-zinc-100">
+        <tbody className="divide-y divide-slate-100">
           {rows.map((r) => (
             <tr key={r.label}>
               <td className="px-3 py-2">{r.label}</td>
@@ -136,7 +136,7 @@ export function RequestsTab({
   const list = seedRequests.filter((r) => r.pharmacyId === shop.id);
   if (!list.length) return <Empty />;
   return (
-    <ul className="divide-y divide-zinc-100">
+    <ul className="divide-y divide-slate-100">
       {list.map((r) => (
         <li key={r.id} className={itemClass}>
           <span className="min-w-0 break-words">
@@ -168,7 +168,7 @@ export function AuditsTab({ shop }: { shop: Pharmacy }) {
   const list = postAudits.filter((a) => a.pharmacyId === shop.id);
   if (!list.length) return <Empty />;
   return (
-    <ul className="divide-y divide-zinc-100">
+    <ul className="divide-y divide-slate-100">
       {list.map((a) => (
         <li key={a.id} className={itemClass}>
           <Link
@@ -190,7 +190,7 @@ export function ComplaintsTab({ shop }: { shop: Pharmacy }) {
   const list = complaints.filter((c) => c.pharmacyId === shop.id);
   if (!list.length) return <Empty />;
   return (
-    <ul className="divide-y divide-zinc-100">
+    <ul className="divide-y divide-slate-100">
       {list.map((c) => (
         <li key={c.id} className={itemClass}>
           <span className="min-w-0 break-words">

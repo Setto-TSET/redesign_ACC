@@ -130,7 +130,7 @@ export default function RequestDetailPage() {
       <div className="max-w-5xl space-y-6">
         <Link
           href="/requests"
-          className="inline-block text-sm font-semibold"
+          className="inline-flex items-center gap-1 min-h-10 sm:min-h-0 text-sm font-semibold"
           style={{ color: 'var(--accent)' }}
         >
           <span aria-hidden="true">←</span> กลับไปรายการคำขอ
@@ -185,7 +185,7 @@ export default function RequestDetailPage() {
           <div
             role="tablist"
             aria-label="ส่วนของคำขอ"
-            className="flex gap-1 overflow-x-auto border-b border-zinc-100 px-2"
+            className="flex gap-1 overflow-x-auto border-b border-slate-100 px-2"
             onKeyDown={(e) => {
               const el = (e.target as HTMLElement).closest('[role=tab]');
               if (!el) return;
@@ -218,7 +218,7 @@ export default function RequestDetailPage() {
                 aria-selected={t.key === tab}
                 tabIndex={t.key === tab ? 0 : -1}
                 onClick={() => setTab(t.key)}
-                className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px hover:bg-zinc-50"
+                className="shrink-0 px-4 py-3 text-sm font-semibold border-b-2 -mb-px hover:bg-slate-50"
                 style={
                   t.key === tab
                     ? { borderColor: 'var(--accent)', color: 'var(--accent)' }

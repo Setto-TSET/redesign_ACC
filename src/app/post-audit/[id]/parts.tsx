@@ -322,7 +322,7 @@ function ReplyForm({
     <form
       ref={ref}
       noValidate
-      className="space-y-4 border-t border-zinc-100 pt-5"
+      className="space-y-4 border-t border-slate-100 pt-5"
       onSubmit={(e) => {
         e.preventDefault();
         const err: typeof errors = {};

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
-import toast from 'react-hot-toast';
 import { IconPencil, IconPin, IconPlus } from '@tabler/icons-react';
 import { AdminLayout } from '@/components/layout';
 import { FilterChips } from '@/components/prototype/FilterChips';
@@ -57,7 +56,6 @@ function NewsList() {
           publishedAt: todayLocal(),
         },
       ]);
-      toast.success('เพิ่มข่าวแล้ว');
     } else if (editing) {
       const id = editing.id;
       setItems((xs) =>
@@ -74,7 +72,6 @@ function NewsList() {
             : n,
         ),
       );
-      toast.success('บันทึกการแก้ไขข่าวแล้ว');
     }
     setEditing(null);
   };
@@ -84,9 +81,6 @@ function NewsList() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            ข่าวประชาสัมพันธ์
-          </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             ประกาศ กิจกรรม และการอบรมของสำนักงาน
           </p>
@@ -145,7 +139,7 @@ function NewsList() {
                     <span aria-hidden="true">·</span>
                     <span>{n.category}</span>
                   </p>
-                  <h3 className="font-bold mt-1 break-words">
+                  <h2 className="font-bold mt-1 break-words">
                     <Link
                       href={`/news/${n.id}`}
                       className="underline-offset-2 hover:underline"
@@ -153,7 +147,7 @@ function NewsList() {
                     >
                       {n.title}
                     </Link>
-                  </h3>
+                  </h2>
                   <p className="text-sm mt-1 break-words">{n.summary}</p>
                 </div>
                 {canEdit && (

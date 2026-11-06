@@ -91,7 +91,6 @@ function Reports() {
     <AdminLayout title="รายงาน">
       <PrototypeBadge />
       <div className="mb-6">
-        <h2 className="text-2xl font-extrabold tracking-tight">รายงาน</h2>
         <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
           สรุปตัวเลขและส่งออกเป็นไฟล์ Excel
         </p>
@@ -196,7 +195,7 @@ function Reports() {
               className="mb-4 flex items-baseline justify-between gap-2"
               aria-hidden="true"
             >
-              <h3 className="font-bold">{meta.label}</h3>
+              <h2 className="font-bold">{meta.label}</h2>
               <span
                 className="text-sm tabular-nums"
                 style={{ color: 'var(--ink-tertiary)' }}
@@ -354,7 +353,7 @@ function Reports() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y divide-slate-100">
               {data.rows.length === 0 && (
                 <tr>
                   <td

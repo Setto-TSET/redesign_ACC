@@ -106,7 +106,7 @@ export function HomeTasks({ user }: { user: User }) {
           <h2 className="font-bold tracking-tight">คำขอล่าสุด</h2>
           <Link
             href="/requests"
-            className="text-sm font-semibold"
+            className="inline-flex items-center min-h-10 sm:min-h-0 text-sm font-semibold"
             style={{ color: 'var(--accent)' }}
           >
             ดูทั้งหมด
@@ -117,7 +117,7 @@ export function HomeTasks({ user }: { user: User }) {
             {isShop ? 'ยังไม่เคยยื่นคำขอ' : 'ยังไม่มีคำขอ'}
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-100">
+          <ul className="divide-y divide-slate-100">
             {recent.map((r, i) => (
               <li
                 key={r.id}

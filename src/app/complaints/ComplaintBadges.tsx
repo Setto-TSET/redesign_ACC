@@ -4,7 +4,7 @@ import {
 } from '@/mock/prototype/complaints';
 
 const stageTone: Record<ComplaintStage, string> = {
-  intake: 'bg-zinc-100 text-zinc-600',
+  intake: 'bg-slate-100 text-slate-600',
   factfinding: 'badge-info',
   subcommittee: 'badge-warning',
   council: 'badge-warning',
@@ -29,7 +29,7 @@ const sevTone: Record<string, string> = {
 export function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span
-      className={`badge ${sevTone[severity] ?? 'bg-zinc-100 text-zinc-600'}`}
+      className={`badge ${sevTone[severity] ?? 'bg-slate-100 text-slate-600'}`}
     >
       {severity}
     </span>

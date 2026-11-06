@@ -71,7 +71,6 @@ function DocumentList() {
           updatedAt: todayLocal(),
         },
       ]);
-      toast.success('เพิ่มเอกสารแล้ว');
     } else if (editing && editing !== 'new') {
       const id = editing.id;
       setItems((xs) =>
@@ -87,15 +86,36 @@ function DocumentList() {
             : x,
         ),
       );
-      toast.success('บันทึกการแก้ไขเอกสารแล้ว');
     }
     setEditing(null);
   };
 
+  // ลบทันที + เลิกทำได้ใน toast แทนกล่องยืนยัน (การลบย้อนกลับได้)
   const remove = (d: DocItem) => {
-    if (!window.confirm(`ลบเอกสาร "${d.title}"?`)) return;
+    const at = items.findIndex((x) => x.id === d.id);
     setItems((xs) => xs.filter((x) => x.id !== d.id));
-    toast.success('ลบเอกสารแล้ว');
+    toast(
+      (t) => (
+        <span className="flex items-center gap-3">
+          ลบ “{d.title}” แล้ว
+          <button
+            type="button"
+            className="-my-2 shrink-0 whitespace-nowrap py-2 font-semibold underline underline-offset-2"
+            onClick={() => {
+              setItems((xs) =>
+                xs.some((x) => x.id === d.id)
+                  ? xs
+                  : [...xs.slice(0, at), d, ...xs.slice(at)],
+              );
+              toast.dismiss(t.id);
+            }}
+          >
+            เลิกทำ
+          </button>
+        </span>
+      ),
+      { duration: 8000 },
+    );
   };
 
   return (
@@ -103,9 +123,6 @@ function DocumentList() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            เอกสารดาวน์โหลด
-          </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             ระเบียบ แบบฟอร์ม และคู่มือการใช้งาน
           </p>
@@ -123,7 +140,7 @@ function DocumentList() {
       </div>
 
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
+        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-slate-100">
           <div className="relative">
             <IconSearch
               aria-hidden="true"
@@ -155,7 +172,7 @@ function DocumentList() {
             <p className="font-semibold">ไม่พบเอกสารที่ตรงกับตัวกรอง</p>
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-100">
+          <ul className="divide-y divide-slate-100">
             {visible.map((d, i) => {
               const Icon = icons[d.fileType];
               return (

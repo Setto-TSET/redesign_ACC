@@ -226,7 +226,7 @@ export function ActionDialog({
 
           {action === 'assign' && (
             <fieldset>
-              <legend className="block text-[13px] font-semibold text-zinc-700 mb-2">
+              <legend className="block text-[13px] font-semibold text-slate-700 mb-2">
                 ผู้ตรวจประเมิน
               </legend>
               <div className="space-y-2">
@@ -278,7 +278,7 @@ export function ActionDialog({
           {action === 'assign' && (
             <div className="grid gap-4 sm:grid-cols-2">
               <fieldset>
-                <legend className="block text-[13px] font-semibold text-zinc-700 mb-2">
+                <legend className="block text-[13px] font-semibold text-slate-700 mb-2">
                   วิธีตรวจ
                 </legend>
                 <div className="flex flex-wrap gap-2">
@@ -332,7 +332,7 @@ export function ActionDialog({
                     <button
                       key={t}
                       type="button"
-                      className="rounded-full border px-3 py-1 text-xs text-left hover:bg-zinc-50"
+                      className="rounded-full border px-3 py-1 text-xs text-left hover:bg-slate-50"
                       style={{ borderColor: 'var(--border)' }}
                       onClick={() => setMessage((m) => (m ? `${m}\n${t}` : t))}
                     >

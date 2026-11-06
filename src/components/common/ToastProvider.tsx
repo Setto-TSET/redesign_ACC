@@ -9,19 +9,19 @@ export function ToastProvider() {
       toastOptions={{
         duration: 4000,
         style: {
-          background: '#1f2937',
+          background: 'var(--toast-bg)',
           color: '#fff',
           padding: '12px 16px',
           borderRadius: '8px',
           fontSize: '14px',
         },
         success: {
-          style: { background: '#059669' },
-          iconTheme: { primary: '#fff', secondary: '#059669' },
+          style: { background: 'var(--accent)' },
+          iconTheme: { primary: '#fff', secondary: 'var(--accent)' },
         },
         error: {
-          style: { background: '#dc2626' },
-          iconTheme: { primary: '#fff', secondary: '#dc2626' },
+          style: { background: 'var(--danger)' },
+          iconTheme: { primary: '#fff', secondary: 'var(--danger)' },
         },
       }}
     />

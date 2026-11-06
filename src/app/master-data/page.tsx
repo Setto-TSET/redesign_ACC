@@ -36,11 +36,9 @@ function MasterData() {
     if (editing === 'new') {
       const id = Math.max(0, ...list.map((m) => m.id)) + 1;
       setList((xs) => [...xs, { ...d, id, kind: tab }]);
-      toast.success('เพิ่มข้อมูลแล้ว');
     } else if (editing) {
       const id = editing.id;
       setList((xs) => xs.map((m) => (m.id === id ? { ...m, ...d } : m)));
-      toast.success('บันทึกการแก้ไขแล้ว');
     }
     setEditing(null);
   };
@@ -79,7 +77,6 @@ function MasterData() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">ข้อมูลหลัก</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             จัดการประเภท กลุ่ม และเครือข่ายของร้านยา
           </p>
@@ -140,7 +137,7 @@ function MasterData() {
                 </tbody>
               </table>
             </div>
-            <ul className="sm:hidden divide-y divide-zinc-100">
+            <ul className="sm:hidden divide-y divide-slate-100">
               {rows.map((m, i) => (
                 <li
                   key={m.id}

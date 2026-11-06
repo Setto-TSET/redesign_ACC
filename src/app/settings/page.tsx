@@ -64,14 +64,12 @@ export default function SettingsPage() {
     setF(toForm(defaultSettings));
     setSaved(toForm(defaultSettings));
     setErrors({});
-    toast.success('คืนค่าเดิมแล้ว');
   };
 
   return (
     <AdminLayout title="ตั้งค่าระบบ">
       <PrototypeBadge />
       <div className="mb-6">
-        <h2 className="text-2xl font-extrabold tracking-tight">ตั้งค่าระบบ</h2>
         <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
           เกณฑ์และค่าเริ่มต้นของการรับรองร้านยา
         </p>

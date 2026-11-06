@@ -27,7 +27,7 @@ export default function CertificatePage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/certificates"
-            className="text-sm font-semibold"
+            className="inline-flex items-center min-h-10 sm:min-h-0 text-sm font-semibold"
             style={{ color: 'var(--accent)' }}
           >
             ← กลับไปรายการใบรับรอง

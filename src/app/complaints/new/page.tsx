@@ -252,7 +252,7 @@ function NewComplaintForm({ defaultReceiver }: { defaultReceiver: string }) {
         <div role="group" aria-labelledby="std-label">
           <p
             id="std-label"
-            className="block text-[13px] font-semibold text-zinc-700 mb-1.5"
+            className="block text-[13px] font-semibold text-slate-700 mb-1.5"
           >
             มาตรฐานที่เกี่ยวข้อง
           </p>
@@ -301,12 +301,12 @@ function NewComplaintForm({ defaultReceiver }: { defaultReceiver: string }) {
         </Field>
         <div>
           <fieldset>
-            <legend className="text-[13px] font-semibold text-zinc-700 mb-1.5">
+            <legend className="text-[13px] font-semibold text-slate-700 mb-1.5">
               ความรุนแรง
             </legend>
             <div className="flex flex-wrap gap-6">
               {severities.map((s, i) => (
-                <label key={s} className="flex items-center gap-2 text-sm">
+                <label key={s} className="flex items-center gap-2 min-h-10 text-sm">
                   <input
                     id={`severity-${i}`}
                     type="radio"
@@ -384,11 +384,8 @@ function NewComplaintForm({ defaultReceiver }: { defaultReceiver: string }) {
 export default function NewComplaintPage() {
   const { user } = useAuth();
   return (
-    <AdminLayout title="รับเรื่องร้องเรียน">
+    <AdminLayout title="รับเรื่องร้องเรียนใหม่">
       <PrototypeBadge />
-      <h2 className="text-2xl font-extrabold tracking-tight mb-6">
-        รับเรื่องร้องเรียนใหม่
-      </h2>
       {user && <NewComplaintForm defaultReceiver={user.name} />}
     </AdminLayout>
   );

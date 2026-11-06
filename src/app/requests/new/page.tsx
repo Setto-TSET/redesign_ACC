@@ -168,7 +168,7 @@ export default function NewRequestPage() {
             <ReviewStep draft={draft} update={update} errors={errors} />
           )}
 
-          <div className="flex justify-between gap-3 mt-8 pt-6 border-t border-zinc-100">
+          <div className="flex justify-between gap-3 mt-8 pt-6 border-t border-slate-100">
             <button
               type="button"
               className="btn-secondary"

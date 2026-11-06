@@ -26,9 +26,6 @@ export default function AllocationPage() {
       <PrototypeBadge />
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            มอบหมายผู้ตรวจ
-          </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
             กำหนดจังหวัดที่ผู้ตรวจประเมินแต่ละคนรับผิดชอบ
           </p>
@@ -88,7 +85,7 @@ export default function AllocationPage() {
                     <button
                       type="button"
                       aria-label={`เอา${p}ออก`}
-                      className="rounded-full p-0.5 hover:bg-black/10"
+                      className="relative rounded-full p-0.5 hover:bg-black/10 after:absolute after:-inset-2 after:content-['']"
                       onClick={() => remove(a.id, p)}
                     >
                       <IconX aria-hidden="true" size={12} />
@@ -98,7 +95,7 @@ export default function AllocationPage() {
               </ul>
               <label
                 htmlFor={`alloc-${a.id}`}
-                className="block text-[13px] font-semibold text-zinc-700 mt-4 mb-1.5"
+                className="block text-[13px] font-semibold text-slate-700 mt-4 mb-1.5"
               >
                 เพิ่มจังหวัด
               </label>

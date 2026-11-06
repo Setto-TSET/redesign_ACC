@@ -27,7 +27,7 @@ const regionColor: Record<Region, string> = {
 };
 const statuses: CertStatus[] = ['A', 'N', 'E', 'X'];
 const tone: Record<CertStatus, { badge: string; bar: string }> = {
-  A: { badge: 'badge-success', bar: '#16a34a' },
+  A: { badge: 'badge-success', bar: 'var(--accent)' },
   N: { badge: 'badge-info', bar: 'var(--info)' },
   E: { badge: 'badge-warning', bar: 'var(--warn)' },
   X: { badge: 'badge-error', bar: 'var(--danger)' },
@@ -56,7 +56,7 @@ function bbox(ds: string[]) {
 
 function StatusBar({ shops }: { shops: Pharmacy[] }) {
   return (
-    <div className="flex h-2 mt-2 overflow-hidden rounded-full bg-zinc-100">
+    <div className="flex h-2 mt-2 overflow-hidden rounded-full bg-slate-100">
       {statuses.map((s) => {
         const n = shops.filter((p) => p.certStatus === s).length;
         return n ? (

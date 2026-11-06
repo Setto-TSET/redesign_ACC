@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 // สีแถบเบราว์เซอร์มือถือ = --bg
 export const viewport: Viewport = {
-  themeColor: '#fafaf9',
+  themeColor: '#f5f7fa',
 };
 
 export default function RootLayout({

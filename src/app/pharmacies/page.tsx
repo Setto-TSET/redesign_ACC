@@ -56,16 +56,13 @@ function PharmacyList() {
     <AdminLayout title="ร้านยาทั้งหมด">
       <PrototypeBadge />
       <div className="mb-6">
-        <h2 className="text-2xl font-extrabold tracking-tight">
-          ร้านยาทั้งหมด
-        </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--ink-secondary)' }}>
+        <p className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
           ค้นหาและดูข้อมูลร้านยาในระบบ
         </p>
       </div>
 
       <div className="card !p-0 overflow-hidden">
-        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-zinc-100">
+        <div className="flex flex-col gap-3 p-4 sm:p-5 border-b border-slate-100">
           <div className="flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-56">
               <IconSearch
@@ -188,11 +185,11 @@ function PharmacyList() {
                       <th className="px-5 py-3 font-semibold">หมดอายุ</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-100">
+                  <tbody className="divide-y divide-slate-100">
                     {visible.map((p, i) => (
                       <tr
                         key={p.id}
-                        className="animate-stagger hover:bg-zinc-50"
+                        className="animate-stagger hover:bg-slate-50"
                         style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
                       >
                         <td className="px-5 py-3 break-words min-w-0">
@@ -218,17 +215,18 @@ function PharmacyList() {
               </div>
             )}
             <ul
-              className={`grid gap-3 p-4 sm:p-5 sm:grid-cols-2 xl:grid-cols-3 ${view === 'table' ? 'sm:hidden' : ''}`}
+              className={`grid sm:grid-cols-2 xl:grid-cols-3 ${view === 'table' ? 'sm:hidden' : ''}`}
             >
+              {/* เส้นคั่นแทนการ์ดซ้อนใน card — ขอบขวา/ล่างที่เกินจะถูกตัดโดย overflow-hidden ของกล่องนอก */}
               {visible.map((p, i) => (
                 <li
                   key={p.id}
-                  className="animate-stagger"
+                  className="animate-stagger -mb-px -mr-px border-b border-r border-slate-100"
                   style={{ '--i': Math.min(i, 7) } as React.CSSProperties}
                 >
                   <Link
                     href={`/pharmacies/${p.id}`}
-                    className="block h-full rounded-xl border border-zinc-100 p-4 hover:bg-zinc-50"
+                    className="block h-full px-5 py-4 hover:bg-slate-50"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <p className="font-semibold min-w-0 break-words">

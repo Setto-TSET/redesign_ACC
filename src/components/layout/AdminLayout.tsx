@@ -29,7 +29,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
       </a>
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm z-40 lg:hidden animate-fade"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden animate-fade"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />

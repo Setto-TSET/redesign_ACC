@@ -88,12 +88,10 @@ function Detail({ initial }: { initial: PostAudit }) {
           </p>
           <div className="flex flex-wrap gap-2 mt-3">
             <AuditStatusBadge
-              small
               prefix="คุณภาพ: "
               status={audit.parts.quality.status}
             />
             <AuditStatusBadge
-              small
               prefix="Common illness: "
               status={audit.parts.ci.status}
             />

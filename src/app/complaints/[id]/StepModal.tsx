@@ -38,7 +38,7 @@ function RadioGroup({
   return (
     <div>
       <fieldset>
-        <legend className="text-[13px] font-semibold text-zinc-700 mb-1.5">
+        <legend className="text-[13px] font-semibold text-slate-700 mb-1.5">
           {legend}
         </legend>
         {options.map((o, i) => (

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import toast from 'react-hot-toast';
 import { AdminLayout } from '@/components/layout';
 import { CycleTimeline } from '@/components/prototype/CycleTimeline';
 import { PrototypeBadge } from '@/components/prototype/PrototypeBadge';
@@ -44,14 +43,12 @@ function Detail({ initial }: { initial: Complaint }) {
   const closed = c.step >= LAST;
 
   const record = (date: string, text: string) => {
-    const label = complaintSteps[c.step];
     setC((x) => ({
       ...x,
       step: x.step + 1,
       log: [...x.log, { step: x.step, date, text }],
     }));
     setOpen(false);
-    toast.success(`บันทึกขั้น ${label} แล้ว`);
   };
 
   const closeNow = () => {
@@ -68,7 +65,6 @@ function Detail({ initial }: { initial: Complaint }) {
         { step: LAST - 1, date, text: 'ปิดเรื่องโดยข้ามขั้นที่เหลือ' },
       ],
     }));
-    toast.success('ปิดเรื่องแล้ว');
   };
 
   const rows: [string, React.ReactNode][] = [
@@ -123,7 +119,7 @@ function Detail({ initial }: { initial: Complaint }) {
               ))}
             </dl>
             {!closed && (
-              <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-zinc-100">
+              <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   className="btn-primary"

@@ -109,7 +109,6 @@ export default function InspectPage() {
     <AdminLayout title="บันทึกผลตรวจ">
       <PrototypeBadge />
       <div className="max-w-3xl">
-        <h2 className="text-2xl font-extrabold tracking-tight">บันทึกผลตรวจ</h2>
         <p className="text-sm mt-1 mb-6" style={muted}>
           {audit.no} · {shop?.name}
         </p>
@@ -293,7 +292,7 @@ export default function InspectPage() {
                 </p>
               )}
               <fieldset>
-                <legend className="text-[13px] font-semibold text-zinc-700 mb-1.5">
+                <legend className="text-[13px] font-semibold text-slate-700 mb-1.5">
                   ความพึงพอใจของผู้รับบริการ
                 </legend>
                 <div className="flex flex-wrap gap-4">

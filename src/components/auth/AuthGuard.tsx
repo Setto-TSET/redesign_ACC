@@ -27,7 +27,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         style={{ background: 'var(--bg)' }}
       >
         <div
-          className="animate-spin rounded-full h-8 w-8 border-2 border-zinc-200"
+          className="animate-spin rounded-full h-8 w-8 border-2 border-slate-200"
           style={{ borderTopColor: 'var(--accent)' }}
           role="status"
           aria-label="กำลังโหลด"

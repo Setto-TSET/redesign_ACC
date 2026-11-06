@@ -227,7 +227,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             if (item.type === 'category') {
               return (
                 <li key={item.label} className="px-5 pt-6 pb-1.5">
-                  <span className="text-[11px] font-semibold tracking-wide text-slate-400">
+                  <span className="text-xs font-semibold tracking-wide text-slate-500">
                     {item.label}
                   </span>
                 </li>

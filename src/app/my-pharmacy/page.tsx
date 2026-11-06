@@ -12,7 +12,7 @@ import type { Pharmacy } from '@/types/api';
 
 function Rows({ rows }: { rows: [string, string][] }) {
   return (
-    <dl className="divide-y divide-zinc-100">
+    <dl className="divide-y divide-slate-100">
       {rows.map(([k, v]) => (
         <div key={k} className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
           <dt className="text-sm" style={{ color: 'var(--ink-secondary)' }}>
@@ -101,7 +101,7 @@ export default function MyPharmacyPage() {
             style={{ '--i': 3 } as React.CSSProperties}
           >
             <h3 className="font-bold mb-3">เภสัชกร</h3>
-            <ul className="divide-y divide-zinc-100">
+            <ul className="divide-y divide-slate-100">
               {shop.pharmacists.map((p) => (
                 <li
                   key={p.license}

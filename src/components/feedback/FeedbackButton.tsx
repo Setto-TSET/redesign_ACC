@@ -162,13 +162,13 @@ export function FeedbackButton() {
                     submit();
                   }}
                 >
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-slate-500">
                     หน้า: {pageName} · {roleName}
                   </p>
                   <fieldset
                     aria-describedby={errors.kind ? 'fb-kind-error' : undefined}
                   >
-                    <legend className="block text-[13px] font-semibold text-zinc-700 mb-1.5">
+                    <legend className="block text-[13px] font-semibold text-slate-700 mb-1.5">
                       ประเภท
                     </legend>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -250,16 +250,16 @@ export function FeedbackButton() {
                     ดาวน์โหลดทั้งหมด (.csv)
                   </button>
                   {list.length === 0 ? (
-                    <p className="text-sm text-zinc-500">ยังไม่มีข้อเสนอแนะ</p>
+                    <p className="text-sm text-slate-500">ยังไม่มีข้อเสนอแนะ</p>
                   ) : (
-                    <ul className="divide-y divide-zinc-100">
+                    <ul className="divide-y divide-slate-100">
                       {list.map((e) => (
                         <li key={e.id} className="py-3 space-y-1 text-sm">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold">
+                            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold">
                               {feedbackKinds[e.kind]}
                             </span>
-                            <span className="text-xs text-zinc-500">
+                            <span className="text-xs text-slate-500">
                               {formatDateTime(e.at)}
                             </span>
                             <button
@@ -272,14 +272,14 @@ export function FeedbackButton() {
                               ลบ
                             </button>
                           </div>
-                          <p className="text-xs text-zinc-500 break-words">
+                          <p className="text-xs text-slate-500 break-words">
                             {e.page} · {e.path} · {e.role}
                           </p>
                           <p className="whitespace-pre-wrap break-words">
                             {e.message}
                           </p>
                           {e.name && (
-                            <p className="text-xs text-zinc-500 break-words">
+                            <p className="text-xs text-slate-500 break-words">
                               โดย {e.name}
                             </p>
                           )}

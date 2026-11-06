@@ -58,7 +58,40 @@ export default function CertificatesPage() {
           />
         </div>
 
-        <div className="card relative !p-0 overflow-x-auto">
+        <ul className="grid gap-3 sm:hidden">
+          {rows.map((p) => (
+            <li key={p.id}>
+              <Link
+                href={`/certificates/${p.id}`}
+                className="card block !p-4 hover:!bg-slate-50"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="font-mono font-semibold">{p.qualityNo}</p>
+                  <CertBadge status={p.certStatus} />
+                </div>
+                <p className="font-semibold mt-1.5 break-words">{p.name}</p>
+                <p
+                  className="text-xs mt-1 break-words"
+                  style={{ color: 'var(--ink-secondary)' }}
+                >
+                  {p.province}
+                </p>
+                <p
+                  className="text-xs mt-1 tabular-nums"
+                  style={{ color: 'var(--ink-secondary)' }}
+                >
+                  ให้ไว้ {formatDate(p.certIssued)} · หมดอายุ{' '}
+                  {formatDate(p.certExpires)}
+                </p>
+              </Link>
+            </li>
+          ))}
+          {shops && rows.length === 0 && (
+            <li className="card text-center">ไม่พบใบรับรอง</li>
+          )}
+        </ul>
+
+        <div className="card relative !p-0 overflow-x-auto hidden sm:block">
           <table className="data-table">
             <thead>
               <tr>

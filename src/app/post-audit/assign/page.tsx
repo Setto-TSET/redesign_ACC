@@ -95,9 +95,6 @@ export default function AssignPage() {
     <AdminLayout title="มอบหมายประจำปี">
       <PrototypeBadge />
       <div className="max-w-3xl">
-        <h2 className="text-2xl font-extrabold tracking-tight mb-1">
-          มอบหมายตรวจรักษาคุณภาพประจำปี
-        </h2>
         <p className="text-sm mb-6" style={{ color: 'var(--ink-secondary)' }}>
           เลือกร้านที่ได้รับการรับรอง แล้วกำหนดผู้ตรวจและวันนัด
         </p>
@@ -197,12 +194,12 @@ export default function AssignPage() {
                   </p>
                 ) : (
                   <ul
-                    className="divide-y divide-zinc-100 border rounded-lg max-h-96 overflow-y-auto"
+                    className="divide-y divide-slate-100 border rounded-lg max-h-96 overflow-y-auto"
                     style={{ borderColor: 'var(--border)' }}
                   >
                     {shown.map((p) => (
                       <li key={p.id}>
-                        <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-50">
+                        <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50">
                           <input
                             name="pa-shop"
                             autoComplete="off"
@@ -282,7 +279,7 @@ export default function AssignPage() {
                 />
               </Field>
               <fieldset>
-                <legend className="text-[13px] font-semibold text-zinc-700 mb-1.5">
+                <legend className="text-[13px] font-semibold text-slate-700 mb-1.5">
                   วิธีตรวจ
                 </legend>
                 <div className="flex gap-6">
